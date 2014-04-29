@@ -1,20 +1,53 @@
 package me.joeyandtom.communitycraft.core.player.mongo;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import me.joeyandtom.communitycraft.core.player.CPlayer;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 public final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
     @Getter private String lastSentChatMessage;
+    @Getter private Player bukkitPlayer;
+    @Getter private boolean firstJoin = false;
 
-    public CMongoPlayer(List<String> knownUsernames, String lastKnownUsername, UUID uniqueIdentifier, List<String> knownIPAddresses, Date firstTimeOnline, Date lastTimeOnline, Long millisecondsOnline) {
-        super(knownUsernames, lastKnownUsername, uniqueIdentifier, knownIPAddresses, firstTimeOnline, lastTimeOnline, millisecondsOnline);
+    public CMongoPlayer(Player player, COfflineMongoPlayer offlinePlayer, CMongoPlayerManager manager) {
+        super(offlinePlayer, manager);
+        this.bukkitPlayer = player;
+    }
+
+    void onJoin() {
+        this.setLastKnownUsername(bukkitPlayer.getName());
+        this.setLastTimeOnline(new Date());
+        addIfUnique(this.getKnownUsernames(), bukkitPlayer.getName());
+        addIfUnique(this.getKnownIPAddresses(), bukkitPlayer.getAddress().getHostString());
+        if (this.getFirstTimeOnline() == null) {
+            this.setFirstTimeOnline(new Date());
+            this.firstJoin = true;
+        }
+    }
+
+    void onLeave() {
+        Date leaveTime = new Date();
+        this.setMillisecondsOnline(this.getMillisecondsOnline() + (leaveTime.getTime()-this.getLastTimeOnline().getTime()));
+        this.setLastTimeOnline(leaveTime);
+    }
+
+    private static <T> void addIfUnique(List<T> list, T object) {
+        for (T t : list) {
+            if (t.equals(object)) return;
+        }
+        list.add(object);
+    }
+
+    @Override
+    public String getName() {
+        return bukkitPlayer.getName();
     }
 
     @Override

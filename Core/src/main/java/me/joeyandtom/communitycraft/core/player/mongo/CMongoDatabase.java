@@ -1,6 +1,7 @@
 package me.joeyandtom.communitycraft.core.player.mongo;
 
 import com.mongodb.DB;
+import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import lombok.Data;
 import lombok.Getter;
@@ -32,6 +33,11 @@ public final class CMongoDatabase implements CDatabase {
 
     @Override
     public void disconnect() {
+        this.mongoDatabase = null;
+        this.client.close();
+    }
 
+    DBCollection getCollection(String name) {
+        return mongoDatabase.getCollection(collectionPrefix + name);
     }
 }

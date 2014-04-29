@@ -3,13 +3,16 @@ package me.joeyandtom.communitycraft.core.player;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 public interface CPlayerManager {
     COfflinePlayerIterator getOfflinePlayerByName(String username);
-    List<CPlayer> getOnlinePlayers();
-    CPlayer getCPlayerForPlayer(Player player);
+    COfflinePlayer getOfflinePlayerByUUID(UUID uuid);
     COfflinePlayer getCOfflinePlayerForOfflinePlayer(OfflinePlayer player);
+    Collection<CPlayer> getOnlinePlayers();
+    CPlayer getCPlayerForPlayer(Player player);
 
     void savePlayerData(COfflinePlayer player) throws DatabaseConnectException;
 
