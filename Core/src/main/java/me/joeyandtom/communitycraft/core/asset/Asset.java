@@ -12,4 +12,7 @@ public abstract class Asset {
     private final Map<String, ?> metaVariables;
 
     public Map<String, ?> getMetaVariables() { return new HashMap<>();}
+
+    /* hooks */
+
 }

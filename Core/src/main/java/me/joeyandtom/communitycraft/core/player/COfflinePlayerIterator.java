@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 @Data
-public class COfflinePlayerIterator implements Iterable<COfflinePlayer> {
+public final class COfflinePlayerIterator implements Iterable<COfflinePlayer> {
     @NonNull private final Collection<COfflinePlayer> playersResolved;
 
     @Override

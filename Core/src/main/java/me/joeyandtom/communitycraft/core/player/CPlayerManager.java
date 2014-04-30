@@ -13,6 +13,8 @@ public interface CPlayerManager {
     COfflinePlayer getCOfflinePlayerForOfflinePlayer(OfflinePlayer player);
     Collection<CPlayer> getOnlinePlayers();
     CPlayer getCPlayerForPlayer(Player player);
+    CPlayer getOnlineCPlayerForUUID(UUID uuid);
+    CPlayer getOnlineCPlayerForName(String name);
 
     void savePlayerData(COfflinePlayer player) throws DatabaseConnectException;
 

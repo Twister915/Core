@@ -1,5 +1,7 @@
-package me.joeyandtom.communitycraft.core;
+package me.joeyandtom.communitycraft.core.modular;
 
+import lombok.Getter;
+import me.joeyandtom.communitycraft.core.Core;
 import me.joeyandtom.communitycraft.core.config.YAMLConfigurationFile;
 import org.bukkit.ChatColor;
 import org.bukkit.event.Listener;
@@ -8,11 +10,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 public abstract class ModularPlugin extends JavaPlugin {
 
     private YAMLConfigurationFile formatsFile;
+    @Getter private ModuleMeta meta;
 
     @Override
     public void onEnable() {
         try {
             if (!Core.getInstance().isEnabled()) onFailureToEnable();
+            meta = getClass().getAnnotation(ModuleMeta.class);
             saveDefaultConfig();
             this.formatsFile = new YAMLConfigurationFile(this, "formats.yml");
             this.formatsFile.saveDefaultConfig();
@@ -22,11 +26,18 @@ public abstract class ModularPlugin extends JavaPlugin {
             onFailureToEnable();
             getServer().getPluginManager().disablePlugin(this);
         }
+        logMessage("&cModule " + meta.name() + " &a&lEnabled");
     }
 
     @Override
     public void onDisable() {
-
+        try {
+            onModuleDisable();
+        } catch (Exception e) {
+            onFailureToDisable();
+            e.printStackTrace();
+        }
+        logMessage("&cModule " + meta.name() + " &4&lDisabled");
     }
 
     /* Delegated Methods */

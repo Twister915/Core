@@ -3,15 +3,17 @@ package me.joeyandtom.communitycraft.core.player.mongo;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import me.joeyandtom.communitycraft.core.Core;
 import me.joeyandtom.communitycraft.core.asset.Asset;
 import me.joeyandtom.communitycraft.core.player.COfflinePlayer;
 import me.joeyandtom.communitycraft.core.player.CPlayer;
-import me.joeyandtom.communitycraft.core.player.CPlayerManager;
 import me.joeyandtom.communitycraft.core.player.DatabaseConnectException;
 import org.apache.commons.lang.IllegalClassException;
-import org.bukkit.entity.Player;
+import org.bson.types.ObjectId;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -30,7 +32,7 @@ public class COfflineMongoPlayer implements COfflinePlayer {
 
     /* helpers */
     private final CMongoPlayerManager playerManager;
-
+    @Getter @Setter private ObjectId objectId;
 
     public COfflineMongoPlayer(UUID uniqueIdentifier, DBObject player, @NonNull CMongoPlayerManager manager) {
         this.playerManager = manager;
@@ -38,18 +40,22 @@ public class COfflineMongoPlayer implements COfflinePlayer {
             this.assets = new ArrayList<>();
             this.settings = new HashMap<>();
             this.uniqueIdentifier = uniqueIdentifier;
+            this.objectId = null;
             return;
         }
+        this.objectId = getValueFrom(player, "_id", ObjectId.class);
         updateFromDBObject(player);
     }
 
     protected COfflineMongoPlayer(COfflineMongoPlayer otherCPlayer, CMongoPlayerManager playerManager) {
         this.playerManager = playerManager;
+        this.objectId = otherCPlayer.getObjectId();
         updateFromDBObject(otherCPlayer.getObjectForPlayer());
     }
 
     DBObject getObjectForPlayer() {
         DBObject object = new BasicDBObject();
+        if (this.objectId != null) object.put("_id", this.objectId);
         object.put("last_username", lastKnownUsername);
         object.put("uuid", uniqueIdentifier.toString());
         object.put("first_join", firstTimeOnline);
@@ -107,18 +113,8 @@ public class COfflineMongoPlayer implements COfflinePlayer {
     }
 
     @Override
-    public boolean hasAsset(Asset asset) {
-        return false;
-    }
-
-    @Override
-    public Asset getAssetByName(String key) {
-        return null;
-    }
-
-    @Override
     public CPlayer getPlayer() {
-        return null;
+        return this.playerManager.getOnlineCPlayerForUUID(this.uniqueIdentifier);
     }
 
     @Override
@@ -136,29 +132,34 @@ public class COfflineMongoPlayer implements COfflinePlayer {
         this.uniqueIdentifier = UUID.fromString(getValueFrom(player, "uuid", String.class));
         this.firstTimeOnline = getValueFrom(player, "first_join", Date.class);
         this.lastTimeOnline = getValueFrom(player, "last_seen", Date.class);
-        this.millisecondsOnline = getValueFrom(player, "time_online", Long.class);
-        this.knownIPAddresses = getListFor(getValueFrom(player, "ips", BasicDBList.class), String.class);
-        this.knownUsernames = getListFor(getValueFrom(player, "usernames", BasicDBList.class), String.class);
-        this.settings = getMapFor(getValueFrom(player, "settings", DBObject.class));
+        Long time_online = getValueFrom(player, "time_online", Long.class);
+        this.millisecondsOnline = time_online == null ? 0 : time_online;
+        List<String> ips = getListFor(getValueFrom(player, "ips", BasicDBList.class), String.class);
+        this.knownIPAddresses = ips == null ? new ArrayList<String>() : ips;
+        List<String> usernames = getListFor(getValueFrom(player, "usernames", BasicDBList.class), String.class);
+        this.knownUsernames = usernames == null ? new ArrayList<String>() : usernames;
+        Map<String, Object> settings1 = getMapFor(getValueFrom(player, "settings", DBObject.class));
+        this.settings = settings1 == null ? new HashMap<String, Object>() : settings1;
         this.assets = new ArrayList<>();
         List<DBObject> assets1 = getListFor(getValueFrom(player, "assets", BasicDBList.class), DBObject.class);
         for (DBObject assetObject : assets1) {
-            String fqcn1 = getValueFrom(assetObject, "fqcn", String.class);
+            String fqcn = getValueFrom(assetObject, "fqcn", String.class);
             Class<?> assetClass;
             try {
-                assetClass = Class.forName(fqcn1);
+                assetClass = Class.forName(fqcn);
                 if (!Asset.class.isAssignableFrom(assetClass)) throw new IllegalClassException("This class does not extend Asset!");
                 Map<String, Object> meta = getMapFor(getValueFrom(assetObject, "meta", DBObject.class));
                 Asset asset = (Asset) assetClass.getConstructor(COfflinePlayer.class, Map.class).newInstance(this, meta);
                 this.assets.add(asset);
             } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException | ClassNotFoundException | IllegalClassException e) {
-                Core.getInstance().getLogger().severe("Could not load asset for player " + this.lastKnownUsername + " - " + fqcn1 + " - " + e.getMessage());
+                Core.getInstance().getLogger().severe("Could not load asset for player " + this.lastKnownUsername + " - " + fqcn + " - " + e.getMessage());
             }
         }
     }
 
     @SuppressWarnings("UnusedParameters")
-    static <T> T getValueFrom(DBObject object, String key, Class<T> clazz) {
+    static <T> T getValueFrom(DBObject object, @NonNull String key, Class<T> clazz) {
+        if (object == null) return null;
         try {
             //noinspection unchecked
             return (T)object.get(key);
@@ -170,6 +171,7 @@ public class COfflineMongoPlayer implements COfflinePlayer {
     @SuppressWarnings("UnusedParameters")
     static <T> List<T> getListFor(BasicDBList list, Class<T> clazz) {
         List<T> tList = new ArrayList<>();
+        if (list == null) return null;
         for (Object o : list) {
             try {
                 //noinspection unchecked
@@ -181,6 +183,7 @@ public class COfflineMongoPlayer implements COfflinePlayer {
 
     static BasicDBList getDBListFor(List<?> list) {
         BasicDBList dbList = new BasicDBList();
+        if (list == null) return null;
         for (Object o : list) {
             dbList.add(o);
         }
@@ -189,6 +192,7 @@ public class COfflineMongoPlayer implements COfflinePlayer {
 
     static DBObject getDBObjectFor(Map<String, ?> map) {
         BasicDBObject basicDBObject = new BasicDBObject();
+        if (map == null) return null;
         for (Map.Entry<String, ?> stringEntry : map.entrySet()) {
             basicDBObject.put(stringEntry.getKey(), stringEntry.getValue());
         }
@@ -197,6 +201,7 @@ public class COfflineMongoPlayer implements COfflinePlayer {
 
     static Map<String, Object> getMapFor(DBObject object) {
         HashMap<String, Object> map = new HashMap<>();
+        if (object == null) return null;
         for (String s : object.keySet()) {
             map.put(s, object.get(s));
         }

@@ -1,12 +1,11 @@
 package me.joeyandtom.communitycraft.core.player.mongo;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.mongodb.*;
 import lombok.Getter;
 import me.joeyandtom.communitycraft.core.Core;
 import me.joeyandtom.communitycraft.core.player.*;
+import org.bson.types.ObjectId;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -21,6 +20,8 @@ public final class CMongoPlayerManager implements CPlayerManager {
 
     public CMongoPlayerManager(CMongoDatabase database) {
         this.database = database;
+        Core.getInstance().registerListener(new CPlayerManagerListener(this));
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new CPlayerManagerSaveTask(this), 1200, 1200);
     }
 
     @Override
@@ -35,18 +36,27 @@ public final class CMongoPlayerManager implements CPlayerManager {
 
     @Override
     public COfflineMongoPlayer getOfflinePlayerByUUID(UUID uuid) {
-        DBObject player = getPlayerDocumentFor(uuid);
-        return new COfflineMongoPlayer(uuid, player, this);
+        return new COfflineMongoPlayer(uuid, getPlayerDocumentFor(uuid), this);
     }
 
     DBObject getPlayerDocumentFor(UUID uuid) {
-        DBCollection users = database.getCollection("users");
-        return users.findOne(new BasicDBObject("uuid", uuid.toString()));
+        return database.getCollection("users").findOne(new BasicDBObject("uuid", uuid.toString()));
     }
 
     @Override
     public CMongoPlayer getCPlayerForPlayer(Player player) {
+        if (player == null) return null;
         return (CMongoPlayer) this.onlinePlayerMap.get(player.getName());
+    }
+
+    @Override
+    public CPlayer getOnlineCPlayerForUUID(UUID uuid) {
+        return getCPlayerForPlayer(Bukkit.getPlayer(uuid));
+    }
+
+    @Override
+    public CPlayer getOnlineCPlayerForName(String name) {
+        return this.onlinePlayerMap.get(name);
     }
 
     @Override
@@ -61,22 +71,31 @@ public final class CMongoPlayerManager implements CPlayerManager {
 
     @Override
     public void savePlayerData(COfflinePlayer player) throws DatabaseConnectException {
-        player.saveIntoDatabase();
+        COfflineMongoPlayer player1 = (COfflineMongoPlayer) player;
+        if (player1 instanceof CMongoPlayer) ((CMongoPlayer)player1).updateForSaving();
+        DBObject objectForPlayer = player1.getObjectForPlayer();
+        this.database.getCollection("users").save(objectForPlayer);
+        player1.setObjectId(getValueFrom(objectForPlayer, "_id", ObjectId.class));
     }
 
     @Override
     public void playerLoggedIn(Player player) {
         CMongoPlayer cMongoPlayer = new CMongoPlayer(player, getOfflinePlayerByUUID(player.getUniqueId()), this);
+        try {
+            cMongoPlayer.onJoin();
+        } catch (DatabaseConnectException | MongoException e) {
+            Core.getInstance().getLogger().severe("Could not save player into the database " + e.getMessage() + " - " + player.getName());
+        }
         this.onlinePlayerMap.put(player.getName(), cMongoPlayer);
     }
 
     @Override
     public void playerLoggedOut(Player player) {
         CMongoPlayer cPlayerForPlayer = getCPlayerForPlayer(player);
-        cPlayerForPlayer.onLeave();
+        cPlayerForPlayer.updateForSaving();
         try {
             cPlayerForPlayer.saveIntoDatabase();
-        } catch (DatabaseConnectException e) {
+        } catch (DatabaseConnectException | MongoException e) {
             Core.getInstance().getLogger().severe("Could not save player into the database " + e.getMessage() + " - " + cPlayerForPlayer.getName());
         }
         this.onlinePlayerMap.remove(player.getName());
@@ -87,7 +106,7 @@ public final class CMongoPlayerManager implements CPlayerManager {
         for (CPlayer onlinePlayer : getOnlinePlayers()) {
             try {
                 onlinePlayer.saveIntoDatabase();
-            } catch (DatabaseConnectException e) {
+            } catch (DatabaseConnectException | MongoException e) {
                 Core.getInstance().getLogger().severe("Could not save player into the database " + e.getMessage() + " - " + onlinePlayer.getName());
             }
         }

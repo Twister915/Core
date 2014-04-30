@@ -1,3 +1,5 @@
-host: 127.0.0.1
-port: 28017
-database: communitycraft
+host: oceanic.mongohq.com
+port: 10077
+database: community_craft
+username: test
+password: test123

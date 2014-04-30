@@ -86,8 +86,6 @@ public interface COfflinePlayer {
 
     void giveAsset(@NonNull Asset asset);
     Collection<Asset> getAssets();
-    boolean hasAsset(Asset asset);
-    Asset getAssetByName(String key);
 
     CPlayer getPlayer();
 
