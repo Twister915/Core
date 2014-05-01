@@ -23,6 +23,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
         this.name = name;
     }
 
+    @Override
     public final boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         //Handling commands can be done by the logic below, and all errors should be thrown using an exception.
         //If you wish to override the behavior of displaying that error to the player, it is discouraged to do that in
@@ -68,6 +69,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    @Override
     public final List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length > 1) {
             ModuleCommand possibleHigherLevelSubCommand;
@@ -90,7 +92,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.RED + ex.getClass().getSimpleName() + ": " + ex.getMessage() + "!");
     }
 
-    private ModuleCommand getSubCommandFor(String s) {
+    public final ModuleCommand getSubCommandFor(String s) {
         if (subCommands.containsKey(s)) return subCommands.get(s);
         for (String s1 : subCommands.keySet()) {
             if (s1.equalsIgnoreCase(s)) return subCommands.get(s1);
@@ -98,7 +100,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
         return null;
     }
 
-    private List<ModuleCommand> getSubCommandsForPartial(String s) {
+    public final List<ModuleCommand> getSubCommandsForPartial(String s) {
         List<ModuleCommand> commands = new ArrayList<>();
         ModuleCommand subCommand;
         if ((subCommand = getSubCommandFor(s)) != null) {
