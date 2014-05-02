@@ -5,7 +5,9 @@ import net.communitycraft.core.Core;
 import net.communitycraft.core.config.YAMLConfigurationFile;
 import net.communitycraft.core.modular.command.ModuleCommand;
 import net.communitycraft.core.modular.command.ModuleCommandMap;
+import net.communitycraft.core.player.CPlayerManager;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -16,7 +18,7 @@ public abstract class ModularPlugin extends JavaPlugin {
     @Getter private ModuleCommandMap commandMap;
 
     @Override
-    public void onEnable() {
+    public final void onEnable() {
         try {
             if (!Core.getInstance().isEnabled()) onFailureToEnable();
             meta = getClass().getAnnotation(ModuleMeta.class);
@@ -33,7 +35,7 @@ public abstract class ModularPlugin extends JavaPlugin {
     }
 
     @Override
-    public void onDisable() {
+    public final void onDisable() {
         try {
             onModuleDisable();
         } catch (Exception e) {
@@ -50,20 +52,49 @@ public abstract class ModularPlugin extends JavaPlugin {
     protected void onFailureToDisable() {}
 
     /* Util methods */
-    public <T extends Listener> T registerListener(T listener) {
+    public final <T extends Listener> T registerListener(T listener) {
         getServer().getPluginManager().registerEvents(listener, this);
         return listener;
     }
 
-    public void logMessage(String message) {
+    public final void logMessage(String message) {
         getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', message));
     }
 
-    protected void addCommand(ModuleCommand command) {
+    protected final void addCommand(ModuleCommand command) {
         this.commandMap.registerCommand(command);
+    }
+
+    protected final ModuleCommand getModuleCommand(String name) {
+        return this.commandMap.getCommandByName(name);
     }
 
     /* Formatting methods */
 
+    public final String getFormatRaw(String key, String[]... formatters) {
+        FileConfiguration config = formatsFile.getConfig();
+        if (!config.contains(key)) return null;
+        String unFormattedString = config.getString(key);
+        for (String[] formatter : formatters) {
+            if (formatter.length < 2) continue;
+            unFormattedString = unFormattedString.replace(formatter[0], formatter[1]);
+        }
+        return unFormattedString;
+    }
 
+    public final String getFormat(String key, boolean prefix, String[]... formatters) {
+        return getFormatRaw("prefix") + getFormatRaw(key, formatters);
+    }
+
+    public final String getFormat(String key, String[]... formatters) {
+        return getFormat(key, true, formatters);
+    }
+
+    public final String getFormat(String key) {
+        return getFormatRaw(key);
+    }
+
+    public CPlayerManager getPlayerManager() {
+        return Core.getPlayerManager();
+    }
 }

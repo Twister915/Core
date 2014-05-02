@@ -10,6 +10,14 @@ public final class RandomUtils {
         declaredField.set(instance, value);
     }
 
+    public static <T> T getDeclaredField(Object o, String field, Class<T> type){
+        try {
+            return safeCast(o.getClass().getDeclaredField(field).get(o), type);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            return null;
+        }
+    }
+
     public static <T> T safeCast(Object o, Class<T> type) {
         try {
             //noinspection unchecked
@@ -32,5 +40,12 @@ public final class RandomUtils {
             if (t1.equals(t)) return true;
         }
         return false;
+    }
+
+    public static <T> int indexOf(T[] ts, T t) {
+        for (int x = 0; x < ts.length; x++) {
+            if (ts[x].equals(t)) return x;
+        }
+        return -1;
     }
 }
