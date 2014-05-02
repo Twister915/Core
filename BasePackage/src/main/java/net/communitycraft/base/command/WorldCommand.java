@@ -9,7 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.World;
 
-public class WorldCommand extends ModuleCommand {
+public final class WorldCommand extends ModuleCommand {
     public WorldCommand() {
         super("world");
     }
