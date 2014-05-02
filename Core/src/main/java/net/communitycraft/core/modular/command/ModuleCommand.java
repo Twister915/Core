@@ -3,6 +3,7 @@ package net.communitycraft.core.modular.command;
 import lombok.Getter;
 import net.communitycraft.core.Core;
 import net.communitycraft.core.player.CPlayer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
@@ -15,19 +16,49 @@ import org.bukkit.entity.Player;
 import java.lang.String;
 import java.util.*;
 
+/**
+ * ModuleCommand is the superclass for any commands that are created to hook into the module system in CommunityCraft Core.
+ *
+ * All commands are handled through three main methods, splitting the different sender types into different calls, and simplifying the method to just args and a sender.
+ *
+ * Commands must throw exceptions in the event of a failure, and you can handle these exceptions using {@link #handleCommandException(CommandException, String[], org.bukkit.command.CommandSender)}.
+ *
+ * You can also use our sub command system which supports tab completion and recursive sub-commands by using the constructor {@link #ModuleCommand(String, ModuleCommand...)}.
+ *
+ * You can override tab-completion using {@link #handleTabComplete(org.bukkit.command.CommandSender, org.bukkit.command.Command, String, String[])}
+ *
+ * If you require usage of a sub-command, please override {@link #isUsingSubcommandsOnly()} and have it return true.
+ */
 public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
+    /**
+     * Holds a list of the sub-commands bound to their names used for quick access.
+     */
     private final Map<String, ModuleCommand> subCommands = new HashMap<>();
+    /**
+     * Holds the name of this command.
+     */
     @Getter private final String name;
 
+    /**
+     * Main constructor without sub-commands.
+     * @param name The name of the command.
+     */
     protected ModuleCommand(String name) {
         this.name = name;
     }
 
+    /**
+     * Main constructor with sub-commands.
+     * @param name The name of the command.
+     * @param subCommands The sub-commands you wish to register.
+     */
     protected ModuleCommand(final String name, ModuleCommand... subCommands) {
         this.name = name;
+        //Toss all the sub commands in the map
         for (ModuleCommand subCommand : subCommands) {
             this.subCommands.put(subCommand.getName(), subCommand);
         }
+        //Add a provided help command
         final Map<String, ModuleCommand> subCommandsLV = this.subCommands;
         this.subCommands.put("help", new ModuleCommand("help") {
 
@@ -52,6 +83,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
                      builder.append(stringModuleCommandEntry.getKey()).append("|");
                 }
                 String s = builder.toString();
+                //Looks like this /name - [subcommand1|subcommand2|]
                 sender.sendMessage(ChatColor.AQUA + "/" + ChatColor.DARK_AQUA + name + ChatColor.YELLOW + " - [" + s.substring(0, s.length()-2) + "]");
             }
         });
@@ -162,11 +194,21 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
         return commands;
     }
 
+    //Default behavior is to do nothing, these methods can be overrided by the sub-class.
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {}
     protected void handleCommand(ConsoleCommandSender commandSender, String[] args) throws CommandException {}
     protected void handleCommand(BlockCommandSender commandSender, String[] args) throws CommandException {}
 
-    protected List<String> handleTabComplete(CommandSender sender, Command command, String alias, String[] args) {return Core.getInstance().onTabComplete(sender, command, alias, args);}
+    //Default behavior if we delegate the call to the sub-class
+    protected List<String> handleTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        List<String> ss = new ArrayList<>(); //Create a list to put possible names
+        String arg = args[args.length - 1]; //Get the last argument
+        for (Player player : Bukkit.getOnlinePlayers()) { //Loop through all the players
+            String name1 = player.getName(); //Get this players name (since we reference it twice)
+            if (name1.startsWith(arg)) ss.add(name1); //And if it starts with the argument we add it to this list
+        }
+        return ss; //Return what we found.
+    }
 
     protected boolean isUsingSubcommandsOnly() {return false;}
 }

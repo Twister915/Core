@@ -18,7 +18,7 @@ public final class RandomUtils {
         }
     }
 
-    public static <T> T safeCast(Object o, Class<T> type) {
+    public static <T> T safeCast(Object o, @SuppressWarnings("UnusedParameters") Class<T> type) {
         try {
             //noinspection unchecked
             return (T)o;
