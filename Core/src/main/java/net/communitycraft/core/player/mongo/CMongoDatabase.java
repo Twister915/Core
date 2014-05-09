@@ -28,22 +28,22 @@ public final class CMongoDatabase implements CDatabase {
     @Override
     public void connect() throws DatabaseConnectException {
         try {
-            MongoClientURI uri;
+            MongoClientURI uri; //Create the URI
             if (this.password != null && this.username != null) {
                 uri = new MongoClientURI("mongodb://" + username + ":" + password + "@" + host + ":"  + port + "/" + database);
                 Core.getInstance().getLogger().info(uri.toString());
             }
             else uri = new MongoClientURI("mongodb://" + host + ":" + port + "/" + database);
-            this.client = new MongoClient(uri);
+            this.client = new MongoClient(uri); //Connect using it
         } catch (UnknownHostException e) {
-            throw new DatabaseConnectException("Could not resolve mongo hostname!", e, this);
+            throw new DatabaseConnectException("Could not resolve mongo hostname!", e, this); //Could not connect!
         }
-        this.mongoDatabase = this.client.getDB(database);
+        this.mongoDatabase = this.client.getDB(database); //Grab the database
     }
 
     @Override
     public void disconnect() {
-        this.mongoDatabase = null;
+        this.mongoDatabase = null; //Memory management FTW
         this.client.close();
         this.client = null;
     }

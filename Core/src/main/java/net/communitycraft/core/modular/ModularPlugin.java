@@ -20,7 +20,10 @@ public abstract class ModularPlugin extends JavaPlugin {
     @Override
     public final void onEnable() {
         try {
-            if (!Core.getInstance().isEnabled()) onFailureToEnable();
+            if (!Core.getInstance().isEnabled()) {
+                onFailureToEnable();
+                return;
+            }
             meta = getClass().getAnnotation(ModuleMeta.class);
             saveDefaultConfig();
             this.formatsFile = new YAMLConfigurationFile(this, "formats.yml");
@@ -72,18 +75,18 @@ public abstract class ModularPlugin extends JavaPlugin {
     /* Formatting methods */
 
     public final String getFormatRaw(String key, String[]... formatters) {
-        FileConfiguration config = formatsFile.getConfig();
-        if (!config.contains(key)) return null;
-        String unFormattedString = config.getString(key);
-        for (String[] formatter : formatters) {
-            if (formatter.length < 2) continue;
-            unFormattedString = unFormattedString.replace(formatter[0], formatter[1]);
+        FileConfiguration config = formatsFile.getConfig(); //Get the formats file
+        if (!config.contains(key)) return null; //Check if it has this format key, and if not return null
+        String unFormattedString = config.getString(key); //Get the un-formatted key
+        for (String[] formatter : formatters) { //Iterate through the formatters
+            if (formatter.length < 2) continue; //Validate the length
+            unFormattedString = unFormattedString.replace(formatter[0], formatter[1]); //Replace all in the unformatted string
         }
-        return unFormattedString;
+        return unFormattedString; //Return
     }
 
     public final String getFormat(String key, boolean prefix, String[]... formatters) {
-        return getFormatRaw("prefix") + getFormatRaw(key, formatters);
+        return !prefix ? "" : getFormatRaw("prefix") + getFormatRaw(key, formatters);
     }
 
     public final String getFormat(String key, String[]... formatters) {
