@@ -40,6 +40,7 @@ public final class Core extends JavaPlugin {
             databaseConfiguration.reloadConfig();
             databaseConfiguration.saveDefaultConfig();
             FileConfiguration config = databaseConfiguration.getConfig();
+            //This will get the database values from the database.yml file
             CMongoDatabase mongoDatabase = new CMongoDatabase(
                     config.getString("host", "127.0.0.1"),
                     config.getInt("port", 28017),

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import net.communitycraft.core.Core;
+import net.communitycraft.core.RandomUtils;
 import net.communitycraft.core.asset.Asset;
 import net.communitycraft.core.player.COfflinePlayer;
 import net.communitycraft.core.player.CPlayer;
@@ -17,6 +18,8 @@ import org.bson.types.ObjectId;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+
+import static net.communitycraft.core.RandomUtils.safeCast;
 
 class COfflineMongoPlayer implements COfflinePlayer {
     @Getter private List<String> knownUsernames;
@@ -77,14 +80,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
 
     @Override
     public final <T> T getSettingValue(@NonNull String key, @NonNull Class<T> type, T defaultValue) {
-        T t;
-        try {
-            //noinspection unchecked
-            t = (T) this.settings.get(key);
-        } catch (ClassCastException ex) {
-            t = null;
-        }
-        return t == null ? defaultValue : t;
+        T t; return (!this.settings.containsKey(key) || (t = safeCast(this.settings.get(key), type)) == null) ? defaultValue : t;
     }
 
     @Override
