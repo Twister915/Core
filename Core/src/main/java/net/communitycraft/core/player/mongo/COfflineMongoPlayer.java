@@ -18,7 +18,7 @@ import org.bson.types.ObjectId;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-public class COfflineMongoPlayer implements COfflinePlayer {
+class COfflineMongoPlayer implements COfflinePlayer {
     @Getter private List<String> knownUsernames;
     @Getter @Setter(AccessLevel.PROTECTED) private String lastKnownUsername;
     @Getter private UUID uniqueIdentifier;
@@ -53,7 +53,7 @@ public class COfflineMongoPlayer implements COfflinePlayer {
         updateFromDBObject(otherCPlayer.getObjectForPlayer());
     }
 
-    DBObject getObjectForPlayer() {
+    final DBObject getObjectForPlayer() {
         DBObject object = new BasicDBObject();
         if (this.objectId != null) object.put("_id", this.objectId);
         object.put("last_username", lastKnownUsername);
@@ -76,7 +76,7 @@ public class COfflineMongoPlayer implements COfflinePlayer {
     }
 
     @Override
-    public <T> T getSettingValue(@NonNull String key, @NonNull Class<T> type, T defaultValue) {
+    public final <T> T getSettingValue(@NonNull String key, @NonNull Class<T> type, T defaultValue) {
         T t;
         try {
             //noinspection unchecked
@@ -88,42 +88,47 @@ public class COfflineMongoPlayer implements COfflinePlayer {
     }
 
     @Override
-    public <T> T getSettingValue(@NonNull String key, @NonNull Class<T> type) {
+    public final <T> T getSettingValue(@NonNull String key, @NonNull Class<T> type) {
         return getSettingValue(key, type, null);
     }
 
     @Override
-    public void storeSettingValue(@NonNull String key, Object value) {
+    public final void storeSettingValue(@NonNull String key, Object value) {
         this.settings.put(key, value);
     }
 
     @Override
-    public void removeSettingValue(@NonNull String key) {
+    public final void removeSettingValue(@NonNull String key) {
         this.settings.remove(key);
     }
 
     @Override
-    public boolean isSettingValuePresent(@NonNull String key) {
+    public final boolean containsSetting(@NonNull String key) {
         return this.settings.containsKey(key);
     }
 
     @Override
-    public void giveAsset(@NonNull Asset asset) {
+    public final void giveAsset(@NonNull Asset asset) {
         this.assets.add(asset);
     }
 
     @Override
-    public CPlayer getPlayer() {
+    public final void removeAsset(@NonNull Asset asset) {
+        this.assets.remove(asset);
+    }
+
+    @Override
+    public final CPlayer getPlayer() {
         return this.playerManager.getOnlineCPlayerForUUID(this.uniqueIdentifier);
     }
 
     @Override
-    public void updateFromDatabase() {
+    public final void updateFromDatabase() {
         updateFromDBObject(this.playerManager.getPlayerDocumentFor(this.uniqueIdentifier));
     }
 
     @Override
-    public void saveIntoDatabase() throws DatabaseConnectException {
+    public final void saveIntoDatabase() throws DatabaseConnectException {
         this.playerManager.savePlayerData(this);
     }
 

@@ -13,7 +13,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(of = {"username"})
-public final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
+final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
     @Getter private String lastSentChatMessage;
     @Getter private final String username;

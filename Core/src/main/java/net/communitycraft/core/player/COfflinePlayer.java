@@ -18,7 +18,7 @@ import java.util.UUID;
 public interface COfflinePlayer {
     /**
      * Gets the known usernames. All usernames on login are logged and placed into storage. This will return all current usernames.
-     * @return All usernames in a list.
+     * @return All usernames in a {@link java.util.List}.
      */
     List<String> getKnownUsernames();
 
@@ -55,7 +55,7 @@ public interface COfflinePlayer {
     /**
      * Gets the amount of time the player has spent online.
      *
-     * This is recorded in milliseconds, and can be converted into seconds by dividing by 1000.
+     * This is recorded in milliseconds, and can be converted into seconds by dividing by {@code 1000}.
      *
      * @return The amount of time the player has spent online.
      */
@@ -65,30 +65,75 @@ public interface COfflinePlayer {
     /**
      * Gets the value of a setting by key with a default value and type.
      * @param key The key that is used to uniquely identify the setting entry.
-     * @param type The type of the entry, this will force the entry to be cast to this type and return the default value if a ClassCastException is caught.
-     * @param defaultValue The default value of this setting in the case it does not exist, or a ClassCastException is caught.
+     * @param type The type of the entry, this will force the entry to be cast to this type and return the default value if a {@link java.lang.ClassCastException} is caught.
+     * @param defaultValue The default value of this setting in the case it does not exist, or a {@link java.lang.ClassCastException} is caught.
      * @param <T> The type parameter for the setting.
      * @return The value of the setting as specified by the above parameters.
      */
     <T> T getSettingValue(@NonNull String key, @NonNull Class<T> type, T defaultValue);
 
     /**
-     *
-     * @param key
-     * @param type
-     * @param <T>
-     * @return
+     * Gets the value of a setting by key. Returns null if it cannot be found.
+     * @param key The key that is used to uniquely identify the setting entry.
+     * @param type The type of the entry, this will force the entry to be cast to this type and return null if it cannot be.
+     * @param <T> The type parameter for the setting.
+     * @return The value of the setting as specified by the above parameters.
      */
     <T> T getSettingValue(@NonNull String key, @NonNull Class<T> type);
-    void storeSettingValue(@NonNull String key, Object value);
-    void removeSettingValue(@NonNull String key);
-    boolean isSettingValuePresent(@NonNull String key);
 
+    /**
+     * Stores a setting value.
+     * @param key The key to store the setting as.
+     * @param value The value to set the key to.
+     */
+    void storeSettingValue(@NonNull String key, Object value);
+
+    /**
+     * Completely removes a setting from the user.
+     * @param key The key to remove the value from.
+     */
+    void removeSettingValue(@NonNull String key);
+
+    /**
+     * Checks if the value at the key is present. If it is not, this will return {@code false}.
+     * @param key The key to find a value for.
+     * @return A {@code true} or {@code false} value based on the presence of {@code key}.
+     */
+    boolean containsSetting(@NonNull String key);
+
+    /**
+     * Grants a player an asset.
+     * @param asset The asset to give the player.
+     */
     void giveAsset(@NonNull Asset asset);
+
+    /**
+     * Removes an asset from a player.
+     * @param asset The asset to remove from the player.
+     */
+    void removeAsset(@NonNull Asset asset);
+
+    /**
+     * Returns a list of all assets owned by a player.
+     * @return All the assets owned by a player
+     */
     Collection<Asset> getAssets();
 
+    /**
+     * If the player is online, this will return the instance of {@link net.communitycraft.core.player.CPlayer}, whereas if they are not online this will return a {@code null}.
+     * @return A {@link net.communitycraft.core.player.CPlayer} object or {@code null}.
+     */
     CPlayer getPlayer();
 
+    /**
+     * Updates data about a player with the current values from the database.
+     * @throws DatabaseConnectException When we cannot connect to the database to make an update.
+     */
     void updateFromDatabase() throws DatabaseConnectException;
+
+    /**
+     * Saves the current values (settings, assets, metadata) into the database.
+     * @throws DatabaseConnectException When we cannot save the data into the database.
+     */
     void saveIntoDatabase() throws DatabaseConnectException;
 }

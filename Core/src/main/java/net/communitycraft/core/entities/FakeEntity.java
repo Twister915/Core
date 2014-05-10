@@ -17,6 +17,7 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode
 @ToString
+//TODO finish this
 public abstract class FakeEntity {
     private final EntityType type;
     private final CPlayer player;
@@ -41,21 +42,22 @@ public abstract class FakeEntity {
         entity.remove();
     }
 
-    public void teleport(Location l) {
+    public final void teleport(Location l) {
         this.currentLocation = l;
+        updateEntityState();
     }
 
-    public void setDisplayName(String name) {
+    public final void setDisplayName(String name) {
         this.customEntityName = name;
+        updateEntityState();
     }
 
-    public <T extends FakeEntity> void addObserver(EntityObserver<T> observer, Class<T> fakeEntityType) {
+    public final <T extends FakeEntity> void addObserver(EntityObserver<T> observer, Class<T> fakeEntityType) {
         if (!fakeEntityType.equals(getClass())) throw new IllegalArgumentException("You must add an observer of the right type!");
         if (!observers.contains(observer)) observers.add(observer);
     }
 
-    private void updateEntityState() {
-
+    private final void updateEntityState() {
     }
 
     protected abstract int getHealthInteger();

@@ -27,7 +27,7 @@ import java.util.*;
  *
  * You can override tab-completion using {@link #handleTabComplete(org.bukkit.command.CommandSender, org.bukkit.command.Command, String, String[])}
  *
- * If you require usage of a sub-command, please override {@link #isUsingSubcommandsOnly()} and have it return true.
+ * If you require usage of a sub-command, please override {@link #isUsingSubCommandsOnly()} and have it return true.
  */
 public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
     /**
@@ -99,7 +99,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
             ModuleCommand subCommand = null;
 
             //Check if we HAVE to use sub-commands (a behavior this class provides)
-            if (isUsingSubcommandsOnly()) {
+            if (isUsingSubCommandsOnly()) {
                 //Check if there are not enough args for there to be a sub command
                 if (args.length < 1)
                     throw new ArgumentRequirementException("You must specify a subcommand for this command!");
@@ -210,5 +210,5 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
         return ss; //Return what we found.
     }
 
-    protected boolean isUsingSubcommandsOnly() {return false;}
+    protected boolean isUsingSubCommandsOnly() {return false;}
 }

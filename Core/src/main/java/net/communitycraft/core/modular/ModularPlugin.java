@@ -97,7 +97,7 @@ public abstract class ModularPlugin extends JavaPlugin {
         return getFormatRaw(key);
     }
 
-    public CPlayerManager getPlayerManager() {
+    public final CPlayerManager getPlayerManager() {
         return Core.getPlayerManager();
     }
 }
