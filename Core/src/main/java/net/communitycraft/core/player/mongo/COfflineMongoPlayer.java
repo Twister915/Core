@@ -80,7 +80,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
 
     @Override
     public final <T> T getSettingValue(@NonNull String key, @NonNull Class<T> type, T defaultValue) {
-        T t; return (!this.settings.containsKey(key) || (t = safeCast(this.settings.get(key), type)) == null) ? defaultValue : t;
+        T t; return ((t = safeCast(this.settings.get(key), type)) == null) ? defaultValue : t;
     }
 
     @Override
