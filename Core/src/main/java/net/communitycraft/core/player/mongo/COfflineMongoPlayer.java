@@ -198,8 +198,8 @@ class COfflineMongoPlayer implements COfflinePlayer {
 
     static Object applyTypeFiltersForDB(Object i) {
         Object value = i;
-        if (value instanceof List) value = getDBListFor((List<?>) value);
-        else if (value instanceof Map) value = getDBObjectFor((Map) value);
+        if (value instanceof List && !(i instanceof BasicDBList)) value = getDBListFor((List<?>) value);
+        else if (value instanceof Map && !(i instanceof DBObject)) value = getDBObjectFor((Map) value);
         return value;
     }
 
