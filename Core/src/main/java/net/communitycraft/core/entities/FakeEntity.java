@@ -57,7 +57,8 @@ public abstract class FakeEntity {
         if (!observers.contains(observer)) observers.add(observer);
     }
 
-    private final void updateEntityState() {
+    private void updateEntityState() {
+
     }
 
     protected abstract int getHealthInteger();

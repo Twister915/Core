@@ -3,12 +3,8 @@ package net.communitycraft.core.player.mongo;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
 import net.communitycraft.core.Core;
-import net.communitycraft.core.RandomUtils;
 import net.communitycraft.core.asset.Asset;
 import net.communitycraft.core.player.COfflinePlayer;
 import net.communitycraft.core.player.CPlayer;
@@ -67,11 +63,11 @@ class COfflineMongoPlayer implements COfflinePlayer {
         object.put("ips", getDBListFor(knownIPAddresses));
         object.put("usernames", getDBListFor(knownUsernames));
         object.put("settings", getDBObjectFor(settings));
-        List<BasicDBObject> assetDefinition = new ArrayList<>();
+        List<Map> assetDefinition = new ArrayList<>();
         for (Asset asset : assets) {
-            BasicDBObject assetMap = new BasicDBObject();
+            Map<String, Object> assetMap = new BasicDBObject();
             assetMap.put("fqcn", asset.getClass().getName());
-            assetMap.put("meta", getDBObjectFor(asset.getMetaVariables()));
+            assetMap.put("meta", asset.getMetaVariables());
             assetDefinition.add(assetMap);
         }
         object.put("assets", getDBListFor(assetDefinition));
@@ -80,7 +76,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
 
     @Override
     public final <T> T getSettingValue(@NonNull String key, @NonNull Class<T> type, T defaultValue) {
-        T t; return ((t = safeCast(this.settings.get(key), type)) == null) ? defaultValue : t;
+        T t; return (this.settings.containsKey(key) || (t = safeCast(this.settings.get(key), type)) == null) ? defaultValue : t;
     }
 
     @Override
@@ -163,7 +159,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
         if (object == null) return null;
         try {
             //noinspection unchecked
-            return (T)object.get(key);
+            return (T) applyTypeFiltersForObject(object.get(key));
         } catch (ClassCastException ex) {
             return null;
         }
@@ -176,7 +172,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
         for (Object o : list) {
             try {
                 //noinspection unchecked
-                tList.add((T) o);
+                tList.add((T)applyTypeFiltersForObject(o));
             } catch (ClassCastException ignored) {}
         }
         return tList;
@@ -186,25 +182,39 @@ class COfflineMongoPlayer implements COfflinePlayer {
         BasicDBList dbList = new BasicDBList();
         if (list == null) return null;
         for (Object o : list) {
-            dbList.add(o);
+            dbList.add(applyTypeFiltersForDB(o));
         }
         return dbList;
     }
 
-    static DBObject getDBObjectFor(Map<String, ?> map) {
+    static DBObject getDBObjectFor(Map<?,?> map) {
         BasicDBObject basicDBObject = new BasicDBObject();
         if (map == null) return null;
-        for (Map.Entry<String, ?> stringEntry : map.entrySet()) {
-            basicDBObject.put(stringEntry.getKey(), stringEntry.getValue());
+        for (Map.Entry<?, ?> stringEntry : map.entrySet()) {
+            basicDBObject.put(stringEntry.getKey().toString(), applyTypeFiltersForDB(stringEntry.getValue()));
         }
         return basicDBObject;
+    }
+
+    static Object applyTypeFiltersForDB(Object i) {
+        Object value = i;
+        if (value instanceof List) value = getDBListFor((List<?>) value);
+        else if (value instanceof Map) value = getDBObjectFor((Map) value);
+        return value;
+    }
+
+    static Object applyTypeFiltersForObject(Object i) {
+        Object value = i;
+        if (i instanceof BasicDBList) value = getListFor((BasicDBList) i, Object.class);
+        else if (i instanceof DBObject) value = getMapFor((DBObject) i);
+        return value;
     }
 
     static Map<String, Object> getMapFor(DBObject object) {
         HashMap<String, Object> map = new HashMap<>();
         if (object == null) return null;
         for (String s : object.keySet()) {
-            map.put(s, object.get(s));
+            map.put(s, applyTypeFiltersForObject(object.get(s)));
         }
         return map;
     }

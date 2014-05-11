@@ -25,13 +25,13 @@ public final class CMongoPlayerManager implements CPlayerManager {
     }
 
     @Override
-    public COfflinePlayerIterator getOfflinePlayerByName(String username) {
+    public Collection<COfflinePlayer> getOfflinePlayerByName(String username) {
         DBCursor dbObjects = database.getCollection("users").find(new BasicDBObject("usernames", username));
         List<COfflinePlayer> offlinePlayers = new ArrayList<>();
         for (DBObject dbObject : dbObjects) {
             offlinePlayers.add(new COfflineMongoPlayer(UUID.fromString(getValueFrom(dbObject, "uuid", String.class)), dbObject, this));
         }
-        return new COfflinePlayerIterator(offlinePlayers);
+        return offlinePlayers;
     }
 
     @Override

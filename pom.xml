@@ -10,6 +10,7 @@
     <modules>
         <module>Core</module>
         <module>BasePackage</module>
+        <module>Punishments</module>
     </modules>
 
     <packaging>pom</packaging>

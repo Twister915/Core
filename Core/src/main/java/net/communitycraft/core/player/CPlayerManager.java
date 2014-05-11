@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 public interface CPlayerManager {
-    COfflinePlayerIterator getOfflinePlayerByName(String username);
+    Collection<COfflinePlayer> getOfflinePlayerByName(String username);
     COfflinePlayer getOfflinePlayerByUUID(UUID uuid);
     COfflinePlayer getCOfflinePlayerForOfflinePlayer(OfflinePlayer player);
     Collection<CPlayer> getOnlinePlayers();
