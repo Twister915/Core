@@ -65,7 +65,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
         object.put("settings", getDBObjectFor(settings));
         List<Map> assetDefinition = new ArrayList<>();
         for (Asset asset : assets) {
-            Map<String, Object> assetMap = new BasicDBObject();
+            Map<String, Object> assetMap = new HashMap<>();
             assetMap.put("fqcn", asset.getClass().getName());
             assetMap.put("meta", asset.getMetaVariables());
             assetDefinition.add(assetMap);
