@@ -19,8 +19,10 @@ import org.json.simple.JSONValue;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public final class LilyPadNetworkManager implements NetworkManager {
+    /* Constants */
     private static final String NETWORK_MANAGER_CHANNEL = "CC.LILYPAD.MANAGER";
     private static final String HEARTBEAT_PLAYERS_KEY = "PLAYERS";
     private static final Integer HEARTBEAT_ATTEMPTS_MAX = 5;
@@ -30,19 +32,34 @@ public final class LilyPadNetworkManager implements NetworkManager {
     @Getter private final Connect connect;
 
     public LilyPadNetworkManager() {
-        connect = Core.getInstance().getServer().getServicesManager().getRegistration(Connect.class).getProvider();
+        connect = Core.getInstance().getServer().getServicesManager().getRegistration(Connect.class).getProvider(); //Gets the Connect plugin as per LilyPad docs.
         if (connect == null) throw new IllegalStateException("We don't have a LilyPad Connect provider");
-        connect.registerEvents(this);
+        connect.registerEvents(this); //Register events for the messages
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new NetworkUpdaterTask(this), 40L, 40L); //Setup the updater
     }
 
     @Override
     public List<NetworkServer> getServers() {
-        return new ArrayList<>(servers);
+        return new ArrayList<>(servers); //Clone because we do not want anything to modify our local copy of the servers.
     }
 
     @Override
-    public NetworkServer getServer(String name) {
+    public synchronized List<NetworkServer> getServersMatchingRegex(Pattern regex) { //Sync because we want to lock this object to prevent any async updates while we are reading it.
+        List<NetworkServer> networkServers = new ArrayList<>();
+        for (NetworkServer server : servers) {
+            if (regex.matcher(server.getName()).matches()) networkServers.add(server);
+        }
+        return networkServers;
+    }
+
+    @Override
+    public synchronized List<NetworkServer> getServersMatchingRegex(String regex) {
+        return getServersMatchingRegex(Pattern.compile(regex));
+    }
+
+    @Override
+    public synchronized NetworkServer getServer(String name) {
+        //Basic resolution loop
         for (NetworkServer server : this.servers) {
             if (server.getName().equals(name)) return server;
          }
@@ -88,27 +105,38 @@ public final class LilyPadNetworkManager implements NetworkManager {
         if (!completedHeartbeat) throw new RuntimeException("Unable to send the request to do a heartbeat!");
     }
 
-    private void recievedUpdate(String server, List<UUID> uuids) {
+    private void receivedUpdate(String server, List<UUID> uuids) {
         LilyPadServer s;
-        if ((s = (LilyPadServer) getServer(server)) == null) s = new LilyPadServer(server, this);
+        boolean shouldAdd = false; //Here to mark if this is a new server...
+        //Try and see if we already know this server, and if not create a new instance.
+        if ((s = (LilyPadServer) getServer(server)) == null) {
+            s = new LilyPadServer(server, this);
+            shouldAdd = true;
+        }
+        //Update with the heartbeat information
         s.setOnlineCount(uuids.size());
         s.setLastPing(new Date());
         s.setPlayers(Core.getPlayerManager().getOfflinePlayersByUUIDS(uuids));
-        this.servers.add(s);
+        if (shouldAdd) this.servers.add(s);//And if it is a new server, add it to our servers list
     }
 
     /* event handlers */
     @EventListener
     @SneakyThrows
-    public void onMessage(MessageEvent event) {
-        if (!event.getChannel().equals(NETWORK_MANAGER_CHANNEL)) return;
-        JSONObject heartbeat = (JSONObject)JSONValue.parse(event.getMessageAsString());
-        JSONArray playerUUIDs = (JSONArray) heartbeat.get(HEARTBEAT_PLAYERS_KEY);
-        List<UUID> uuids = new ArrayList<>();
-        for (Object playerUUID : playerUUIDs) {
-            if (!(playerUUID instanceof String)) continue;
-            uuids.add(UUID.fromString(String.valueOf(playerUUID)));
+    public synchronized void onMessage(MessageEvent event) {
+        if (!event.getChannel().equals(NETWORK_MANAGER_CHANNEL)) return; //If it's not our channel, ignore this
+        try {
+            JSONObject heartbeat = (JSONObject)JSONValue.parse(event.getMessageAsString()); //Get the values
+            JSONArray playerUUIDs = (JSONArray) heartbeat.get(HEARTBEAT_PLAYERS_KEY);
+            List<UUID> uuids = new ArrayList<>(); //Holder for UUIDs that are converted from the strings above
+            for (Object playerUUID : playerUUIDs) {
+                if (!(playerUUID instanceof String)) continue;
+                uuids.add(UUID.fromString(String.valueOf(playerUUID))); //Convert a string to UUID
+            }
+            receivedUpdate(event.getSender(), uuids); //Update the server info.
+        } catch (ClassCastException ex) {
+            //Invalid heartbeat
+            Core.logInfo("Unable to read heartbeat on channel due to a ClassCastException on line " + ex.getStackTrace()[0].getLineNumber());
         }
-        recievedUpdate(event.getSender(), uuids);
     }
 }
