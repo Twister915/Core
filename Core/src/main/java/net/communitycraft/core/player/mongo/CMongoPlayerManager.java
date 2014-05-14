@@ -22,6 +22,11 @@ public final class CMongoPlayerManager implements CPlayerManager {
         this.database = database;
         Core.getInstance().registerListener(new CPlayerManagerListener(this));
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new CPlayerManagerSaveTask(this), 1200, 1200);
+        DBCollection users = database.getCollection("users");
+        if (users.count() == 0) { //Looks like a new collection to me
+            //Need to setup the index
+            users.createIndex(new BasicDBObject("uuid", 1));
+        }
     }
 
     @Override
