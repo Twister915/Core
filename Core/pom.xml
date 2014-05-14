@@ -16,6 +16,10 @@
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>lilypad</id>
+            <url>http://ci.lilypadmc.org/plugin/repository/everything</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -43,6 +47,11 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>17.0</version>
+        </dependency>
+        <dependency>
+            <groupId>lilypad.client.connect</groupId>
+            <artifactId>api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

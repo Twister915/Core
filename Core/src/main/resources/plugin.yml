@@ -1,4 +1,5 @@
 name: Core
+soft-depend: [LilyPad-Connect]
 main: me.joeyandtom.communitycraft.core.Core
 version: 1.0
 description: Core for CommunityCraft modular model. Performs database operations and module management.

@@ -25,7 +25,7 @@ public final class CMongoPlayerManager implements CPlayerManager {
     }
 
     @Override
-    public Collection<COfflinePlayer> getOfflinePlayerByName(String username) {
+    public List<COfflinePlayer> getOfflinePlayerByName(String username) {
         DBCursor dbObjects = database.getCollection("users").find(new BasicDBObject("usernames", username));
         List<COfflinePlayer> offlinePlayers = new ArrayList<>();
         for (DBObject dbObject : dbObjects) {
@@ -36,7 +36,20 @@ public final class CMongoPlayerManager implements CPlayerManager {
 
     @Override
     public COfflineMongoPlayer getOfflinePlayerByUUID(UUID uuid) {
-        return new COfflineMongoPlayer(uuid, getPlayerDocumentFor(uuid), this);
+        DBObject playerDocumentFor = getPlayerDocumentFor(uuid);
+        if (playerDocumentFor == null) return null;
+        return new COfflineMongoPlayer(uuid, playerDocumentFor, this);
+    }
+
+    @Override
+    public List<COfflinePlayer> getOfflinePlayersByUUIDS(List<UUID> uuids) {
+        List<COfflinePlayer> offlinePlayers = new ArrayList<>();
+        for (UUID uuid : uuids) {
+            DBObject playerDocumentFor = getPlayerDocumentFor(uuid);
+            if (playerDocumentFor == null) continue;
+            offlinePlayers.add(new COfflineMongoPlayer(uuid, playerDocumentFor, this));
+        }
+        return offlinePlayers;
     }
 
     DBObject getPlayerDocumentFor(UUID uuid) {

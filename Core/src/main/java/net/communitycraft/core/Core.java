@@ -9,6 +9,8 @@ import net.communitycraft.core.player.CPlayer;
 import net.communitycraft.core.player.CPlayerManager;
 import net.communitycraft.core.player.mongo.CMongoDatabase;
 import net.communitycraft.core.player.mongo.CMongoPlayerManager;
+import net.communitycraft.core.network.NetworkManager;
+import net.communitycraft.core.network.lilypad.LilyPadNetworkManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -22,6 +24,7 @@ public final class Core extends JavaPlugin {
     @Getter private static Random random;
 
     private CPlayerManager playerManager;
+    @Getter private NetworkManager networkManager;
     @Getter  private YAMLConfigurationFile databaseConfiguration;
 
     @Getter private List<ModularPlugin> modules;
@@ -52,6 +55,11 @@ public final class Core extends JavaPlugin {
             this.playerManager = new CMongoPlayerManager(mongoDatabase);
             CDatabase database = this.playerManager.getDatabase();
             database.connect();
+
+            //Setup network manager
+            if (getServer().getPluginManager().getPlugin("LilyPad-Connect") != null)
+                this.networkManager = new LilyPadNetworkManager();
+            else getLogger().severe("COULD NOT FIND A NETWORK PLUGIN TO CONNECT TO!");
 
             //Setup module list
             this.modules = new ArrayList<>();
