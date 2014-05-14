@@ -8,6 +8,7 @@ import net.communitycraft.core.player.DatabaseConnectException;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.net.InetAddress;
 import java.util.Date;
 import java.util.List;
 
@@ -18,6 +19,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Getter private final String username;
     @Getter private Player bukkitPlayer;
     @Getter private boolean firstJoin = false;
+    @Getter private InetAddress address = null;
 
     public CMongoPlayer(Player player, COfflineMongoPlayer offlinePlayer, CMongoPlayerManager manager) {
         super(offlinePlayer, manager);
@@ -25,11 +27,12 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
         this.bukkitPlayer = player;
     }
 
-    void onJoin() throws DatabaseConnectException {
+    void onJoin(InetAddress address) throws DatabaseConnectException {
         this.setLastKnownUsername(bukkitPlayer.getName());
         this.setLastTimeOnline(new Date());
         addIfUnique(this.getKnownUsernames(), bukkitPlayer.getName());
-        String hostString = bukkitPlayer.getAddress().getHostString();
+        this.address = address;
+        String hostString = address.getHostAddress();
         addIfUnique(this.getKnownIPAddresses(), hostString);
         if (this.getFirstTimeOnline() == null) {
             this.setFirstTimeOnline(new Date());

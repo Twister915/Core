@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.net.InetAddress;
 import java.util.*;
 
 import static net.communitycraft.core.player.mongo.COfflineMongoPlayer.getValueFrom;
@@ -104,10 +105,10 @@ public final class CMongoPlayerManager implements CPlayerManager {
     }
 
     @Override
-    public void playerLoggedIn(Player player) {
+    public void playerLoggedIn(Player player, InetAddress address) {
         CMongoPlayer cMongoPlayer = new CMongoPlayer(player, getOfflinePlayerByUUID(player.getUniqueId()), this);
         try {
-            cMongoPlayer.onJoin();
+            cMongoPlayer.onJoin(address);
         } catch (DatabaseConnectException | MongoException e) {
             Core.getInstance().getLogger().severe("Could not save player into the database " + e.getMessage() + " - " + player.getName());
         }

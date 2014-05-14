@@ -3,6 +3,8 @@ package net.communitycraft.core.player;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.net.InetAddress;
+
 /**
  * A class to represent a player on the server.
  */
@@ -12,6 +14,12 @@ public interface CPlayer extends COfflinePlayer {
      * @return A {@link java.lang.String} representing the player's name.
      */
     String getName();
+
+    /**
+     * Gets their current IP Address
+     * @return The {@link java.net.InetAddress} representing their IP Address.
+     */
+    InetAddress getAddress();
 
     /**
      * Gets the status of the player (online or offline)
