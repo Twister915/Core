@@ -8,6 +8,11 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CPlayerManager {
+    /**
+     * Gets an offline player by searching through the database for anyone with a current-name as specified.
+     * @param username The username you want to search for.
+     * @return Any matching {@link net.communitycraft.core.player.COfflinePlayer} object or {@code null} if none is found.
+     */
     List<COfflinePlayer> getOfflinePlayerByName(String username);
     COfflinePlayer getOfflinePlayerByUUID(UUID uuid);
     List<COfflinePlayer> getOfflinePlayersByUUIDS(List<UUID> uuids);

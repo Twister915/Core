@@ -22,19 +22,25 @@ public final class CMongoPlayerManager implements CPlayerManager {
         this.database = database;
         Core.getInstance().registerListener(new CPlayerManagerListener(this));
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new CPlayerManagerSaveTask(this), 1200, 1200);
-        DBCollection users = database.getCollection("users");
+        DBCollection users = database.getCollection(MongoKey.USERS_COLLETION.toString());
         if (users.count() == 0) { //Looks like a new collection to me
             //Need to setup the index
-            users.createIndex(new BasicDBObject("uuid", 1));
+            users.createIndex(new BasicDBObject(MongoKey.UUID_KEY.toString(), 1));
         }
     }
 
     @Override
     public List<COfflinePlayer> getOfflinePlayerByName(String username) {
-        DBCursor dbObjects = database.getCollection("users").find(new BasicDBObject("usernames", username));
+        CPlayer test;
+        if ((test = getOnlineCPlayerForName(username)) != null) {
+            ArrayList<COfflinePlayer> cOfflinePlayers = new ArrayList<>();
+            cOfflinePlayers.add(test);
+            return cOfflinePlayers;
+        }
+        DBCursor dbObjects = database.getCollection(MongoKey.USERS_COLLETION.toString()).find(new BasicDBObject(MongoKey.USERNAMES_KEY.toString(), username));
         List<COfflinePlayer> offlinePlayers = new ArrayList<>();
         for (DBObject dbObject : dbObjects) {
-            offlinePlayers.add(new COfflineMongoPlayer(UUID.fromString(getValueFrom(dbObject, "uuid", String.class)), dbObject, this));
+            offlinePlayers.add(new COfflineMongoPlayer(UUID.fromString(getValueFrom(dbObject, MongoKey.UUID_KEY.toString(), String.class)), dbObject, this));
         }
         return offlinePlayers;
     }
@@ -58,7 +64,7 @@ public final class CMongoPlayerManager implements CPlayerManager {
     }
 
     DBObject getPlayerDocumentFor(UUID uuid) {
-        return database.getCollection("users").findOne(new BasicDBObject("uuid", uuid.toString()));
+        return database.getCollection(MongoKey.USERS_COLLETION.toString()).findOne(new BasicDBObject(MongoKey.UUID_KEY.toString(), uuid.toString()));
     }
 
     @Override
@@ -92,8 +98,8 @@ public final class CMongoPlayerManager implements CPlayerManager {
         COfflineMongoPlayer player1 = (COfflineMongoPlayer) player;
         if (player1 instanceof CMongoPlayer) ((CMongoPlayer)player1).updateForSaving();
         DBObject objectForPlayer = player1.getObjectForPlayer();
-        this.database.getCollection("users").save(objectForPlayer);
-        player1.setObjectId(getValueFrom(objectForPlayer, "_id", ObjectId.class));
+        this.database.getCollection(MongoKey.USERS_COLLETION.toString()).save(objectForPlayer);
+        player1.setObjectId(getValueFrom(objectForPlayer, MongoKey.ID_KEY, ObjectId.class));
     }
 
     @Override

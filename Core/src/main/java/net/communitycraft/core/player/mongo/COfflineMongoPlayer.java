@@ -42,7 +42,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
             this.objectId = null;
             return;
         }
-        this.objectId = getValueFrom(player, "_id", ObjectId.class);
+        this.objectId = getValueFrom(player, MongoKey.ID_KEY, ObjectId.class);
         updateFromDBObject(player);
     }
 
@@ -54,23 +54,23 @@ class COfflineMongoPlayer implements COfflinePlayer {
 
     final DBObject getObjectForPlayer() {
         DBObject object = new BasicDBObject();
-        if (this.objectId != null) object.put("_id", this.objectId);
-        object.put("last_username", lastKnownUsername);
-        object.put("uuid", uniqueIdentifier.toString());
-        object.put("first_join", firstTimeOnline);
-        object.put("last_seen", lastTimeOnline);
-        object.put("time_online", millisecondsOnline);
-        object.put("ips", getDBListFor(knownIPAddresses));
-        object.put("usernames", getDBListFor(knownUsernames));
-        object.put("settings", getDBObjectFor(settings));
+        if (this.objectId != null) object.put(MongoKey.ID_KEY.toString(), this.objectId);
+        object.put(MongoKey.LAST_USERNAME_KEY.toString(), lastKnownUsername);
+        object.put(MongoKey.UUID_KEY.toString(), uniqueIdentifier.toString());
+        object.put(MongoKey.FIRST_JOIN_KEY.toString(), firstTimeOnline);
+        object.put(MongoKey.LAST_SEEN_KEY.toString(), lastTimeOnline);
+        object.put(MongoKey.TIME_ONLINE_KEY.toString(), millisecondsOnline);
+        object.put(MongoKey.IPS_KEY.toString(), getDBListFor(knownIPAddresses));
+        object.put(MongoKey.USERNAMES_KEY.toString(), getDBListFor(knownUsernames));
+        object.put(MongoKey.SETTINGS_KEY.toString(), getDBObjectFor(settings));
         List<Map> assetDefinition = new ArrayList<>();
         for (Asset asset : assets) {
             Map<String, Object> assetMap = new HashMap<>();
-            assetMap.put("fqcn", asset.getClass().getName());
-            assetMap.put("meta", asset.getMetaVariables());
+            assetMap.put(MongoKey.FULLY_QUALIFIED_CLASS_NAME_KEY.toString(), asset.getClass().getName());
+            assetMap.put(MongoKey.META_KEY.toString(), asset.getMetaVariables());
             assetDefinition.add(assetMap);
         }
-        object.put("assets", getDBListFor(assetDefinition));
+        object.put(MongoKey.ASSETS_KEY.toString(), getDBListFor(assetDefinition));
         return object;
     }
 
@@ -125,33 +125,37 @@ class COfflineMongoPlayer implements COfflinePlayer {
     }
 
     private void updateFromDBObject(@NonNull DBObject player) {
-        this.lastKnownUsername = getValueFrom(player, "last_username", String.class);
-        this.uniqueIdentifier = UUID.fromString(getValueFrom(player, "uuid", String.class));
-        this.firstTimeOnline = getValueFrom(player, "first_join", Date.class);
-        this.lastTimeOnline = getValueFrom(player, "last_seen", Date.class);
-        Long time_online = getValueFrom(player, "time_online", Long.class);
+        this.lastKnownUsername = getValueFrom(player, MongoKey.LAST_USERNAME_KEY, String.class);
+        this.uniqueIdentifier = UUID.fromString(getValueFrom(player, MongoKey.UUID_KEY, String.class));
+        this.firstTimeOnline = getValueFrom(player, MongoKey.FIRST_JOIN_KEY, Date.class);
+        this.lastTimeOnline = getValueFrom(player, MongoKey.LAST_SEEN_KEY, Date.class);
+        Long time_online = getValueFrom(player, MongoKey.TIME_ONLINE_KEY, Long.class);
         this.millisecondsOnline = time_online == null ? 0 : time_online;
-        List<String> ips = getListFor(getValueFrom(player, "ips", BasicDBList.class), String.class);
+        List<String> ips = getListFor(getValueFrom(player, MongoKey.IPS_KEY, BasicDBList.class), String.class);
         this.knownIPAddresses = ips == null ? new ArrayList<String>() : ips;
-        List<String> usernames = getListFor(getValueFrom(player, "usernames", BasicDBList.class), String.class);
+        List<String> usernames = getListFor(getValueFrom(player, MongoKey.USERNAMES_KEY, BasicDBList.class), String.class);
         this.knownUsernames = usernames == null ? new ArrayList<String>() : usernames;
-        Map<String, Object> settings1 = getMapFor(getValueFrom(player, "settings", DBObject.class));
+        Map<String, Object> settings1 = getMapFor(getValueFrom(player, MongoKey.SETTINGS_KEY, DBObject.class));
         this.settings = settings1 == null ? new HashMap<String, Object>() : settings1;
         this.assets = new ArrayList<>();
-        List<DBObject> assets1 = getListFor(getValueFrom(player, "assets", BasicDBList.class), DBObject.class);
+        List<DBObject> assets1 = getListFor(getValueFrom(player,MongoKey.ASSETS_KEY , BasicDBList.class), DBObject.class);
         for (DBObject assetObject : assets1) {
-            String fqcn = getValueFrom(assetObject, "fqcn", String.class);
+            String fqcn = getValueFrom(assetObject, MongoKey.FULLY_QUALIFIED_CLASS_NAME_KEY, String.class);
             Class<?> assetClass;
             try {
                 assetClass = Class.forName(fqcn);
                 if (!Asset.class.isAssignableFrom(assetClass)) throw new IllegalClassException("This class does not extend Asset!");
-                Map<String, Object> meta = getMapFor(getValueFrom(assetObject, "meta", DBObject.class));
+                Map<String, Object> meta = getMapFor(getValueFrom(assetObject, MongoKey.META_KEY, DBObject.class));
                 Asset asset = (Asset) assetClass.getConstructor(COfflinePlayer.class, Map.class).newInstance(this, meta);
                 this.assets.add(asset);
             } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException | ClassNotFoundException | IllegalClassException e) {
                 Core.getInstance().getLogger().severe("Could not load asset for player " + this.lastKnownUsername + " - " + fqcn + " - " + e.getMessage());
             }
         }
+    }
+
+    static <T> T getValueFrom(DBObject object, @NonNull Object key, Class<T> clazz) {
+        return getValueFrom(object, key.toString(), clazz);
     }
 
     @SuppressWarnings("UnusedParameters")

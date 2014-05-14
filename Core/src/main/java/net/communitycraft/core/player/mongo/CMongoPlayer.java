@@ -15,7 +15,6 @@ import java.util.List;
 @ToString(of = {"username"})
 final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
-    @Getter private String lastSentChatMessage;
     @Getter private final String username;
     @Getter private Player bukkitPlayer;
     @Getter private boolean firstJoin = false;
@@ -77,12 +76,21 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
         int chatBufferSize = 10;
         String[] strings = new String[chatBufferSize];
         int deltaLength = strings.length - messageLines.length;
+        if (deltaLength < 0) throw new IllegalArgumentException("There are too many messages for this chat buffer");
+        //Padding is the difference in the size of the chat buffer and the size of the message divided by two
+        //Example, 8 lines should have a buffer of one on each side (top/bottom). 10-8 = 2, 2/2 = 1. The buffer should be one, and padding = 1!
+        //Example 2, 9 lines should have a buffer of 0 on the top and 1 on the bottom. 10-9 = 1, 1/2 = 0.5, buffer = 0, padding = 0
+        //Example 3, 5 lines should have a buffer of 2 one one side, 3 on another. 10-5 = 5, 5/2 = 2.5, 2.5 -> 2, buffer = 2, padding = 2
         double padding = Math.floor(deltaLength / 2);
-        for (int x = (int)padding, y = 0; x < chatBufferSize-((deltaLength % 2 == 0) ? deltaLength : deltaLength-1); x++, y++) {
+        //x will start at the padding, the lower end of the buffer.
+        //x will go until we reach the end of the strings by testing if it is at padding+messageLines.length
+        //y tracks the index int the messageLines array.
+        for (int x = (int)padding, y = 0; x < padding+messageLines.length; x++, y++) {
             strings[x] = messageLines[y];
         }
         for (String string : strings) {
-            sendMessage(string);
+            if (string == null) sendMessage("");
+            else sendMessage(string);
         }
     }
 

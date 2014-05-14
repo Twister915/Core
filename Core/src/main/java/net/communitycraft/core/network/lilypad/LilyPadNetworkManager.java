@@ -107,7 +107,7 @@ public final class LilyPadNetworkManager implements NetworkManager {
 
     private void receivedUpdate(String server, List<UUID> uuids) {
         LilyPadServer s;
-        boolean shouldAdd = false; //Here to mark if this is a new server...
+        boolean shouldAdd = false; //Hold a marker if this is a new server...
         //Try and see if we already know this server, and if not create a new instance.
         if ((s = (LilyPadServer) getServer(server)) == null) {
             s = new LilyPadServer(server, this);
