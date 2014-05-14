@@ -31,10 +31,11 @@ public final class CMongoPlayerManager implements CPlayerManager {
 
     @Override
     public List<COfflinePlayer> getOfflinePlayerByName(String username) {
-        CPlayer test;
-        if ((test = getOnlineCPlayerForName(username)) != null) {
+        CPlayer onlinePlayer;
+        if ((onlinePlayer = getOnlineCPlayerForName(username)) != null) {
+            //Hmm... is there an easier way to store a single player in an array list with an implicit generic type of it's super interface?
             ArrayList<COfflinePlayer> cOfflinePlayers = new ArrayList<>();
-            cOfflinePlayers.add(test);
+            cOfflinePlayers.add(onlinePlayer);
             return cOfflinePlayers;
         }
         DBCursor dbObjects = database.getCollection(MongoKey.USERS_COLLETION.toString()).find(new BasicDBObject(MongoKey.USERNAMES_KEY.toString(), username));
