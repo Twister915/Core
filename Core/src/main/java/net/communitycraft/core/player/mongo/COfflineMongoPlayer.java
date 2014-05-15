@@ -1,7 +1,6 @@
 package net.communitycraft.core.player.mongo;
 
 import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
 import lombok.AccessLevel;
@@ -19,8 +18,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import static net.communitycraft.core.RandomUtils.safeCast;
-import static net.communitycraft.core.player.mongo.CMongoGroup.combineObjectBuilders;
-import static net.communitycraft.core.player.mongo.CMongoGroup.getObjectForPermissible;
+import static net.communitycraft.core.player.mongo.MongoUtils.*;
 
 class COfflineMongoPlayer implements COfflinePlayer {
     @Getter private List<String> knownUsernames;
@@ -183,7 +181,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
                 Core.getInstance().getLogger().severe("Could not load asset for player " + this.lastKnownUsername + " - " + fqcn + " - " + e.getMessage());
             }
         }
-        CPermissible permissibileDataFor = CMongoGroup.getPermissibileDataFor(player);
+        CPermissible permissibileDataFor = getPermissibileDataFor(player);
         this.chatColor = permissibileDataFor.getChatColor();
         this.chatPrefix = permissibileDataFor.getChatPrefix();
         this.tablistColor = permissibileDataFor.getTablistColor();
@@ -196,87 +194,6 @@ class COfflineMongoPlayer implements COfflinePlayer {
             this.groups.add(groupByObjectId);
         }
         reloadPermissions();
-    }
-
-    static <T> T getValueFrom(DBObject object, @NonNull Object key, Class<T> clazz) {
-        return getValueFrom(object, key.toString(), clazz);
-    }
-
-    @SuppressWarnings("UnusedParameters")
-    static <T> T getValueFrom(DBObject object, @NonNull String key, Class<T> clazz) {
-        if (object == null) return null;
-        try {
-            //noinspection unchecked
-            return (T) applyTypeFiltersForObject(object.get(key));
-        } catch (ClassCastException ex) {
-            return null;
-        }
-    }
-
-    @SuppressWarnings("UnusedParameters")
-    static <T> List<T> getListFor(BasicDBList list, Class<T> clazz) {
-        List<T> tList = new ArrayList<>();
-        if (list == null) return null;
-        for (Object o : list) {
-            try {
-                //noinspection unchecked
-                tList.add((T)applyTypeFiltersForObject(o));
-            } catch (ClassCastException ignored) {}
-        }
-        return tList;
-    }
-
-    static BasicDBList getDBListFor(List<?> list) {
-        BasicDBList dbList = new BasicDBList();
-        if (list == null) return null;
-        for (Object o : list) {
-            dbList.add(applyTypeFiltersForDB(o));
-        }
-        return dbList;
-    }
-
-    static DBObject getDBObjectFor(Map<?,?> map) {
-        BasicDBObject basicDBObject = new BasicDBObject();
-        if (map == null) return null;
-        for (Map.Entry<?, ?> stringEntry : map.entrySet()) {
-            basicDBObject.put(stringEntry.getKey().toString(), applyTypeFiltersForDB(stringEntry.getValue()));
-        }
-        return basicDBObject;
-    }
-
-    static Object applyTypeFiltersForDB(Object i) {
-        Object value = i;
-        if (value instanceof List && !(i instanceof BasicDBList)) value = getDBListFor((List<?>) value);
-        else if (value instanceof Map && !(i instanceof DBObject)) value = getDBObjectFor((Map) value);
-        return value;
-    }
-
-    static Object applyTypeFiltersForObject(Object i) {
-        Object value = i;
-        if (i instanceof BasicDBList) value = getListFor((BasicDBList) i, Object.class);
-        else if (i instanceof DBObject) value = getMapFor((DBObject) i);
-        return value;
-    }
-
-    static Map<String, Object> getMapFor(DBObject object) {
-        return getMapFor(object, Object.class);
-    }
-
-    @SuppressWarnings("UnusedParameters")
-    static <T> Map<String, T> getMapFor(DBObject object, Class<T> valueType) {
-        HashMap<String, T> map = new HashMap<>();
-        if (object == null) return null;
-        for (String s : object.keySet()) {
-            T t;
-            try {
-                //noinspection unchecked
-                t = (T) applyTypeFiltersForObject(object.get(s));
-            } catch (ClassCastException e) {
-                continue;
-            }
-            map.put(s, t);
-        }
-        return map;
     }
 
     @Override

@@ -1,13 +1,11 @@
 package net.communitycraft.core.player.mongo;
 
 import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
 import lombok.*;
 import net.communitycraft.core.Core;
 import net.communitycraft.core.player.CGroup;
-import net.communitycraft.core.player.CPermissible;
 import net.communitycraft.core.player.CPlayer;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
@@ -17,7 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static net.communitycraft.core.player.mongo.COfflineMongoPlayer.*;
+import static net.communitycraft.core.player.mongo.MongoUtils.combineObjectBuilders;
+import static net.communitycraft.core.player.mongo.MongoUtils.getObjectForPermissible;
 
 @Data
 @EqualsAndHashCode(of = {"name", "objectId", "parents"})
@@ -78,80 +77,6 @@ final class CMongoGroup implements CGroup {
         }
         builder.add(MongoKey.GROUPS_PARENTS_KEY.toString(), parentList);
         return builder.get();
-    }
-
-    static BasicDBObjectBuilder getObjectForPermissible(CPermissible permissible) {
-        BasicDBObjectBuilder builder = new BasicDBObjectBuilder();
-        builder.add(MongoKey.GROUPS_TABLIST_COLOR_KEY.toString(), permissible.getTablistColor().name());
-        builder.add(MongoKey.GROUPS_CHAT_COLOR_KEY.toString(), permissible.getChatColor().name());
-        builder.add(MongoKey.GROUPS_CHAT_PREFIX_KEY.toString(), permissible.getChatPrefix());
-        builder.add(MongoKey.GROUPS_PERMISSIONS_KEY.toString(), getDBObjectFor(permissible.getDeclaredPermissions()));
-        return builder;
-    }
-
-    static void combineObjectBuilders(BasicDBObjectBuilder h, BasicDBObjectBuilder k) {
-        DBObject kObject = k.get();
-        for (String s : kObject.keySet()) {
-            h.add(s, kObject.get(s));
-        }
-    }
-
-    static CPermissible getPermissibileDataFor(DBObject object) {
-        final Map<String, Boolean> declaredPermissions = getMapFor(getValueFrom(object, MongoKey.GROUPS_PERMISSIONS_KEY, BasicDBObject.class), Boolean.class);
-        final ChatColor chatColor = ChatColor.valueOf(getValueFrom(object, MongoKey.GROUPS_CHAT_COLOR_KEY, String.class));
-        final ChatColor tablistColor = ChatColor.valueOf(getValueFrom(object, MongoKey.GROUPS_TABLIST_COLOR_KEY, String.class));
-        final String chatPrefix = getValueFrom(object, MongoKey.GROUPS_CHAT_PREFIX_KEY, String.class);
-        return new CPermissible() {
-            @Override
-            public ChatColor getChatColor() {
-                return chatColor;
-            }
-
-            @Override
-            public ChatColor getTablistColor() {
-                return tablistColor;
-            }
-
-            @Override
-            public String getChatPrefix() {
-                return chatPrefix;
-            }
-
-            @Override
-            public void setChatColor(ChatColor color) {
-                throw new UnsupportedOperationException("This CPermissible is for data access only!");
-            }
-
-            @Override
-            public void setTablistColor(ChatColor color) {
-                throw new UnsupportedOperationException("This CPermissible is for data access only!");
-            }
-
-            @Override
-            public void setChatPrefix(String prefix) {
-                throw new UnsupportedOperationException("This CPermissible is for data access only!");
-            }
-
-            @Override
-            public void setPermission(String permission, Boolean value) {
-                throw new UnsupportedOperationException("This CPermissible is for data access only!");
-            }
-
-            @Override
-            public boolean hasPermission(String permission) {
-                throw new UnsupportedOperationException("This CPermissible is for data access only!");
-            }
-
-            @Override
-            public Map<String, Boolean> getDeclaredPermissions() {
-                return declaredPermissions;
-            }
-
-            @Override
-            public void reloadPermissions() {
-                throw new UnsupportedOperationException("This CPermissible is for data access only!");
-            }
-        };
     }
 
     @Override

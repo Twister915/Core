@@ -9,8 +9,9 @@ import org.bukkit.ChatColor;
 
 import java.util.*;
 
-import static net.communitycraft.core.player.mongo.COfflineMongoPlayer.getListFor;
-import static net.communitycraft.core.player.mongo.COfflineMongoPlayer.getValueFrom;
+import static net.communitycraft.core.player.mongo.MongoUtils.getListFor;
+import static net.communitycraft.core.player.mongo.MongoUtils.getPermissibileDataFor;
+import static net.communitycraft.core.player.mongo.MongoUtils.getValueFrom;
 
 final class CMongoPermissionsManager implements CPermissionsManager {
     private final CMongoDatabase database;
@@ -49,12 +50,15 @@ final class CMongoPermissionsManager implements CPermissionsManager {
         DBCollection groupsCollection = database.getCollection(MongoKey.GROUPS_COLLECTION.toString());
         DBObject andRemove = groupsCollection.findAndRemove(query);
         if (andRemove == null) throw new IllegalStateException("Group does not exist!");
-        DBObject findUsersInGroup = new BasicDBObjectBuilder().add(MongoKey.USER_GROUPS_KEY.toString(), ((CMongoGroup) group).getObjectId()).get();
+        for (CPlayer cPlayer : group.getOnlineDirectMembers()) {
+            cPlayer.removeFromGroup(group);
+        }
+        DBObject findPlayersInGroupQuery = new BasicDBObjectBuilder().add(MongoKey.USER_GROUPS_KEY.toString(), ((CMongoGroup) group).getObjectId()).get();
         DBCollection usersCollection = database.getCollection(MongoKey.USERS_COLLETION.toString());
-        DBCursor dbObjects = usersCollection.find(findUsersInGroup);
-        CMongoPlayerManager playerManager1 = (CMongoPlayerManager) playerManager;
-        for (DBObject dbObject : dbObjects) {
-            COfflinePlayer playerInGroup = playerManager1.getOfflinePlayerByObjectId(getValueFrom(dbObject, MongoKey.ID_KEY, ObjectId.class));
+        DBCursor playersInGroup = usersCollection.find(findPlayersInGroupQuery);
+        CMongoPlayerManager mongoPlayerManager = (CMongoPlayerManager) playerManager;
+        for (DBObject dbObject : playersInGroup) {
+            COfflinePlayer playerInGroup = mongoPlayerManager.getOfflinePlayerByObjectId(getValueFrom(dbObject, MongoKey.ID_KEY, ObjectId.class));
             playerInGroup.removeFromGroup(group);
             playerInGroup.saveIntoDatabase();
         }
@@ -98,7 +102,7 @@ final class CMongoPermissionsManager implements CPermissionsManager {
             parents.add(getGroupByObjectId(parentId));
         }
         ObjectId objectId = getValueFrom(object, MongoKey.ID_KEY, ObjectId.class);
-        CPermissible perm = CMongoGroup.getPermissibileDataFor(object);
+        CPermissible perm = getPermissibileDataFor(object);
         CMongoGroup cMongoGroup = new CMongoGroup(name, perm.getDeclaredPermissions(), parents, perm.getTablistColor(), perm.getChatColor(), perm.getChatPrefix());
         cMongoGroup.setObjectId(objectId);
         return cMongoGroup;

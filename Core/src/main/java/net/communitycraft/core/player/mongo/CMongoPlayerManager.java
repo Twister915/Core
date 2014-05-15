@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import java.net.InetAddress;
 import java.util.*;
 
-import static net.communitycraft.core.player.mongo.COfflineMongoPlayer.getValueFrom;
+import static net.communitycraft.core.player.mongo.MongoUtils.getValueFrom;
 
 public final class CMongoPlayerManager implements CPlayerManager {
     @Getter private CMongoDatabase database;
