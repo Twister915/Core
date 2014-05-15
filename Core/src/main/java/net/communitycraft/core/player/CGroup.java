@@ -1,12 +1,11 @@
 package net.communitycraft.core.player;
 
-import org.bukkit.ChatColor;
-
 import java.util.List;
+import java.util.Map;
 
 public interface CGroup extends CPermissable {
     String getName();
     List<CGroup> getParents();
-    List<String> getDeclaredPermissions();
-    List<String> getAllPermissions();
+    Map<String, Boolean> getAllPermissions();
+    List<CPlayer> getOnlineDirectMembers();
 }

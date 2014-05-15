@@ -15,7 +15,7 @@ import java.util.UUID;
  *
  * This class should be most polymorphic friendly type for players, if you can get by using this to represent a player anywhere, you must.
  */
-public interface COfflinePlayer {
+public interface COfflinePlayer extends CPermissable {
     /**
      * Gets the known usernames. All usernames on login are logged and placed into storage. This will return all current usernames.
      * @return All usernames in a {@link java.util.List}.
@@ -136,4 +136,10 @@ public interface COfflinePlayer {
      * @throws DatabaseConnectException When we cannot save the data into the database.
      */
     void saveIntoDatabase() throws DatabaseConnectException;
+
+    /* Permissions */
+    //Inherits Permissable
+    void addToGroup(CGroup group);
+    void removeFromGroup(CGroup group);
+    List<CGroup> getGroups();
 }

@@ -13,13 +13,17 @@ enum MongoKey {
     SETTINGS_KEY("settings"),
     FULLY_QUALIFIED_CLASS_NAME_KEY("fqcn"),
     META_KEY("meta"),
-    ASSETS_KEY("assets");
+    ASSETS_KEY("assets"),
+    GROUPS_COLLECTION("groups"),
+    GROUPS_NAME_KEY("name"),
+    GROUPS_TABLIST_COLOR_KEY("tablist_color"),
+    GROUPS_CHAT_COLOR_KEY("chatcolor_color"),
+    GROUPS_CHAT_PREFIX_KEY("chat_prefix"),
+    GROUPS_PARENTS_KEY("parents"),
+    GROUPS_PERMISSIONS_KEY("permissions");
     private final String value;
     MongoKey(String value) {
         this.value = value;
-    }
-    String getValue() {
-        return value;
     }
 
     @Override

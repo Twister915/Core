@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-public interface CPlayerManager {
+public interface CPlayerManager extends Iterable<CPlayer> {
     /**
      * Gets an offline player by searching through the database for anyone with a current-name as specified.
      * @param username The username you want to search for.

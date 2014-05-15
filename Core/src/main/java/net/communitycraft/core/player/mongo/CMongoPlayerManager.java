@@ -16,11 +16,13 @@ import static net.communitycraft.core.player.mongo.COfflineMongoPlayer.getValueF
 
 public final class CMongoPlayerManager implements CPlayerManager {
     @Getter private CMongoDatabase database;
+    @Getter private CMongoPermissionsManager permissionsManager;
 
     private Map<String, CPlayer> onlinePlayerMap = new HashMap<>();
 
     public CMongoPlayerManager(CMongoDatabase database) {
         this.database = database;
+        this.permissionsManager = new CMongoPermissionsManager(database);
         Core.getInstance().registerListener(new CPlayerManagerListener(this));
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new CPlayerManagerSaveTask(this), 1200, 1200);
         DBCollection users = database.getCollection(MongoKey.USERS_COLLETION.toString());
@@ -137,5 +139,10 @@ public final class CMongoPlayerManager implements CPlayerManager {
             }
         }
         this.database.disconnect();
+    }
+
+    @Override
+    public Iterator<CPlayer> iterator() {
+        return this.onlinePlayerMap.values().iterator();
     }
 }

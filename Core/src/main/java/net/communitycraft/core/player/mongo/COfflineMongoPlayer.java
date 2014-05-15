@@ -3,14 +3,19 @@ package net.communitycraft.core.player.mongo;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import net.communitycraft.core.Core;
 import net.communitycraft.core.asset.Asset;
+import net.communitycraft.core.player.CGroup;
 import net.communitycraft.core.player.COfflinePlayer;
 import net.communitycraft.core.player.CPlayer;
 import net.communitycraft.core.player.DatabaseConnectException;
 import org.apache.commons.lang.IllegalClassException;
 import org.bson.types.ObjectId;
+import org.bukkit.ChatColor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -32,6 +37,14 @@ class COfflineMongoPlayer implements COfflinePlayer {
     /* helpers */
     private final CMongoPlayerManager playerManager;
     @Getter @Setter private ObjectId objectId;
+
+    /* Permissions */
+    @Getter @Setter private ChatColor tablistColor;
+    @Getter @Setter private ChatColor chatColor;
+    @Getter @Setter private String chatPrefix;
+    private Map<String, Boolean> declaredPermissions;
+    private Map<String, Boolean> allPermissions;
+    private List<CGroup> groups;
 
     public COfflineMongoPlayer(UUID uniqueIdentifier, DBObject player, @NonNull CMongoPlayerManager manager) {
         this.playerManager = manager;
@@ -122,6 +135,21 @@ class COfflineMongoPlayer implements COfflinePlayer {
     @Override
     public final void saveIntoDatabase() throws DatabaseConnectException {
         this.playerManager.savePlayerData(this);
+    }
+
+    @Override
+    public void addToGroup(CGroup group) {
+        this.groups.add(group);
+    }
+
+    @Override
+    public void removeFromGroup(CGroup group) {
+
+    }
+
+    @Override
+    public List<CGroup> getGroups() {
+        return null;
     }
 
     private void updateFromDBObject(@NonNull DBObject player) {
@@ -215,11 +243,47 @@ class COfflineMongoPlayer implements COfflinePlayer {
     }
 
     static Map<String, Object> getMapFor(DBObject object) {
-        HashMap<String, Object> map = new HashMap<>();
+        return getMapFor(object, Object.class);
+    }
+
+    @SuppressWarnings("UnusedParameters")
+    static <T> Map<String, T> getMapFor(DBObject object, Class<T> valueType) {
+        HashMap<String, T> map = new HashMap<>();
         if (object == null) return null;
         for (String s : object.keySet()) {
-            map.put(s, applyTypeFiltersForObject(object.get(s)));
+            T t;
+            try {
+                //noinspection unchecked
+                t = (T) applyTypeFiltersForObject(object.get(s));
+            } catch (ClassCastException e) {
+                continue;
+            }
+            map.put(s, t);
         }
         return map;
+    }
+
+    @Override
+    public void setPermission(String permission, Boolean value) {
+
+    }
+
+    @Override
+    public boolean hasPermission(String permission) {
+        return false;
+    }
+
+    @Override
+    public Map<String, Boolean> getDeclaredPermissions() {
+        return new HashMap<>(declaredPermissions);
+    }
+
+    @Override
+    public void reload() {
+
+    }
+
+    void reloadPermissions() {
+
     }
 }

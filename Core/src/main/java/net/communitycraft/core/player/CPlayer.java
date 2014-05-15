@@ -4,12 +4,11 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.net.InetAddress;
-import java.util.List;
 
 /**
  * A class to represent a player on the server.
  */
-public interface CPlayer extends COfflinePlayer, CPermissable {
+public interface CPlayer extends COfflinePlayer {
     /**
      * Gets the name of the player on the server.
      * @return A {@link java.lang.String} representing the player's name.
@@ -82,11 +81,5 @@ public interface CPlayer extends COfflinePlayer, CPermissable {
      * @return The player from Bukkit.
      */
     Player getBukkitPlayer();
-
-    /* Permissions */
-    //Inherits Permissable
-    void addToGroup(CGroup group);
-    void removeFromGroup(CGroup group);
-    List<CGroup> getGroups();
 
 }

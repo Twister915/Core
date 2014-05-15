@@ -2,6 +2,8 @@ package net.communitycraft.core.player;
 
 import org.bukkit.ChatColor;
 
+import java.util.Map;
+
 public interface CPermissable {
     ChatColor getChatColor();
     ChatColor getTablistColor();
@@ -11,4 +13,6 @@ public interface CPermissable {
     void setChatPrefix(String prefix);
     void setPermission(String permission, Boolean value);
     boolean hasPermission(String permission);
+    Map<String, Boolean> getDeclaredPermissions();
+    void reload();
 }
