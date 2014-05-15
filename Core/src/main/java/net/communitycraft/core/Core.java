@@ -22,7 +22,7 @@ public class Core extends JavaPlugin {
     @Getter private NetworkManager networkManager;
     @Getter private YAMLConfigurationFile databaseConfiguration;
     @Getter private List<ModularPlugin> modules = new ArrayList<>();
-    @Getter protected Provider defaultProvider = new DefaultProvider();
+    @Getter protected Provider provider;
 
     @Override
     public final void onEnable() {
@@ -38,12 +38,19 @@ public class Core extends JavaPlugin {
             databaseConfiguration.reloadConfig();
             databaseConfiguration.saveDefaultConfig();
 
+            //Setup the provider
+            try {
+                provider = (Provider) Class.forName(getConfig().getString("provider")).newInstance();
+            } catch (Exception e) {
+                provider = new DefaultProvider();
+            }
+
             //Talk to the provider and setup the database
-            this.playerManager = defaultProvider.getNewPlayerManager(this);
+            this.playerManager = provider.getNewPlayerManager(this);
             this.playerManager.getDatabase().connect();
 
             //Setup network manager through the provider as well
-            this.networkManager = defaultProvider.getNewNetworkManager(this);
+            this.networkManager = provider.getNewNetworkManager(this);
         } catch (Throwable t) {
             t.printStackTrace();
             Bukkit.getPluginManager().disablePlugin(this);
