@@ -49,22 +49,6 @@ final class CMongoGroup implements CGroup {
         return new HashMap<>(declaredPermissions);
     }
 
-    void reloadPermissionsFromInheritence() {
-        allPermissions = new HashMap<>(declaredPermissions);
-        //For every parent
-        for (CGroup parent : parents) {
-            //get their permissions (inherited on their tree well)
-            Map<String, Boolean> allPermissions1 = parent.getAllPermissions();
-            //Iterate through them
-            for (Map.Entry<String, Boolean> stringBooleanEntry : allPermissions1.entrySet()) {
-                //...and if we don't have it, or ours is false
-                if (!allPermissions.containsKey(stringBooleanEntry.getKey()) || !allPermissions.get(stringBooleanEntry.getKey())) {
-                    allPermissions.put(stringBooleanEntry.getKey(), stringBooleanEntry.getValue()); //Put it into ours
-                }
-            }
-        }
-    }
-
     DBObject getDBObject() {
         BasicDBObjectBuilder builder = new BasicDBObjectBuilder();
         builder.add(MongoKey.GROUPS_NAME_KEY.toString(), name);
@@ -90,7 +74,19 @@ final class CMongoGroup implements CGroup {
 
     @Override
     public void reloadPermissions() {
-        reloadPermissionsFromInheritence();
+        allPermissions = new HashMap<>(declaredPermissions);
+        //For every parent
+        for (CGroup parent : parents) {
+            //get their permissions (inherited on their tree well)
+            Map<String, Boolean> allPermissions1 = parent.getAllPermissions();
+            //Iterate through them
+            for (Map.Entry<String, Boolean> stringBooleanEntry : allPermissions1.entrySet()) {
+                //...and if we don't have it, or ours is false
+                if (!allPermissions.containsKey(stringBooleanEntry.getKey()) || !allPermissions.get(stringBooleanEntry.getKey())) {
+                    allPermissions.put(stringBooleanEntry.getKey(), stringBooleanEntry.getValue()); //Put it into ours
+                }
+            }
+        }
     }
 
     @Override
