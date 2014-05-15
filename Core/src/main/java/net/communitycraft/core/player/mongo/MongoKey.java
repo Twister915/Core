@@ -14,6 +14,7 @@ enum MongoKey {
     FULLY_QUALIFIED_CLASS_NAME_KEY("fqcn"),
     META_KEY("meta"),
     ASSETS_KEY("assets"),
+    USER_GROUPS_KEY("groups"),
     GROUPS_COLLECTION("groups"),
     GROUPS_NAME_KEY("name"),
     GROUPS_TABLIST_COLOR_KEY("tablist_color"),

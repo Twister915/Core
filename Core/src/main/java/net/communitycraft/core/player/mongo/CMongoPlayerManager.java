@@ -22,7 +22,7 @@ public final class CMongoPlayerManager implements CPlayerManager {
 
     public CMongoPlayerManager(CMongoDatabase database) {
         this.database = database;
-        this.permissionsManager = new CMongoPermissionsManager(database);
+        this.permissionsManager = new CMongoPermissionsManager(database, this);
         Core.getInstance().registerListener(new CPlayerManagerListener(this));
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new CPlayerManagerSaveTask(this), 1200, 1200);
         DBCollection users = database.getCollection(MongoKey.USERS_COLLETION.toString());
@@ -65,6 +65,13 @@ public final class CMongoPlayerManager implements CPlayerManager {
             offlinePlayers.add(new COfflineMongoPlayer(uuid, playerDocumentFor, this));
         }
         return offlinePlayers;
+    }
+
+    public COfflinePlayer getOfflinePlayerByObjectId(ObjectId id) {
+        DBObject one = database.getCollection(MongoKey.USERS_COLLETION.toString()).findOne(new BasicDBObject(MongoKey.ID_KEY.toString(), id));
+        if (one == null) return null;
+        UUID uuid = UUID.fromString(getValueFrom(one, MongoKey.UUID_KEY, String.class));
+        return new COfflineMongoPlayer(uuid, one, this);
     }
 
     DBObject getPlayerDocumentFor(UUID uuid) {

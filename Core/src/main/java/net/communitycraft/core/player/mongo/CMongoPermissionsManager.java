@@ -1,31 +1,33 @@
 package net.communitycraft.core.player.mongo;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-import net.communitycraft.core.player.CGroup;
-import net.communitycraft.core.player.CPermissionsManager;
+import com.mongodb.*;
+import lombok.SneakyThrows;
+import net.communitycraft.core.Core;
+import net.communitycraft.core.player.*;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static net.communitycraft.core.player.mongo.COfflineMongoPlayer.*;
+import static net.communitycraft.core.player.mongo.COfflineMongoPlayer.getListFor;
+import static net.communitycraft.core.player.mongo.COfflineMongoPlayer.getValueFrom;
 
-class CMongoPermissionsManager implements CPermissionsManager {
+final class CMongoPermissionsManager implements CPermissionsManager {
     private final CMongoDatabase database;
+    private final CPlayerManager playerManager;
     private Map<String, CMongoGroup> groups;
-    public CMongoPermissionsManager(CMongoDatabase database) {
+    public CMongoPermissionsManager(CMongoDatabase database, CPlayerManager playerManager) {
         this.database = database;
+        this.playerManager = playerManager;
         groups = new HashMap<>();
     }
 
     @Override
     public CGroup createNewGroup(String name) {
-        return null;
+        if (getGroup(name) != null) throw new IllegalStateException("Group already exists!");
+        @SuppressWarnings("unchecked") CMongoGroup group = new CMongoGroup(name, Collections.EMPTY_MAP, Collections.EMPTY_LIST, ChatColor.WHITE, ChatColor.WHITE, name);
+        saveGroup(group);
+        return group;
     }
 
     @Override
@@ -41,13 +43,51 @@ class CMongoPermissionsManager implements CPermissionsManager {
     }
 
     @Override
+    @SneakyThrows
     public void deleteGroup(CGroup group) {
+        DBObject query = new BasicDBObjectBuilder().add(MongoKey.ID_KEY.toString(), ((CMongoGroup) group).getObjectId()).get();
+        DBCollection groupsCollection = database.getCollection(MongoKey.GROUPS_COLLECTION.toString());
+        DBObject andRemove = groupsCollection.findAndRemove(query);
+        if (andRemove == null) throw new IllegalStateException("Group does not exist!");
+        DBObject findUsersInGroup = new BasicDBObjectBuilder().add(MongoKey.USER_GROUPS_KEY.toString(), ((CMongoGroup) group).getObjectId()).get();
+        DBCollection usersCollection = database.getCollection(MongoKey.USERS_COLLETION.toString());
+        DBCursor dbObjects = usersCollection.find(findUsersInGroup);
+        CMongoPlayerManager playerManager1 = (CMongoPlayerManager) playerManager;
+        for (DBObject dbObject : dbObjects) {
+            COfflinePlayer playerInGroup = playerManager1.getOfflinePlayerByObjectId(getValueFrom(dbObject, MongoKey.ID_KEY, ObjectId.class));
+            playerInGroup.removeFromGroup(group);
+            playerInGroup.saveIntoDatabase();
+        }
+        this.groups.remove(group.getName());
+        Core.logInfo("Removed group " + group.getName());
+    }
 
+    @Override
+    public void saveGroup(CGroup group) {
+        DBCollection collection = database.getCollection(MongoKey.GROUPS_COLLECTION.toString());
+        CMongoGroup group1 = (CMongoGroup) group;
+        DBObject dbObject = group1.getDBObject();
+        collection.save(dbObject);
+        group1.setObjectId(getValueFrom(dbObject, MongoKey.ID_KEY, ObjectId.class));
     }
 
     @Override
     public List<CGroup> getGroups() {
         return new ArrayList<CGroup>(groups.values());
+    }
+
+    @Override
+    public void reloadPermissions() {
+        this.groups = new HashMap<>();
+        DBCollection groups = database.getCollection(MongoKey.GROUPS_COLLECTION.toString());
+        for (DBObject dbObject : groups.find()) {
+            CMongoGroup groupFor = getGroupFor(dbObject);
+            if (groupFor == null) continue;
+            this.groups.put(groupFor.getName(), groupFor);
+        }
+        for (CGroup cGroup : getGroups()) {
+            cGroup.reloadPermissions();
+        }
     }
 
     CMongoGroup getGroupFor(DBObject object) {
@@ -57,11 +97,10 @@ class CMongoPermissionsManager implements CPermissionsManager {
         for (ObjectId parentId : parentIds) {
             parents.add(getGroupByObjectId(parentId));
         }
-        Map<String, Boolean> declaredPermissions = getMapFor(getValueFrom(object, MongoKey.GROUPS_PERMISSIONS_KEY, BasicDBObject.class), Boolean.class);
-        ChatColor chatColor = ChatColor.valueOf(getValueFrom(object, MongoKey.GROUPS_CHAT_COLOR_KEY, String.class));
-        ChatColor tablistColor = ChatColor.valueOf(getValueFrom(object, MongoKey.GROUPS_TABLIST_COLOR_KEY, String.class));
-        String chatPrefix = getValueFrom(object, MongoKey.GROUPS_CHAT_PREFIX_KEY, String.class);
         ObjectId objectId = getValueFrom(object, MongoKey.ID_KEY, ObjectId.class);
-        return new CMongoGroup(name, declaredPermissions, parents, objectId, tablistColor, chatColor, chatPrefix);
+        CPermissible perm = CMongoGroup.getPermissibileDataFor(object);
+        CMongoGroup cMongoGroup = new CMongoGroup(name, perm.getDeclaredPermissions(), parents, perm.getTablistColor(), perm.getChatColor(), perm.getChatPrefix());
+        cMongoGroup.setObjectId(objectId);
+        return cMongoGroup;
     }
 }

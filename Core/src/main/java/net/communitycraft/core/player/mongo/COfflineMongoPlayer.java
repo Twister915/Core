@@ -2,6 +2,7 @@ package net.communitycraft.core.player.mongo;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,10 +10,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import net.communitycraft.core.Core;
 import net.communitycraft.core.asset.Asset;
-import net.communitycraft.core.player.CGroup;
-import net.communitycraft.core.player.COfflinePlayer;
-import net.communitycraft.core.player.CPlayer;
-import net.communitycraft.core.player.DatabaseConnectException;
+import net.communitycraft.core.player.*;
 import org.apache.commons.lang.IllegalClassException;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
@@ -21,6 +19,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import static net.communitycraft.core.RandomUtils.safeCast;
+import static net.communitycraft.core.player.mongo.CMongoGroup.combineObjectBuilders;
+import static net.communitycraft.core.player.mongo.CMongoGroup.getObjectForPermissible;
 
 class COfflineMongoPlayer implements COfflinePlayer {
     @Getter private List<String> knownUsernames;
@@ -43,7 +43,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
     @Getter @Setter private ChatColor chatColor;
     @Getter @Setter private String chatPrefix;
     private Map<String, Boolean> declaredPermissions;
-    private Map<String, Boolean> allPermissions;
+    @Getter private Map<String, Boolean> allPermissions;
     private List<CGroup> groups;
 
     public COfflineMongoPlayer(UUID uniqueIdentifier, DBObject player, @NonNull CMongoPlayerManager manager) {
@@ -66,16 +66,16 @@ class COfflineMongoPlayer implements COfflinePlayer {
     }
 
     final DBObject getObjectForPlayer() {
-        DBObject object = new BasicDBObject();
-        if (this.objectId != null) object.put(MongoKey.ID_KEY.toString(), this.objectId);
-        object.put(MongoKey.LAST_USERNAME_KEY.toString(), lastKnownUsername);
-        object.put(MongoKey.UUID_KEY.toString(), uniqueIdentifier.toString());
-        object.put(MongoKey.FIRST_JOIN_KEY.toString(), firstTimeOnline);
-        object.put(MongoKey.LAST_SEEN_KEY.toString(), lastTimeOnline);
-        object.put(MongoKey.TIME_ONLINE_KEY.toString(), millisecondsOnline);
-        object.put(MongoKey.IPS_KEY.toString(), getDBListFor(knownIPAddresses));
-        object.put(MongoKey.USERNAMES_KEY.toString(), getDBListFor(knownUsernames));
-        object.put(MongoKey.SETTINGS_KEY.toString(), getDBObjectFor(settings));
+        BasicDBObjectBuilder objectBuilder = new BasicDBObjectBuilder();
+        if (this.objectId != null) objectBuilder.add(MongoKey.ID_KEY.toString(), this.objectId);
+        objectBuilder.add(MongoKey.LAST_USERNAME_KEY.toString(), lastKnownUsername);
+        objectBuilder.add(MongoKey.UUID_KEY.toString(), uniqueIdentifier.toString());
+        objectBuilder.add(MongoKey.FIRST_JOIN_KEY.toString(), firstTimeOnline);
+        objectBuilder.add(MongoKey.LAST_SEEN_KEY.toString(), lastTimeOnline);
+        objectBuilder.add(MongoKey.TIME_ONLINE_KEY.toString(), millisecondsOnline);
+        objectBuilder.add(MongoKey.IPS_KEY.toString(), getDBListFor(knownIPAddresses));
+        objectBuilder.add(MongoKey.USERNAMES_KEY.toString(), getDBListFor(knownUsernames));
+        objectBuilder.add(MongoKey.SETTINGS_KEY.toString(), getDBObjectFor(settings));
         List<Map> assetDefinition = new ArrayList<>();
         for (Asset asset : assets) {
             Map<String, Object> assetMap = new HashMap<>();
@@ -83,8 +83,9 @@ class COfflineMongoPlayer implements COfflinePlayer {
             assetMap.put(MongoKey.META_KEY.toString(), asset.getMetaVariables());
             assetDefinition.add(assetMap);
         }
-        object.put(MongoKey.ASSETS_KEY.toString(), getDBListFor(assetDefinition));
-        return object;
+        objectBuilder.add(MongoKey.ASSETS_KEY.toString(), getDBListFor(assetDefinition));
+        combineObjectBuilders(objectBuilder, getObjectForPermissible(this));
+        return objectBuilder.get();
     }
 
     @Override
@@ -140,16 +141,18 @@ class COfflineMongoPlayer implements COfflinePlayer {
     @Override
     public void addToGroup(CGroup group) {
         this.groups.add(group);
+        reloadPermissions();
     }
 
     @Override
     public void removeFromGroup(CGroup group) {
-
+        this.groups.remove(group);
+        reloadPermissions();
     }
 
     @Override
     public List<CGroup> getGroups() {
-        return null;
+        return new ArrayList<>(groups);
     }
 
     private void updateFromDBObject(@NonNull DBObject player) {
@@ -180,6 +183,19 @@ class COfflineMongoPlayer implements COfflinePlayer {
                 Core.getInstance().getLogger().severe("Could not load asset for player " + this.lastKnownUsername + " - " + fqcn + " - " + e.getMessage());
             }
         }
+        CPermissible permissibileDataFor = CMongoGroup.getPermissibileDataFor(player);
+        this.chatColor = permissibileDataFor.getChatColor();
+        this.chatPrefix = permissibileDataFor.getChatPrefix();
+        this.tablistColor = permissibileDataFor.getTablistColor();
+        this.declaredPermissions = permissibileDataFor.getDeclaredPermissions();
+        this.groups = new ArrayList<>();
+        List<ObjectId> groupIds = getListFor(getValueFrom(player, MongoKey.USER_GROUPS_KEY, BasicDBList.class), ObjectId.class);
+        for (ObjectId groupId : groupIds) {
+            CGroup groupByObjectId = playerManager.getPermissionsManager().getGroupByObjectId(groupId);
+            if (groupByObjectId == null) continue;
+            this.groups.add(groupByObjectId);
+        }
+        reloadPermissions();
     }
 
     static <T> T getValueFrom(DBObject object, @NonNull Object key, Class<T> clazz) {
@@ -265,12 +281,13 @@ class COfflineMongoPlayer implements COfflinePlayer {
 
     @Override
     public void setPermission(String permission, Boolean value) {
-
+        this.declaredPermissions.put(permission, value);
+        reloadPermissions();
     }
 
     @Override
     public boolean hasPermission(String permission) {
-        return false;
+        return allPermissions.containsKey(permission) && allPermissions.get(permission);
     }
 
     @Override
@@ -279,11 +296,14 @@ class COfflineMongoPlayer implements COfflinePlayer {
     }
 
     @Override
-    public void reload() {
-
-    }
-
-    void reloadPermissions() {
-
+    public synchronized void reloadPermissions() {
+        allPermissions = new HashMap<>(declaredPermissions);
+        for (CGroup group : groups) {
+            Map<String, Boolean> groupPermissions = group.getAllPermissions();
+            for (Map.Entry<String, Boolean> permission : groupPermissions.entrySet()) {
+                String permNode = permission.getKey();
+                if (!allPermissions.containsKey(permNode) || !allPermissions.get(permNode)) allPermissions.put(permNode, permission.getValue());
+            }
+        }
     }
 }

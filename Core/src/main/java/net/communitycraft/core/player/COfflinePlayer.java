@@ -3,10 +3,7 @@ package net.communitycraft.core.player;
 import lombok.NonNull;
 import net.communitycraft.core.asset.Asset;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * This represents both an online and offline player and can be obtained via a CPlayerManager implementation.
@@ -15,7 +12,7 @@ import java.util.UUID;
  *
  * This class should be most polymorphic friendly type for players, if you can get by using this to represent a player anywhere, you must.
  */
-public interface COfflinePlayer extends CPermissable {
+public interface COfflinePlayer extends CPermissible {
     /**
      * Gets the known usernames. All usernames on login are logged and placed into storage. This will return all current usernames.
      * @return All usernames in a {@link java.util.List}.
@@ -142,4 +139,5 @@ public interface COfflinePlayer extends CPermissable {
     void addToGroup(CGroup group);
     void removeFromGroup(CGroup group);
     List<CGroup> getGroups();
+    Map<String, Boolean> getAllPermissions();
 }

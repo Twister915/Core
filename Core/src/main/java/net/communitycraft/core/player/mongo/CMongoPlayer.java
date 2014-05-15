@@ -3,14 +3,17 @@ package net.communitycraft.core.player.mongo;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import net.communitycraft.core.Core;
 import net.communitycraft.core.player.CPlayer;
 import net.communitycraft.core.player.DatabaseConnectException;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachment;
 
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(of = {"username"})
@@ -18,6 +21,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
     @Getter private final String username;
     @Getter private Player bukkitPlayer;
+    private PermissionAttachment permissionAttachment;
     @Getter private boolean firstJoin = false;
     @Getter private InetAddress address = null;
 
@@ -39,6 +43,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
             this.firstJoin = true;
         }
         saveIntoDatabase();
+        reloadPermissions();
     }
 
     void updateForSaving() {
@@ -124,5 +129,15 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Override
     public void playSoundForPlayer(Sound s) {
         playSoundForPlayer(s, 10f);
+    }
+
+    @Override
+    public void reloadPermissions() {
+        super.reloadPermissions();
+        if (permissionAttachment != null) permissionAttachment.remove();
+        permissionAttachment = bukkitPlayer.addAttachment(Core.getInstance());
+        for (Map.Entry<String, Boolean> stringBooleanEntry : getAllPermissions().entrySet()) {
+            permissionAttachment.setPermission(stringBooleanEntry.getKey(), stringBooleanEntry.getValue());
+        }
     }
 }

@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 
 import java.util.Map;
 
-public interface CPermissable {
+public interface CPermissible {
     ChatColor getChatColor();
     ChatColor getTablistColor();
     String getChatPrefix();
@@ -14,5 +14,5 @@ public interface CPermissable {
     void setPermission(String permission, Boolean value);
     boolean hasPermission(String permission);
     Map<String, Boolean> getDeclaredPermissions();
-    void reload();
+    void reloadPermissions();
 }

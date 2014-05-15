@@ -28,6 +28,7 @@ public interface CPlayerManager extends Iterable<CPlayer> {
     void playerLoggedIn(Player player, InetAddress address);
     void playerLoggedOut(Player player);
     CDatabase getDatabase();
+    CPermissionsManager getPermissionsManager();
 
     void onDisable();
 }
