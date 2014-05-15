@@ -1,6 +1,6 @@
 package net.communitycraft.core.player.mongo;
 
-public enum MongoKey {
+enum MongoKey {
     USERS_COLLETION("users"),
     UUID_KEY("uuid"),
     USERNAMES_KEY("usernames"),
@@ -18,7 +18,7 @@ public enum MongoKey {
     MongoKey(String value) {
         this.value = value;
     }
-    public String getValue() {
+    String getValue() {
         return value;
     }
 

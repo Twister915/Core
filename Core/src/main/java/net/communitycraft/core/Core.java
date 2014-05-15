@@ -86,4 +86,8 @@ public class Core extends JavaPlugin {
     public static void logInfo(String s) {
         instance.getLogger().info(s);
     }
+
+    public static NetworkManager getNetworkManager() {
+        return instance.networkManager;
+    }
 }
