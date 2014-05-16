@@ -14,6 +14,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 
+/**
+ * This represents the very Core of the CC System.
+ *
+ * This will manage all Modules and also the Core Managers.
+ *
+ * The core managers includes the PlayerManager, NetworkManager, and ServiceManager.
+ *
+ * You can access instances of other modules by depending on them in your pom.xml, and then executing Core.get
+ */
 public class Core extends JavaPlugin {
     @Getter private static Core instance;
     @Getter private static Random random;
@@ -71,10 +80,22 @@ public class Core extends JavaPlugin {
         return listener;
     }
 
+    public <T extends ModularPlugin> T getModuleProvider(Class<T> modularClass) {
+        for (ModularPlugin module : modules) {
+            if (modularClass.equals(module.getClass())) //noinspection unchecked
+                return (T) module;
+        }
+        return null;
+    }
+
     /* Public singleton methods!*/
 
     public static CPlayerManager getPlayerManager() {
         return instance.playerManager;
+    }
+
+    public static <T extends ModularPlugin> T getModule(Class<T> moduleClass) {
+        return getInstance().getModuleProvider(moduleClass);
     }
 
     public static Collection<CPlayer> getOnlinePlayers() {

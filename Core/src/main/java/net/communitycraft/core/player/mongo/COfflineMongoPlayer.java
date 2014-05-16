@@ -44,6 +44,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
     @Getter private Map<String, Boolean> allPermissions;
     private List<CGroup> groups;
 
+    //Called in all instances when we're loading a player from the database
     public COfflineMongoPlayer(UUID uniqueIdentifier, DBObject player, @NonNull CMongoPlayerManager manager) {
         this.playerManager = manager;
         if (player == null) {
@@ -56,9 +57,11 @@ class COfflineMongoPlayer implements COfflinePlayer {
             return;
         }
         this.objectId = getValueFrom(player, MongoKey.ID_KEY, ObjectId.class);
-        updateFromDBObject(player);
+        updateFromDBObject(player); //Updates the states of our variables using the database object.
     }
 
+    //Used as the superconstructor when we're creating a CPlayer from a COfflinePlayer (when a player comes online)
+    //This copies the state of all variables in the other COfflinePlayer object that is being passed.
     protected COfflineMongoPlayer(COfflineMongoPlayer otherCPlayer, CMongoPlayerManager playerManager) {
         this.playerManager = playerManager;
         this.objectId = otherCPlayer.getObjectId();
@@ -223,11 +226,13 @@ class COfflineMongoPlayer implements COfflinePlayer {
         return new HashMap<>(declaredPermissions);
     }
 
+    //This is overrided in the subclass, and as such we do not want to call this method directly from within our class. That would trigger the subclass in times we do not want to.
     @Override
     public synchronized void reloadPermissions() {
         reloadPermissions0();
     }
 
+    //Reloads the allPermissions map based on declaredPermissions and inheritance
     private synchronized void reloadPermissions0() {
         allPermissions = new HashMap<>(declaredPermissions);
         if (groups.size() == 0) processGroupInternal(playerManager.getPermissionsManager().getDefaultGroup());
@@ -236,6 +241,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
         }
     }
 
+    //Process a group into our allPermissions map, use care when calling as this can mess things up really bad.
     private synchronized void processGroupInternal(CGroup group) {
         Map<String, Boolean> groupPermissions = group.getAllPermissions();
         for (Map.Entry<String, Boolean> permission : groupPermissions.entrySet()) {
