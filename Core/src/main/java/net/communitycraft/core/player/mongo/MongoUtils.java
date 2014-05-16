@@ -72,6 +72,11 @@ final class MongoUtils {
             }
 
             @Override
+            public void unsetPermission(String permission) {
+                throw new UnsupportedOperationException("This CPermissible is for data access only!");
+            }
+
+            @Override
             public boolean hasPermission(String permission) {
                 throw new UnsupportedOperationException("This CPermissible is for data access only!");
             }

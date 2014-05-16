@@ -1,5 +1,8 @@
 package net.communitycraft.core.player.mongo;
 
+/**
+ *
+ */
 enum MongoKey {
     USERS_COLLETION("users"),
     UUID_KEY("uuid"),

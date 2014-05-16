@@ -135,9 +135,29 @@ public interface COfflinePlayer extends CPermissible {
     void saveIntoDatabase() throws DatabaseConnectException;
 
     /* Permissions */
-    //Inherits Permissable
+    //Inherits Permissible
+
+    /**
+     * Adds a player to a group, and will reload permissions implicitly.
+     * @param group The group you want to add the player to. This will not let you add a player to the same group twice.
+     */
     void addToGroup(CGroup group);
+
+    /**
+     * Removes a player from a group, and will reload permissions implicitly.
+     * @param group The group you want to remove the player from. This will not let you remove a player from the same group twice.
+     */
     void removeFromGroup(CGroup group);
+
+    /**
+     * This will return a copy of the list of groups the player is in currently. You can modify this, but it will not modify the actual groups the player is in.
+     * @return A {@link java.util.List} of {@link net.communitycraft.core.player.CGroup} instances representing the groups that the player is in.
+     */
     List<CGroup> getGroups();
+
+    /**
+     * This will return all permissions that the player has. This cannot be modified, as it is a copy of the original {@link java.util.Map} that holds permissions.
+     * @return The {@link java.util.Map} of permission that the player has defined.
+     */
     Map<String, Boolean> getAllPermissions();
 }

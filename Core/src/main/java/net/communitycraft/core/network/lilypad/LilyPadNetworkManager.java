@@ -8,10 +8,11 @@ import lilypad.client.connect.api.request.impl.MessageRequest;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import net.communitycraft.core.Core;
-import net.communitycraft.core.network.NetworkUpdaterTask;
-import net.communitycraft.core.player.CPlayer;
 import net.communitycraft.core.network.NetworkManager;
 import net.communitycraft.core.network.NetworkServer;
+import net.communitycraft.core.network.NetworkUpdaterTask;
+import net.communitycraft.core.player.COfflinePlayer;
+import net.communitycraft.core.player.CPlayer;
 import org.bukkit.Bukkit;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -116,7 +117,24 @@ public final class LilyPadNetworkManager implements NetworkManager {
         //Update with the heartbeat information
         s.setOnlineCount(uuids.size());
         s.setLastPing(new Date());
-        s.setPlayers(Core.getPlayerManager().getOfflinePlayersByUUIDS(uuids));
+        //We need to find out which UUIDs we don't have that we need to fetch
+        //Find all the UUIDs that are in the server's players
+        //Remove any players that appear in the server's players that do not appear in the uuids argument
+        //Add any players that appear in the uuids that do not appear in the server's players
+        List<COfflinePlayer> players = s.getPlayers();
+        Iterator<COfflinePlayer> playerIterator = players.iterator();
+        List<UUID> uuidsWeHave = new ArrayList<>();
+        while (playerIterator.hasNext()) { //So let's go through all the players we currently have stored
+            COfflinePlayer offlinePlayer = playerIterator.next(); //And for each of them
+            UUID uniqueIdentifier = offlinePlayer.getUniqueIdentifier(); //Get their UUID
+            if (!uuids.contains(uniqueIdentifier)) playerIterator.remove(); //And check if that UUID is still valid, if not remove it
+            else uuidsWeHave.add(uniqueIdentifier); //And if so, note it as something we have
+        }
+        //Now, with all the UUIDs we need to have in this list
+        for (UUID uuid : uuids) { //We will go through them
+            if (uuidsWeHave.contains(uuid)) continue; //And see if we have them
+            players.add(Core.getOfflinePlayerByUUID(uuid)); //If we don't, we need to add them
+        }
         if (shouldAdd) this.servers.add(s);//And if it is a new server, add it to our servers list
     }
 
