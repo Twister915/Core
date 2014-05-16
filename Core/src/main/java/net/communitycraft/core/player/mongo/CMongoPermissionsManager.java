@@ -1,6 +1,7 @@
 package net.communitycraft.core.player.mongo;
 
 import com.mongodb.*;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import net.communitycraft.core.Core;
 import net.communitycraft.core.player.*;
@@ -16,6 +17,7 @@ import static net.communitycraft.core.player.mongo.MongoUtils.getValueFrom;
 final class CMongoPermissionsManager implements CPermissionsManager {
     private final CMongoDatabase database;
     private final CPlayerManager playerManager;
+    @Getter private CGroup defaultGroup;
     private Map<String, CMongoGroup> groups;
     public CMongoPermissionsManager(CMongoDatabase database, CPlayerManager playerManager) {
         this.database = database;
@@ -28,6 +30,7 @@ final class CMongoPermissionsManager implements CPermissionsManager {
         if (getGroup(name) != null) throw new IllegalStateException("Group already exists!");
         @SuppressWarnings("unchecked") CMongoGroup group = new CMongoGroup(name, Collections.EMPTY_MAP, Collections.EMPTY_LIST, ChatColor.WHITE, ChatColor.WHITE, name);
         saveGroup(group);
+        if (this.getDefaultGroup() == null) setDefaultGroup(group);
         return group;
     }
 
@@ -71,6 +74,8 @@ final class CMongoPermissionsManager implements CPermissionsManager {
         DBCollection collection = database.getCollection(MongoKey.GROUPS_COLLECTION.toString());
         CMongoGroup group1 = (CMongoGroup) group;
         DBObject dbObject = group1.getDBObject();
+        if (defaultGroup.equals(group1)) dbObject.put(MongoKey.GROUPS_DEFAULT_MARKER.toString(), true);
+        else if (dbObject.containsField(MongoKey.GROUPS_DEFAULT_MARKER.toString())) dbObject.removeField(MongoKey.GROUPS_DEFAULT_MARKER.toString());
         collection.save(dbObject);
         group1.setObjectId(getValueFrom(dbObject, MongoKey.ID_KEY, ObjectId.class));
     }
@@ -83,11 +88,13 @@ final class CMongoPermissionsManager implements CPermissionsManager {
     @Override
     public void reloadPermissions() {
         this.groups = new HashMap<>();
+        this.defaultGroup = null;
         DBCollection groups = database.getCollection(MongoKey.GROUPS_COLLECTION.toString());
         for (DBObject dbObject : groups.find()) {
             CMongoGroup groupFor = getGroupFor(dbObject);
             if (groupFor == null) continue;
             this.groups.put(groupFor.getName(), groupFor);
+            if (dbObject.containsField(MongoKey.GROUPS_DEFAULT_MARKER.toString())) this.defaultGroup = groupFor;
         }
         for (CGroup cGroup : getGroups()) {
             cGroup.reloadPermissions();
@@ -106,5 +113,14 @@ final class CMongoPermissionsManager implements CPermissionsManager {
         CMongoGroup cMongoGroup = new CMongoGroup(name, perm.getDeclaredPermissions(), parents, perm.getTablistColor(), perm.getChatColor(), perm.getChatPrefix());
         cMongoGroup.setObjectId(objectId);
         return cMongoGroup;
+    }
+
+    @Override
+    public void setDefaultGroup(CGroup group) {
+        CGroup defaultGroup1 = this.defaultGroup;
+        this.defaultGroup = null;
+        saveGroup(defaultGroup1);
+        this.defaultGroup = group;
+        saveGroup(group);
     }
 }

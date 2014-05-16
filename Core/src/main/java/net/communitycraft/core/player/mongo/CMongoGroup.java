@@ -37,6 +37,13 @@ final class CMongoGroup implements CGroup {
     @Override
     public void setPermission(String permission, Boolean value) {
         this.declaredPermissions.put(permission, value);
+        reloadPermissions();
+    }
+
+    @Override
+    public void unsetPermission(String permission) {
+        this.declaredPermissions.remove(permission);
+        reloadPermissions();
     }
 
     @Override

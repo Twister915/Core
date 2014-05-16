@@ -52,6 +52,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
             this.uniqueIdentifier = uniqueIdentifier;
             this.objectId = null;
             this.declaredPermissions = new HashMap<>();
+            this.groups = new ArrayList<>();
             return;
         }
         this.objectId = getValueFrom(player, MongoKey.ID_KEY, ObjectId.class);
@@ -165,7 +166,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
         this.knownIPAddresses = ips == null ? new ArrayList<String>() : ips;
         List<String> usernames = getListFor(getValueFrom(player, MongoKey.USERNAMES_KEY, BasicDBList.class), String.class);
         this.knownUsernames = usernames == null ? new ArrayList<String>() : usernames;
-        Map<String, Object> settings1 = getValueFrom(player, MongoKey.SETTINGS_KEY, HashMap.class);
+        @SuppressWarnings("unchecked") Map<String, Object> settings1 = getValueFrom(player, MongoKey.SETTINGS_KEY, HashMap.class);
         this.settings = settings1 == null ? new HashMap<String, Object>() : settings1;
         this.assets = new ArrayList<>();
         List<DBObject> assets1 = getListFor(getValueFrom(player,MongoKey.ASSETS_KEY , BasicDBList.class), DBObject.class);
@@ -207,6 +208,12 @@ class COfflineMongoPlayer implements COfflinePlayer {
     }
 
     @Override
+    public void unsetPermission(String permission) {
+        this.declaredPermissions.remove(permission);
+        reloadPermissions();
+    }
+
+    @Override
     public boolean hasPermission(String permission) {
         return allPermissions.containsKey(permission) && allPermissions.get(permission);
     }
@@ -223,12 +230,17 @@ class COfflineMongoPlayer implements COfflinePlayer {
 
     private synchronized void reloadPermissions0() {
         allPermissions = new HashMap<>(declaredPermissions);
+        if (groups.size() == 0) processGroupInternal(playerManager.getPermissionsManager().getDefaultGroup());
         for (CGroup group : groups) {
-            Map<String, Boolean> groupPermissions = group.getAllPermissions();
-            for (Map.Entry<String, Boolean> permission : groupPermissions.entrySet()) {
-                String permNode = permission.getKey();
-                if (!allPermissions.containsKey(permNode) || !allPermissions.get(permNode)) allPermissions.put(permNode, permission.getValue());
-            }
+            processGroupInternal(group);
+        }
+    }
+
+    private synchronized void processGroupInternal(CGroup group) {
+        Map<String, Boolean> groupPermissions = group.getAllPermissions();
+        for (Map.Entry<String, Boolean> permission : groupPermissions.entrySet()) {
+            String permNode = permission.getKey();
+            if (!allPermissions.containsKey(permNode) || !allPermissions.get(permNode)) allPermissions.put(permNode, permission.getValue());
         }
     }
 }

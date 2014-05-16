@@ -12,6 +12,7 @@ public interface CPermissible {
     void setTablistColor(ChatColor color);
     void setChatPrefix(String prefix);
     void setPermission(String permission, Boolean value);
+    void unsetPermission(String permission);
     boolean hasPermission(String permission);
     Map<String, Boolean> getDeclaredPermissions();
     void reloadPermissions();
