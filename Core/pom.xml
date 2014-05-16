@@ -44,11 +44,6 @@
             <version>3.3.1</version>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>17.0</version>
-        </dependency>
-        <dependency>
             <groupId>lilypad.client.connect</groupId>
             <artifactId>api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
@@ -78,6 +73,8 @@
                             <artifactSet>
                                 <excludes>
                                     <exclude>org.bukkit</exclude>
+                                    <exclude>lilypad.client.connect</exclude>
+                                    <exclude>com.comphenix.protocol</exclude>
                                 </excludes>
                             </artifactSet>
                         </configuration>

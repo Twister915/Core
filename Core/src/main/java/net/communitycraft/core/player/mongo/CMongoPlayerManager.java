@@ -20,8 +20,9 @@ public final class CMongoPlayerManager implements CPlayerManager {
 
     private Map<String, CPlayer> onlinePlayerMap = new HashMap<>();
 
-    public CMongoPlayerManager(CMongoDatabase database) {
+    public CMongoPlayerManager(CMongoDatabase database) throws DatabaseConnectException {
         this.database = database;
+        database.connect();
         this.permissionsManager = new CMongoPermissionsManager(database, this);
         Core.getInstance().registerListener(new CPlayerManagerListener(this));
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new CPlayerManagerSaveTask(this), 1200, 1200);
@@ -52,7 +53,6 @@ public final class CMongoPlayerManager implements CPlayerManager {
     @Override
     public COfflineMongoPlayer getOfflinePlayerByUUID(UUID uuid) {
         DBObject playerDocumentFor = getPlayerDocumentFor(uuid);
-        if (playerDocumentFor == null) return null;
         return new COfflineMongoPlayer(uuid, playerDocumentFor, this);
     }
 

@@ -51,6 +51,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
             this.settings = new HashMap<>();
             this.uniqueIdentifier = uniqueIdentifier;
             this.objectId = null;
+            this.declaredPermissions = new HashMap<>();
             return;
         }
         this.objectId = getValueFrom(player, MongoKey.ID_KEY, ObjectId.class);
@@ -164,7 +165,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
         this.knownIPAddresses = ips == null ? new ArrayList<String>() : ips;
         List<String> usernames = getListFor(getValueFrom(player, MongoKey.USERNAMES_KEY, BasicDBList.class), String.class);
         this.knownUsernames = usernames == null ? new ArrayList<String>() : usernames;
-        Map<String, Object> settings1 = getMapFor(getValueFrom(player, MongoKey.SETTINGS_KEY, DBObject.class));
+        Map<String, Object> settings1 = getValueFrom(player, MongoKey.SETTINGS_KEY, HashMap.class);
         this.settings = settings1 == null ? new HashMap<String, Object>() : settings1;
         this.assets = new ArrayList<>();
         List<DBObject> assets1 = getListFor(getValueFrom(player,MongoKey.ASSETS_KEY , BasicDBList.class), DBObject.class);
@@ -186,14 +187,17 @@ class COfflineMongoPlayer implements COfflinePlayer {
         this.chatPrefix = permissibileDataFor.getChatPrefix();
         this.tablistColor = permissibileDataFor.getTablistColor();
         this.declaredPermissions = permissibileDataFor.getDeclaredPermissions();
+        if (this.declaredPermissions == null) this.declaredPermissions = new HashMap<>();
         this.groups = new ArrayList<>();
         List<ObjectId> groupIds = getListFor(getValueFrom(player, MongoKey.USER_GROUPS_KEY, BasicDBList.class), ObjectId.class);
-        for (ObjectId groupId : groupIds) {
-            CGroup groupByObjectId = playerManager.getPermissionsManager().getGroupByObjectId(groupId);
-            if (groupByObjectId == null) continue;
-            this.groups.add(groupByObjectId);
+        if (groupIds != null) {
+            for (ObjectId groupId : groupIds) {
+                CGroup groupByObjectId = playerManager.getPermissionsManager().getGroupByObjectId(groupId);
+                if (groupByObjectId == null) continue;
+                this.groups.add(groupByObjectId);
+            }
         }
-        reloadPermissions();
+        reloadPermissions0();
     }
 
     @Override
@@ -214,6 +218,10 @@ class COfflineMongoPlayer implements COfflinePlayer {
 
     @Override
     public synchronized void reloadPermissions() {
+        reloadPermissions0();
+    }
+
+    private synchronized void reloadPermissions0() {
         allPermissions = new HashMap<>(declaredPermissions);
         for (CGroup group : groups) {
             Map<String, Boolean> groupPermissions = group.getAllPermissions();

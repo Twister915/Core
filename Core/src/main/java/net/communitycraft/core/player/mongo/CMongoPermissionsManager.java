@@ -20,7 +20,7 @@ final class CMongoPermissionsManager implements CPermissionsManager {
     public CMongoPermissionsManager(CMongoDatabase database, CPlayerManager playerManager) {
         this.database = database;
         this.playerManager = playerManager;
-        groups = new HashMap<>();
+        reloadPermissions();
     }
 
     @Override

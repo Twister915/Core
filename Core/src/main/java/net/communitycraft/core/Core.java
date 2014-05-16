@@ -47,7 +47,6 @@ public class Core extends JavaPlugin {
 
             //Talk to the provider and setup the database
             this.playerManager = provider.getNewPlayerManager(this);
-            this.playerManager.getDatabase().connect();
 
             //Setup network manager through the provider as well
             this.networkManager = provider.getNewNetworkManager(this);

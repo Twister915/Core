@@ -16,10 +16,10 @@ import java.util.Map;
 final class MongoUtils {
     static BasicDBObjectBuilder getObjectForPermissible(CPermissible permissible) {
         BasicDBObjectBuilder builder = new BasicDBObjectBuilder();
-        builder.add(MongoKey.GROUPS_TABLIST_COLOR_KEY.toString(), permissible.getTablistColor().name());
-        builder.add(MongoKey.GROUPS_CHAT_COLOR_KEY.toString(), permissible.getChatColor().name());
-        builder.add(MongoKey.GROUPS_CHAT_PREFIX_KEY.toString(), permissible.getChatPrefix());
-        builder.add(MongoKey.GROUPS_PERMISSIONS_KEY.toString(), getDBObjectFor(permissible.getDeclaredPermissions()));
+        if (permissible.getTablistColor() != null) builder.add(MongoKey.GROUPS_TABLIST_COLOR_KEY.toString(), permissible.getTablistColor().name());
+        if (permissible.getChatColor() != null) builder.add(MongoKey.GROUPS_CHAT_COLOR_KEY.toString(), permissible.getChatColor().name());
+        if (permissible.getChatPrefix() != null) builder.add(MongoKey.GROUPS_CHAT_PREFIX_KEY.toString(), permissible.getChatPrefix());
+        if (permissible.getDeclaredPermissions().size() > 0) builder.add(MongoKey.GROUPS_PERMISSIONS_KEY.toString(), getDBObjectFor(permissible.getDeclaredPermissions()));
         return builder;
     }
 
@@ -32,8 +32,8 @@ final class MongoUtils {
 
     static CPermissible getPermissibileDataFor(DBObject object) {
         final Map<String, Boolean> declaredPermissions = getMapFor(getValueFrom(object, MongoKey.GROUPS_PERMISSIONS_KEY, BasicDBObject.class), Boolean.class);
-        final ChatColor chatColor = ChatColor.valueOf(getValueFrom(object, MongoKey.GROUPS_CHAT_COLOR_KEY, String.class));
-        final ChatColor tablistColor = ChatColor.valueOf(getValueFrom(object, MongoKey.GROUPS_TABLIST_COLOR_KEY, String.class));
+        String cColor = getValueFrom(object, MongoKey.GROUPS_CHAT_COLOR_KEY, String.class); final ChatColor chatColor = cColor == null ? null : ChatColor.valueOf(cColor);
+        String tColor = getValueFrom(object, MongoKey.GROUPS_TABLIST_COLOR_KEY, String.class); final ChatColor tablistColor = tColor == null ? null : ChatColor.valueOf(tColor);
         final String chatPrefix = getValueFrom(object, MongoKey.GROUPS_CHAT_PREFIX_KEY, String.class);
         return new CPermissible() {
             @Override
@@ -96,7 +96,7 @@ final class MongoUtils {
         if (object == null) return null;
         try {
             //noinspection unchecked
-            return (T) applyTypeFiltersForObject(object.get(key));
+            return (T) (object.get(key));
         } catch (ClassCastException ex) {
             return null;
         }

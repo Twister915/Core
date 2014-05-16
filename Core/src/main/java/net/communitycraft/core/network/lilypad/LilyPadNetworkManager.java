@@ -78,7 +78,7 @@ public final class LilyPadNetworkManager implements NetworkManager {
         JSONObject object = new JSONObject(); //Build the JSON Object
         JSONArray uuids = new JSONArray(); //Generate a JSON list of uuids
         for (CPlayer onlinePlayer : Core.getOnlinePlayers()) {
-            uuids.add(onlinePlayer.getUniqueIdentifier());
+            uuids.add(onlinePlayer.getUniqueIdentifier().toString());
         }
         object.put(HEARTBEAT_PLAYERS_KEY, uuids); //and put it in the heartbeat
         MessageRequest messageRequest;
@@ -126,7 +126,8 @@ public final class LilyPadNetworkManager implements NetworkManager {
     public synchronized void onMessage(MessageEvent event) {
         if (!event.getChannel().equals(NETWORK_MANAGER_CHANNEL)) return; //If it's not our channel, ignore this
         try {
-            JSONObject heartbeat = (JSONObject)JSONValue.parse(event.getMessageAsString()); //Get the values
+            String messageAsString = event.getMessageAsString();
+            JSONObject heartbeat = (JSONObject)JSONValue.parse(messageAsString); //Get the values
             JSONArray playerUUIDs = (JSONArray) heartbeat.get(HEARTBEAT_PLAYERS_KEY);
             List<UUID> uuids = new ArrayList<>(); //Holder for UUIDs that are converted from the strings above
             for (Object playerUUID : playerUUIDs) {

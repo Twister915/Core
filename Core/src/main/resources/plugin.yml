@@ -1,5 +1,7 @@
 name: Core
 soft-depend: [LilyPad-Connect]
-main: me.joeyandtom.communitycraft.core.Core
+main: net.communitycraft.core.Core
 version: 1.0
-description: Core for CommunityCraft modular model. Performs database operations and module management.
+description: Core for UrbisMC modular model. Performs database operations and module management.
+authors: [Twister915, Zewlzor, NoyHillel1, pokuit]
+website: http://urbismc.com

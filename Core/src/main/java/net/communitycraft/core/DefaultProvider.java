@@ -3,13 +3,14 @@ package net.communitycraft.core;
 import net.communitycraft.core.network.NetworkManager;
 import net.communitycraft.core.network.lilypad.LilyPadNetworkManager;
 import net.communitycraft.core.player.CPlayerManager;
+import net.communitycraft.core.player.DatabaseConnectException;
 import net.communitycraft.core.player.mongo.CMongoDatabase;
 import net.communitycraft.core.player.mongo.CMongoPlayerManager;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class DefaultProvider implements Provider {
     @Override
-    public CPlayerManager getNewPlayerManager(Core core) {
+    public CPlayerManager getNewPlayerManager(Core core) throws DatabaseConnectException {
         FileConfiguration config = core.getDatabaseConfiguration().getConfig();
         //This will get the database values from the database.yml file
         CMongoDatabase mongoDatabase = new CMongoDatabase(
