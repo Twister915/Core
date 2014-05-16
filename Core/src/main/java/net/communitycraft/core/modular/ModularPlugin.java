@@ -5,6 +5,7 @@ import net.communitycraft.core.Core;
 import net.communitycraft.core.config.YAMLConfigurationFile;
 import net.communitycraft.core.modular.command.ModuleCommand;
 import net.communitycraft.core.modular.command.ModuleCommandMap;
+import net.communitycraft.core.network.NetworkManager;
 import net.communitycraft.core.player.CPlayerManager;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -99,5 +100,9 @@ public abstract class ModularPlugin extends JavaPlugin {
 
     public final CPlayerManager getPlayerManager() {
         return Core.getPlayerManager();
+    }
+
+    public final NetworkManager getNetworkManager() {
+        return Core.getNetworkManager();
     }
 }

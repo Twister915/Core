@@ -125,6 +125,7 @@ public final class LilyPadNetworkManager implements NetworkManager {
     @SneakyThrows
     public synchronized void onMessage(MessageEvent event) {
         if (!event.getChannel().equals(NETWORK_MANAGER_CHANNEL)) return; //If it's not our channel, ignore this
+        if (event.getSender().equals(connect.getSettings().getUsername())) return; //If it's our heartbeat, doesn't matter either.
         try {
             String messageAsString = event.getMessageAsString();
             JSONObject heartbeat = (JSONObject)JSONValue.parse(messageAsString); //Get the values
