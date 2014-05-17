@@ -87,6 +87,11 @@ class COfflineMongoPlayer implements COfflinePlayer {
             assetDefinition.add(assetMap);
         }
         objectBuilder.add(MongoKey.ASSETS_KEY.toString(), getDBListFor(assetDefinition));
+        List<ObjectId> groupIds = new ArrayList<>();
+        for (CGroup group : groups) {
+            groupIds.add(((CMongoGroup)group).getObjectId());
+        }
+        objectBuilder.add(MongoKey.USER_GROUPS_KEY.toString(), getDBListFor(groupIds));
         combineObjectBuilders(objectBuilder, getObjectForPermissible(this));
         return objectBuilder.get();
     }
@@ -235,7 +240,8 @@ class COfflineMongoPlayer implements COfflinePlayer {
     //Reloads the allPermissions map based on declaredPermissions and inheritance
     private synchronized void reloadPermissions0() {
         allPermissions = new HashMap<>(declaredPermissions);
-        if (groups.size() == 0) processGroupInternal(playerManager.getPermissionsManager().getDefaultGroup());
+        CGroup defaultGroup = playerManager.getPermissionsManager().getDefaultGroup();
+        if (groups.size() == 0 && defaultGroup != null) processGroupInternal(defaultGroup);
         for (CGroup group : groups) {
             processGroupInternal(group);
         }

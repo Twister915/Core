@@ -2,3 +2,4 @@
 *.iml
 Core/target/
 Punishments/target/
+PermissionManager/target/
