@@ -68,4 +68,22 @@ public interface NetworkManager {
      * @return
      */
     Map<NetworkServer, Integer> getOnlinePlayersPerServer();
+
+    /**
+     *
+     * @param handler
+     * @param type
+     * @param <T>
+     */
+    <T extends NetCommand> void registerNetCommandHandler(NetCommandHandler<T> handler, Class<T> type);
+
+    /**
+     *
+     * @param handler
+     * @param type
+     * @param <T>
+     */
+    <T extends NetCommand> void unregisterHandler(NetCommandHandler<T> handler, Class<T> type);
+
+    <T extends NetCommand> List<NetCommandHandler<T>> getNetCommandHandlersFor(Class<T> type);
 }

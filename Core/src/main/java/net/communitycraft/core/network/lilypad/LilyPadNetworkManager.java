@@ -8,9 +8,7 @@ import lilypad.client.connect.api.request.impl.MessageRequest;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import net.communitycraft.core.Core;
-import net.communitycraft.core.network.NetworkManager;
-import net.communitycraft.core.network.NetworkServer;
-import net.communitycraft.core.network.NetworkUpdaterTask;
+import net.communitycraft.core.network.*;
 import net.communitycraft.core.player.COfflinePlayer;
 import net.communitycraft.core.player.CPlayer;
 import org.bukkit.Bukkit;
@@ -19,6 +17,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -27,9 +26,11 @@ public final class LilyPadNetworkManager implements NetworkManager {
     private static final String NETWORK_MANAGER_CHANNEL = "CC.LILYPAD.MANAGER";
     private static final String HEARTBEAT_PLAYERS_KEY = "PLAYERS";
     private static final Integer HEARTBEAT_ATTEMPTS_MAX = 5;
+    static final String NET_COMMAND_CHANNEL = "CC.LILYPAD.NETCOMMAND";
 
     private final List<NetworkServer> servers = new ArrayList<>();
     @Getter private final Connect connect;
+    private final Map<Class, List<NetCommandHandler>> netCommandHandlers = new HashMap<>();
 
     public LilyPadNetworkManager() {
         connect = Core.getInstance().getServer().getServicesManager().getRegistration(Connect.class).getProvider(); //Gets the Connect plugin as per LilyPad docs.
@@ -142,6 +143,29 @@ public final class LilyPadNetworkManager implements NetworkManager {
         return serverIntegerMap;
     }
 
+    @Override
+    public <T extends NetCommand> void registerNetCommandHandler(NetCommandHandler<T> handler, Class<T> type) {
+        List<NetCommandHandler> netCommandHandlers1 = this.netCommandHandlers.get(type);
+        if (netCommandHandlers1 == null) netCommandHandlers1 = new ArrayList<>();
+        netCommandHandlers1.add(handler);
+        this.netCommandHandlers.put(type, netCommandHandlers1);
+    }
+
+    @Override
+    public <T extends NetCommand> void unregisterHandler(NetCommandHandler<T> handler, Class<T> type) {
+        List<NetCommandHandler> netCommandHandlers1 = this.netCommandHandlers.get(type);
+        if (netCommandHandlers1 == null) throw new IllegalStateException("You can't remove a handler from a type that HAS NO HANDLERS...");
+        netCommandHandlers1.remove(handler);
+    }
+
+    @Override
+    public <T extends NetCommand> List<NetCommandHandler<T>> getNetCommandHandlersFor(Class<T> type) {
+        //Have to do this funky conversion for the generic agreement.
+        List<NetCommandHandler<T>> handlers = new ArrayList<>();
+        handlers.addAll(this.netCommandHandlers.get(type));
+        return handlers;
+    }
+
     private void receivedUpdate(String server, List<UUID> uuids) {
         LilyPadServer s;
         boolean shouldAdd = false; //Hold a marker if this is a new server...
@@ -184,9 +208,13 @@ public final class LilyPadNetworkManager implements NetworkManager {
 
     /* event handlers */
     @EventListener
-    @SneakyThrows
     public synchronized void onMessage(MessageEvent event) {
-        if (!event.getChannel().equals(NETWORK_MANAGER_CHANNEL)) return; //If it's not our channel, ignore this
+        if (event.getChannel().equals(NETWORK_MANAGER_CHANNEL)) handleHeartbeatMessageEvent(event); //Handle a heartbeat
+        if (event.getChannel().equals(NET_COMMAND_CHANNEL)) handleNetCommandMessageEvent(event); //Handle a NetCommand
+    }
+
+    @SneakyThrows
+    private void handleHeartbeatMessageEvent(MessageEvent event) {
         if (event.getSender().equals(connect.getSettings().getUsername())) return; //If it's our heartbeat, doesn't matter either.
         try {
             String messageAsString = event.getMessageAsString();
@@ -201,6 +229,35 @@ public final class LilyPadNetworkManager implements NetworkManager {
         } catch (ClassCastException ex) {
             //Invalid heartbeat
             Core.logInfo("Unable to read heartbeat on channel due to a ClassCastException on line " + ex.getStackTrace()[0].getLineNumber());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
+    public void handleNetCommandMessageEvent(MessageEvent event) {
+        //Get the sender
+        NetworkServer sender = getServer(event.getSender());
+        if (sender == null) return;
+        //Get the command object (JSON) and attempt to read it
+        JSONObject netCommand = (JSONObject) JSONValue.parse(event.getMessageAsString());
+        //Get the class
+        Class<? extends NetCommand> netCommandType;
+        try {
+            netCommandType = (Class<? extends NetCommand>) Class.forName((String) netCommand.get(LilyPadKeys.NET_COMMAND_CLASS_NAME));
+        } catch (ClassNotFoundException ex) {
+            return;
+        }
+        //Create a new instance of the NetCommand class that we found. THIS REQUIRES A NO ARGS CONSTRUCTOR TO BE PRESENT.
+        NetCommand netCommand1 = netCommandType.newInstance();
+        JSONObject arguments = (JSONObject)netCommand.get(LilyPadKeys.NET_COMMAND_ARGUMENTS); //Get the arguments
+        for (Field field : netCommandType.getDeclaredFields()) { //And set the values in the class by
+            if (!field.isAnnotationPresent(NetCommandField.class)) continue; //Finding fields with this annotation
+            field.setAccessible(true); //setting them accessable
+            field.set(netCommand1, field.getType().cast(arguments.get(field.getName()))); //and setting their value
+        }
+        //Now let's call the handlers
+        for (NetCommandHandler netCommandHandler : netCommandHandlers.get(netCommandType)) {
+            netCommandHandler.handleNetCommand(sender, netCommand1); //"Yo dude... we got a netcommand being sent by sender, check out netCommand1 param."
         }
     }
 }

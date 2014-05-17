@@ -41,4 +41,10 @@ public interface NetworkServer {
      * @return A {@link java.util.Date} object representing the last time this server was pinged.
      */
     Date getLastPing();
+
+    /**
+     *
+     * @param command
+     */
+    void sendNetCommand(NetCommand command);
 }
