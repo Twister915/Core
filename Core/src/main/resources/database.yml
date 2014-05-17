@@ -1,5 +1,6 @@
-host: oceanic.mongohq.com
-port: 10077
-database: community_craft
-username: test
-password: test123
+#Used by the Mongo implementation, currently the only one supported.
+host: 127.0.0.1
+port: 27017
+database: core
+username: test #OTIONAL, comment out to disable this
+password: test123 #OPTIONAL, comment out to disable this
