@@ -1,5 +1,5 @@
 .idea/
 *.iml
-Core/target/
+Core/
 Punishments/target/
 PermissionManager/target/

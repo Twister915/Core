@@ -1,7 +1,0 @@
-name: Core
-soft-depend: [LilyPad-Connect]
-main: me.twister915.core.Core
-version: 1.0
-description: Core for all plugin and server archeticture. Used to store information in the database and perform various other mission critical operations.
-authors: [Twister915]
-website: http://urbismc.com
