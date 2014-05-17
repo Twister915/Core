@@ -1,9 +1,9 @@
 package net.communitycraft.permissions;
 
-import me.twister915.core.modular.ModularPlugin;
-import me.twister915.core.modular.ModuleMeta;
-import me.twister915.core.player.CGroup;
-import me.twister915.core.player.CPermissionsManager;
+import net.communitycraft.core.modular.ModularPlugin;
+import net.communitycraft.core.modular.ModuleMeta;
+import net.communitycraft.core.player.CGroup;
+import net.communitycraft.core.player.CPermissionsManager;
 
 @ModuleMeta(
         name = "Permissions Manager",
