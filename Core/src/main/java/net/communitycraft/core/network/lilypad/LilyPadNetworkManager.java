@@ -250,14 +250,15 @@ public final class LilyPadNetworkManager implements NetworkManager {
         //Create a new instance of the NetCommand class that we found. THIS REQUIRES A NO ARGS CONSTRUCTOR TO BE PRESENT.
         NetCommand netCommand1 = netCommandType.newInstance();
         JSONObject arguments = (JSONObject)netCommand.get(LilyPadKeys.NET_COMMAND_ARGUMENTS); //Get the arguments
+        boolean allFields = netCommandType.isAnnotationPresent(NetCommandField.class);
         for (Field field : netCommandType.getDeclaredFields()) { //And set the values in the class by
-            if (!field.isAnnotationPresent(NetCommandField.class)) continue; //Finding fields with this annotation
-            field.setAccessible(true); //setting them accessable
+            if (!allFields && !field.isAnnotationPresent(NetCommandField.class)) continue; //Finding fields with this annotation
+            field.setAccessible(true); //setting them accessible
             field.set(netCommand1, field.getType().cast(arguments.get(field.getName()))); //and setting their value
         }
         //Now let's call the handlers
         for (NetCommandHandler netCommandHandler : netCommandHandlers.get(netCommandType)) {
-            netCommandHandler.handleNetCommand(sender, netCommand1); //"Yo dude... we got a netcommand being sent by sender, check out netCommand1 param."
+            netCommandHandler.handleNetCommand(sender, netCommand1); //"Yo dude... we got a NetCommand being sent by sender, check out netCommand1 param."
         }
     }
 }

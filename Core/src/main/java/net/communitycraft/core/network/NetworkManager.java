@@ -85,5 +85,11 @@ public interface NetworkManager {
      */
     <T extends NetCommand> void unregisterHandler(NetCommandHandler<T> handler, Class<T> type);
 
+    /**
+     *
+     * @param type
+     * @param <T>
+     * @return
+     */
     <T extends NetCommand> List<NetCommandHandler<T>> getNetCommandHandlersFor(Class<T> type);
 }

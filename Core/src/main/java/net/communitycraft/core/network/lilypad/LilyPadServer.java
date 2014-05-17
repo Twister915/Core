@@ -40,12 +40,14 @@ public final class LilyPadServer implements NetworkServer {
     @SneakyThrows
     public void sendNetCommand(NetCommand command) {
         JSONObject object = new JSONObject(); //Create a holder for this NetCommand
-        object.put(LilyPadKeys.NET_COMMAND_CLASS_NAME, command.getClass().getName()); //Put the class name
+        Class<? extends NetCommand> commandType = command.getClass(); //Command type
+        object.put(LilyPadKeys.NET_COMMAND_CLASS_NAME, commandType.getName()); //Put the class name
         //Find the objects and values
         JSONObject arguments = new JSONObject();
         //Gets all the fields
-        for (Field field : command.getClass().getDeclaredFields()) {
-            if (!field.isAnnotationPresent(NetCommandField.class)) continue;
+        boolean allFields = commandType.isAnnotationPresent(NetCommandField.class);
+        for (Field field : commandType.getDeclaredFields()) {
+            if (!allFields && !field.isAnnotationPresent(NetCommandField.class)) continue;
             //And adds them when they have a NetCommandField annotation.
             arguments.put(field.getName(), field.get(command));
         }
