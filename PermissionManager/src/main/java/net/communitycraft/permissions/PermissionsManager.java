@@ -1,4 +1,4 @@
-package com.urbismc.permissions;
+package net.communitycraft.permissions;
 
 import me.twister915.core.modular.ModularPlugin;
 import me.twister915.core.modular.ModuleMeta;
