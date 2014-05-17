@@ -1,6 +1,6 @@
 package net.communitycraft.punishments;
 
-import net.communitycraft.core.modular.ModularPlugin;
+import me.twister915.core.modular.ModularPlugin;
 
 public final class PunishmentModule extends ModularPlugin {
     @Override
