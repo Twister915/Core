@@ -28,7 +28,6 @@ public final class LilyPadNetworkManager implements NetworkManager {
     private static final String HEARTBEAT_PLAYERS_KEY = "PLAYERS";
     private static final Integer HEARTBEAT_ATTEMPTS_MAX = 5;
 
-
     private final List<NetworkServer> servers = new ArrayList<>();
     @Getter private final Connect connect;
 
@@ -36,7 +35,10 @@ public final class LilyPadNetworkManager implements NetworkManager {
         connect = Core.getInstance().getServer().getServicesManager().getRegistration(Connect.class).getProvider(); //Gets the Connect plugin as per LilyPad docs.
         if (connect == null) throw new IllegalStateException("We don't have a LilyPad Connect provider");
         connect.registerEvents(this); //Register events for the messages
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new NetworkUpdaterTask(this), 40L, 40L); //Setup the updater
+        LilyPadServer thisServer = new LilyPadServer(connect.getSettings().getUsername(), this);
+        servers.add(thisServer);
+        updateThisServer();
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new NetworkUpdaterTask(this), 200L, 200L); //Setup the updater
     }
 
     @Override
@@ -65,6 +67,11 @@ public final class LilyPadNetworkManager implements NetworkManager {
             if (server.getName().equals(name)) return server;
          }
         return null;
+    }
+
+    @Override
+    public NetworkServer getThisServer() {
+        return getServer(connect.getSettings().getUsername());
     }
 
     @SuppressWarnings("unchecked")
@@ -103,7 +110,36 @@ public final class LilyPadNetworkManager implements NetworkManager {
             break; //Break the loop since we've sent our request.
         }
 
+        //Lastly, update this server.
+        updateThisServer();
         if (!completedHeartbeat) throw new RuntimeException("Unable to send the request to do a heartbeat!");
+    }
+
+    @Override
+    public Integer getTotalOnlineCount() {
+        int total = 0;
+        for (NetworkServer server : servers) {
+            total += server.getOnlineCount();
+        }
+        return total;
+    }
+
+    @Override
+    public List<COfflinePlayer> getTotalPlayersOnline() {
+        List<COfflinePlayer> offlinePlayers = new ArrayList<>();
+        for (NetworkServer server : servers) {
+            offlinePlayers.addAll(server.getPlayers());
+        }
+        return offlinePlayers;
+    }
+
+    @Override
+    public Map<NetworkServer, Integer> getOnlinePlayersPerServer() {
+        Map<NetworkServer, Integer> serverIntegerMap = new HashMap<>();
+        for (NetworkServer server : servers) {
+            serverIntegerMap.put(server, server.getOnlineCount());
+        }
+        return serverIntegerMap;
     }
 
     private void receivedUpdate(String server, List<UUID> uuids) {
@@ -115,7 +151,6 @@ public final class LilyPadNetworkManager implements NetworkManager {
             shouldAdd = true;
         }
         //Update with the heartbeat information
-        s.setOnlineCount(uuids.size());
         s.setLastPing(new Date());
         //We need to find out which UUIDs we don't have that we need to fetch
         //Find all the UUIDs that are in the server's players
@@ -136,6 +171,15 @@ public final class LilyPadNetworkManager implements NetworkManager {
             players.add(Core.getOfflinePlayerByUUID(uuid)); //If we don't, we need to add them
         }
         if (shouldAdd) this.servers.add(s);//And if it is a new server, add it to our servers list
+    }
+
+    private void updateThisServer() {
+        LilyPadServer thisServer = (LilyPadServer) getServer(connect.getSettings().getUsername());
+        Collection<CPlayer> onlinePlayers = Core.getOnlinePlayers();
+        ArrayList<COfflinePlayer> cPlayers = new ArrayList<>();
+        cPlayers.addAll(onlinePlayers);
+        thisServer.setPlayers(cPlayers);
+        thisServer.setLastPing(new Date());
     }
 
     /* event handlers */

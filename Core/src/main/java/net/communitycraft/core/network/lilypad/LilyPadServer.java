@@ -16,12 +16,16 @@ public final class LilyPadServer implements NetworkServer {
     private final String name;
     private final LilyPadNetworkManager networkManager;
     private Date lastPing = new Date();
-    private Integer onlineCount = 0;
     private List<COfflinePlayer> players = new ArrayList<>();
 
     @Override
     @SneakyThrows
     public void sendPlayerToServer(CPlayer player) {
         networkManager.getConnect().request(new RedirectRequest(name, player.getName()));
+    }
+
+    @Override
+    public Integer getOnlineCount() {
+        return players.size();
     }
 }

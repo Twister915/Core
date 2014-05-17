@@ -133,6 +133,7 @@ public final class CMongoPlayerManager implements CPlayerManager {
             player.kickPlayer("Error while logging you in in the CPlayerManager " + e.getClass().getSimpleName() + " : " + e.getMessage() + "\nPlease contact a developer!");
             return;
         }
+        Core.getNetworkManager().updateHeartbeat(); //Send out a heartbeat.
         //Now, let's place this player in our online player map
         this.onlinePlayerMap.put(player.getName(), cMongoPlayer);
     }
