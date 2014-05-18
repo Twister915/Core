@@ -8,6 +8,7 @@ import net.communitycraft.core.player.*;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 
+import java.lang.ref.WeakReference;
 import java.util.*;
 
 import static net.communitycraft.core.player.mongo.MongoUtils.getListFor;
@@ -19,6 +20,8 @@ final class CMongoPermissionsManager implements CPermissionsManager {
     private final CPlayerManager playerManager;
     @Getter private CGroup defaultGroup;
     private Map<String, CMongoGroup> groups;
+    private final List<WeakReference<GroupReloadObserver>> groupReloadObservers = new LinkedList<>();
+
     public CMongoPermissionsManager(CMongoDatabase database, CPlayerManager playerManager) {
         this.database = database;
         this.playerManager = playerManager;
@@ -99,6 +102,19 @@ final class CMongoPermissionsManager implements CPermissionsManager {
         for (CGroup cGroup : getGroups()) {
             cGroup.reloadPermissions();
         }
+        Iterator<WeakReference<GroupReloadObserver>> iterator = groupReloadObservers.iterator();
+        while (iterator.hasNext()) {
+            GroupReloadObserver observer = iterator.next().get();
+            if (observer == null) {
+                iterator.remove();
+                continue;
+            }
+            observer.onReloadPermissions(this);
+        }
+    }
+
+    public void registerObserver(GroupReloadObserver observer) {
+        this.groupReloadObservers.add(new WeakReference<>(observer));
     }
 
     CMongoGroup getGroupFor(DBObject object) {

@@ -2,6 +2,14 @@ package net.communitycraft.core.player;
 
 import java.util.List;
 
+/**
+ * The {@link net.communitycraft.core.player.CPermissionsManager} is responsible for managing groups.
+ *
+ * When you create a group, if no others exist that group will be listed as the <b>default</b> group. Being marked as the
+ * default group will be added to a player always.
+ *
+ * The {@link #reloadPermissions()} method should be called to reload groups from the
+ */
 public interface CPermissionsManager {
     CGroup createNewGroup(String name);
     CGroup getGroup(String name);

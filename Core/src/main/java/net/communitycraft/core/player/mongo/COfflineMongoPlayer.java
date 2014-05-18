@@ -20,7 +20,7 @@ import java.util.*;
 import static net.communitycraft.core.RandomUtils.safeCast;
 import static net.communitycraft.core.player.mongo.MongoUtils.*;
 
-class COfflineMongoPlayer implements COfflinePlayer {
+class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     @Getter private List<String> knownUsernames;
     @Getter @Setter(AccessLevel.PROTECTED) private String lastKnownUsername;
     @Getter private UUID uniqueIdentifier;
@@ -43,6 +43,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
     private Map<String, Boolean> declaredPermissions;
     @Getter private Map<String, Boolean> allPermissions;
     private List<CGroup> groups;
+    private List<ObjectId> groupIds;
 
     //Called in all instances when we're loading a player from the database
     public COfflineMongoPlayer(UUID uniqueIdentifier, DBObject player, @NonNull CMongoPlayerManager manager) {
@@ -58,14 +59,16 @@ class COfflineMongoPlayer implements COfflinePlayer {
         }
         this.objectId = getValueFrom(player, MongoKey.ID_KEY, ObjectId.class);
         updateFromDBObject(player); //Updates the states of our variables using the database object.
+        manager.getPermissionsManager().registerObserver(this);
     }
 
-    //Used as the superconstructor when we're creating a CPlayer from a COfflinePlayer (when a player comes online)
+    //Used as the super-constructor when we're creating a CPlayer from a COfflinePlayer (when a player comes online)
     //This copies the state of all variables in the other COfflinePlayer object that is being passed.
-    protected COfflineMongoPlayer(COfflineMongoPlayer otherCPlayer, CMongoPlayerManager playerManager) {
-        this.playerManager = playerManager;
+    protected COfflineMongoPlayer(COfflineMongoPlayer otherCPlayer, CMongoPlayerManager manager) {
+        this.playerManager = manager;
         this.objectId = otherCPlayer.getObjectId();
         updateFromDBObject(otherCPlayer.getObjectForPlayer());
+        manager.getPermissionsManager().registerObserver(this);
     }
 
     final DBObject getObjectForPlayer() {
@@ -197,15 +200,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
         this.tablistColor = permissibileDataFor.getTablistColor();
         this.declaredPermissions = permissibileDataFor.getDeclaredPermissions();
         if (this.declaredPermissions == null) this.declaredPermissions = new HashMap<>();
-        this.groups = new ArrayList<>();
-        List<ObjectId> groupIds = getListFor(getValueFrom(player, MongoKey.USER_GROUPS_KEY, BasicDBList.class), ObjectId.class);
-        if (groupIds != null) {
-            for (ObjectId groupId : groupIds) {
-                CGroup groupByObjectId = playerManager.getPermissionsManager().getGroupByObjectId(groupId);
-                if (groupByObjectId == null) continue;
-                this.groups.add(groupByObjectId);
-            }
-        }
+        groupIds = getListFor(getValueFrom(player, MongoKey.USER_GROUPS_KEY, BasicDBList.class), ObjectId.class);
         reloadPermissions0();
     }
 
@@ -239,8 +234,19 @@ class COfflineMongoPlayer implements COfflinePlayer {
 
     //Reloads the allPermissions map based on declaredPermissions and inheritance
     private synchronized void reloadPermissions0() {
+        //Why do we need this? When the permissions manager reloads, it creates new instances to represent the same groups, so we need to reload our group instances.
+        this.groups = new ArrayList<>();
+        CMongoPermissionsManager permissionsManager = playerManager.getPermissionsManager();
+        if (groupIds != null) {
+            for (ObjectId groupId : groupIds) {
+                CGroup groupByObjectId = permissionsManager.getGroupByObjectId(groupId);
+                if (groupByObjectId == null) continue;
+                this.groups.add(groupByObjectId);
+            }
+        }
+        //Then we need to reload our permissions map.
         allPermissions = new HashMap<>(declaredPermissions);
-        CGroup defaultGroup = playerManager.getPermissionsManager().getDefaultGroup();
+        CGroup defaultGroup = permissionsManager.getDefaultGroup();
         if (groups.size() == 0 && defaultGroup != null) processGroupInternal(defaultGroup);
         for (CGroup group : groups) {
             processGroupInternal(group);
@@ -254,5 +260,10 @@ class COfflineMongoPlayer implements COfflinePlayer {
             String permNode = permission.getKey();
             if (!allPermissions.containsKey(permNode) || !allPermissions.get(permNode)) allPermissions.put(permNode, permission.getValue());
         }
+    }
+
+    @Override
+    public void onReloadPermissions(CMongoPermissionsManager manager) {
+        reloadPermissions0();
     }
 }
