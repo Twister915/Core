@@ -13,6 +13,6 @@ final class PermissionsReloadNetCommandHandler implements NetCommandHandler<Perm
     public void handleNetCommand(NetworkServer sender, PermissionsReloadNetCommand netCommand) {
         if (sender.getName().equals(ourName)) return;
         Core.logInfo("Reloading permissions as per the request of " + sender.getName());
-        Core.getPlayerManager().getPermissionsManager().reloadPermissions();
+        Core.getPermissionsManager().reloadPermissions();
     }
 }

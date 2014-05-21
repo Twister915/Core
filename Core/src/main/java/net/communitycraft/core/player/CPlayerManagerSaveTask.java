@@ -12,7 +12,7 @@ public final class CPlayerManagerSaveTask implements Runnable {
 
     @Override
     public void run() {
-        manager.getPermissionsManager().reloadPermissions();
+        Core.getPermissionsManager().reloadPermissions();
         List<CPlayer> failedToSave = new ArrayList<>();
         int savedPlayers = 0;
         synchronized (manager.getOnlinePlayers()) {

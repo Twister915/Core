@@ -9,7 +9,7 @@ import net.communitycraft.permissions.commands.general.AbstractPlayerSubCommand;
 
 import java.util.List;
 
-public class SetGroupCommand extends AbstractPlayerSubCommand {
+public final class SetGroupCommand extends AbstractPlayerSubCommand {
     protected SetGroupCommand() {
         super("setgroup");
     }

@@ -4,8 +4,7 @@ import net.communitycraft.core.modular.command.CommandException;
 import net.communitycraft.core.player.COfflinePlayer;
 import net.communitycraft.permissions.commands.general.AbstractPlayerSubCommand;
 
-//${user}'s code heheu
-public class DelGroupCommand extends AbstractPlayerSubCommand {
+public final class DelGroupCommand extends AbstractPlayerSubCommand {
     protected DelGroupCommand() {
         super("delgroup");
     }

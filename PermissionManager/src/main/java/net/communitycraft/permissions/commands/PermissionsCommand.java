@@ -20,6 +20,7 @@ public final class PermissionsCommand extends ModuleCommand {
      *      - tabcolor [name] [tabcolor]
      *  - group
      *      - set [name] [permission]
+     *      - has [name] [permission]
      *      - unset [name] [permission]
      *      - show [name]
      *      - prefix [name] [prefix]

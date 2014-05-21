@@ -169,7 +169,10 @@ public final class LilyPadNetworkManager implements NetworkManager {
     public <T extends NetCommand> List<NetCommandHandler<T>> getNetCommandHandlersFor(Class<T> type) {
         //Have to do this funky conversion for the generic agreement.
         List<NetCommandHandler<T>> handlers = new ArrayList<>();
-        handlers.addAll(this.netCommandHandlers.get(type));
+        for (NetCommandHandler netCommandHandler : this.netCommandHandlers.get(type)) {
+            //noinspection unchecked
+            handlers.add(netCommandHandler);
+        }
         return handlers;
     }
 
