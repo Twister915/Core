@@ -9,7 +9,7 @@ import net.communitycraft.core.player.COfflinePlayer;
 import java.util.Date;
 
 @Getter @Setter @EqualsAndHashCode(callSuper = false)
-public  final class PermissionChange extends Model {
+public final class PermissionChange extends Model {
     private COfflinePlayer executor;
     private Date dateExecuted;
     private String changeMade;
