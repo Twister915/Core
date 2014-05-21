@@ -1,5 +1,7 @@
 package net.communitycraft.core.player;
 
+import net.communitycraft.core.player.mongo.GroupReloadObserver;
+
 import java.util.List;
 
 /**
@@ -15,8 +17,9 @@ public interface CPermissionsManager {
     CGroup getGroup(String name);
     CGroup getDefaultGroup();
     void setDefaultGroup(CGroup group);
-    void deleteGroup(CGroup group);
+    void deleteGroup(CGroup group) throws DatabaseConnectException;
     void saveGroup(CGroup group);
     List<CGroup> getGroups();
     void reloadPermissions();
+    void registerObserver(GroupReloadObserver observer);
 }

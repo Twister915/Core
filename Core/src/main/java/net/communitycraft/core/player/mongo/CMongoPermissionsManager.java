@@ -2,7 +2,6 @@ package net.communitycraft.core.player.mongo;
 
 import com.mongodb.*;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import net.communitycraft.core.Core;
 import net.communitycraft.core.player.*;
 import org.bson.types.ObjectId;
@@ -11,13 +10,14 @@ import org.bukkit.ChatColor;
 import java.lang.ref.WeakReference;
 import java.util.*;
 
-import static net.communitycraft.core.player.mongo.MongoUtils.getListFor;
-import static net.communitycraft.core.player.mongo.MongoUtils.getPermissibileDataFor;
-import static net.communitycraft.core.player.mongo.MongoUtils.getValueFrom;
+import static net.communitycraft.core.player.mongo.MongoUtils.*;
 
-final class CMongoPermissionsManager implements CPermissionsManager {
+public final class CMongoPermissionsManager implements CPermissionsManager {
+    //Hold the fields used as "class parameters" defining behavior.
     private final CMongoDatabase database;
     private final CPlayerManager playerManager;
+
+    //Holds tracked values for the manager
     @Getter private CGroup defaultGroup;
     private Map<String, CMongoGroup> groups;
     private final List<WeakReference<GroupReloadObserver>> groupReloadObservers = new LinkedList<>();
@@ -29,12 +29,14 @@ final class CMongoPermissionsManager implements CPermissionsManager {
     }
 
     @Override
-    public CGroup createNewGroup(String name) {
-        if (getGroup(name) != null) throw new IllegalStateException("Group already exists!");
-        @SuppressWarnings("unchecked") CMongoGroup group = new CMongoGroup(name, Collections.EMPTY_MAP, Collections.EMPTY_LIST, ChatColor.WHITE, ChatColor.WHITE, name);
-        saveGroup(group);
-        if (this.getDefaultGroup() == null) setDefaultGroup(group);
-        return group;
+    public CGroup createNewGroup(String name) { //How to create a group:
+        if (getGroup(name) != null) throw new IllegalStateException("Group already exists!"); //Check if we already have this group name
+        @SuppressWarnings("unchecked") CMongoGroup group =
+                new CMongoGroup(name, Collections.EMPTY_MAP, Collections.EMPTY_LIST, ChatColor.WHITE, ChatColor.WHITE, name); //Setup some default values
+        saveGroup(group); //Save the group
+        if (this.getDefaultGroup() == null) setDefaultGroup(group); //Set this as the default group
+        reloadPermissions(); //Reload our permissions
+        return group; //And return it
     }
 
     @Override
@@ -50,8 +52,7 @@ final class CMongoPermissionsManager implements CPermissionsManager {
     }
 
     @Override
-    @SneakyThrows
-    public void deleteGroup(CGroup group) {
+    public void deleteGroup(CGroup group) throws DatabaseConnectException {
         DBObject query = new BasicDBObjectBuilder().add(MongoKey.ID_KEY.toString(), ((CMongoGroup) group).getObjectId()).get();
         DBCollection groupsCollection = database.getCollection(MongoKey.GROUPS_COLLECTION.toString());
         DBObject andRemove = groupsCollection.findAndRemove(query);
@@ -125,9 +126,11 @@ final class CMongoPermissionsManager implements CPermissionsManager {
             parents.add(getGroupByObjectId(parentId));
         }
         ObjectId objectId = getValueFrom(object, MongoKey.ID_KEY, ObjectId.class);
+        Integer priority = getValueFrom(object, MongoKey.GROUPS_PRIORITY_KEY, Integer.class);
         CPermissible perm = getPermissibileDataFor(object);
         CMongoGroup cMongoGroup = new CMongoGroup(name, perm.getDeclaredPermissions(), parents, perm.getTablistColor(), perm.getChatColor(), perm.getChatPrefix());
         cMongoGroup.setObjectId(objectId);
+        cMongoGroup.setPriority(priority);
         return cMongoGroup;
     }
 

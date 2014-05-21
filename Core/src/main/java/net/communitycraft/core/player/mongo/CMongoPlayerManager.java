@@ -17,14 +17,14 @@ import static net.communitycraft.core.player.mongo.MongoUtils.getValueFrom;
 
 public final class CMongoPlayerManager implements CPlayerManager {
     @Getter private CMongoDatabase database;
-    @Getter private CMongoPermissionsManager permissionsManager;
+//    @Getter private CMongoPermissionsManager permissionsManager;
 
     private Map<String, CPlayer> onlinePlayerMap = new HashMap<>();
 
     public CMongoPlayerManager(CMongoDatabase database) throws DatabaseConnectException {
         this.database = database;
         database.connect();
-        this.permissionsManager = new CMongoPermissionsManager(database, this);
+//        this.permissionsManager = new CMongoPermissionsManager(database, this);
         Core.getInstance().registerListener(new CPlayerManagerListener(this));
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new CPlayerManagerSaveTask(this), 1200, 1200);
         DBCollection users = database.getCollection(MongoKey.USERS_COLLETION.toString());
@@ -148,6 +148,7 @@ public final class CMongoPlayerManager implements CPlayerManager {
         } catch (DatabaseConnectException | MongoException e) {
             Core.getInstance().getLogger().severe("Could not save player into the database " + e.getMessage() + " - " + cPlayerForPlayer.getName());
         }
+        Core.getNetworkManager().updateHeartbeat();
         this.onlinePlayerMap.remove(player.getName());
     }
 

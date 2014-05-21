@@ -33,6 +33,7 @@ final class CMongoGroup implements CGroup {
     @NonNull private ChatColor chatColor;
     @NonNull private String chatPrefix;
     @Setter(AccessLevel.NONE) private Map<String, Boolean> allPermissions;
+    private Integer priority;
 
     @Override
     public void setPermission(String permission, Boolean value) {
@@ -67,6 +68,7 @@ final class CMongoGroup implements CGroup {
             parentList.add(parent1.getObjectId());
         }
         builder.add(MongoKey.GROUPS_PARENTS_KEY.toString(), parentList);
+        builder.add(MongoKey.GROUPS_PRIORITY_KEY.toString(), priority);
         return builder.get();
     }
 
@@ -93,6 +95,10 @@ final class CMongoGroup implements CGroup {
                     allPermissions.put(stringBooleanEntry.getKey(), stringBooleanEntry.getValue()); //Put it into ours
                 }
             }
+        }
+        //Get the online players, and force a reload.
+        for (CPlayer cPlayer : getOnlineDirectMembers()) {
+            cPlayer.reloadPermissions(); //This will ensure that all players with permissions from this group will get permissions.
         }
     }
 

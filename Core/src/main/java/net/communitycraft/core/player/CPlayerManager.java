@@ -98,7 +98,7 @@ public interface CPlayerManager extends Iterable<CPlayer> {
     void playerLoggedIn(Player player, InetAddress address);
 
     /**
-     * Called strcitly by a listener, internal method that you should <b>NEVER</b> call under normal circumstances.
+     * Called strictly by a listener, internal method that you should <b>NEVER</b> call under normal circumstances.
      * @param player The {@link org.bukkit.entity.Player} object that represents the player who is logging out.
      */
     void playerLoggedOut(Player player);
@@ -108,12 +108,6 @@ public interface CPlayerManager extends Iterable<CPlayer> {
      * @return The database connection.
      */
     CDatabase getDatabase();
-
-    /**
-     * Gets the {@link net.communitycraft.core.player.CPermissionsManager}.
-     * @return The {@link net.communitycraft.core.player.CPermissionsManager}.
-     */
-    CPermissionsManager getPermissionsManager();
 
     /**
      * <b>Should only be called during disable, internal method!</b>

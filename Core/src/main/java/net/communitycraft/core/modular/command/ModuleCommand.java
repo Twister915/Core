@@ -61,26 +61,11 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
         //Add a provided help command
         final Map<String, ModuleCommand> subCommandsLV = this.subCommands;
         this.subCommands.put("help", new ModuleCommand("help") {
-
             @Override
-            protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-                sendHelp(player.getBukkitPlayer());
-            }
-
-            @Override
-            protected void handleCommand(ConsoleCommandSender commandSender, String[] args) throws CommandException {
-                sendHelp(commandSender);
-            }
-
-            @Override
-            protected void handleCommand(BlockCommandSender commandSender, String[] args) throws CommandException {
-                sendHelp(commandSender);
-            }
-
-            private void sendHelp(CommandSender sender) {
+            public void handleCommandUnspecific(CommandSender sender, String[] args) {
                 StringBuilder builder = new StringBuilder();
                 for (Map.Entry<String, ModuleCommand> stringModuleCommandEntry : subCommandsLV.entrySet()) {
-                     builder.append(stringModuleCommandEntry.getKey()).append("|");
+                    builder.append(stringModuleCommandEntry.getKey()).append("|");
                 }
                 String s = builder.toString();
                 //Looks like this /name - [subcommand1|subcommand2|]
@@ -112,20 +97,22 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
             //That way, we can use this feature of sub commands without actually requiring it.
             if (subCommand != null) {
                 String[] choppedArgs = Arrays.copyOfRange(args, 1, args.length - 1);
+                preSubCommandDispatch(sender, choppedArgs, subCommand); //Notify the subclass that we are using a sub-command in case any staging needs to take place.
                 subCommand.onCommand(sender, command, s, choppedArgs);
                 return true;
             }
 
             //Now that we've made it past the sub commands, STEP TWO: actually handle the command and it's args.
-            if (sender instanceof Player) {
-                CPlayer player = Core.getPlayerManager().getCPlayerForPlayer((Player) sender);
-                handleCommand(player, args);
-            }
-            if (sender instanceof ConsoleCommandSender) {
-                handleCommand((ConsoleCommandSender)sender, args);
-            }
-            if (sender instanceof BlockCommandSender) {
-                handleCommand((BlockCommandSender)sender, args);
+            try {
+                if (sender instanceof Player) {
+                    CPlayer player = Core.getPlayerManager().getCPlayerForPlayer((Player) sender);
+                    assert player != null;
+                    handleCommand(player, args);
+                }
+                else if (sender instanceof ConsoleCommandSender) handleCommand((ConsoleCommandSender)sender, args);
+                else if (sender instanceof BlockCommandSender)  handleCommand((BlockCommandSender)sender, args);
+            } catch (EmptyHandlerException e) {
+                handleCommandUnspecific(sender, args); //We don't catch this because we would catch it and then immediately re-throw it so it could be caught by the below catch block (which handles the exception).
             }
         } //STEP THREE: Check for any command exceptions (intended) and any exceptions thrown in general and dispatch a call for an unhandled error to the handler.
         catch (CommandException ex) {
@@ -165,9 +152,24 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
         return handleTabComplete(sender, command, alias, args);
     }
 
+    /**
+     * This method <b>should</b> be overridden by any sub-classes as the functionality it provides is limited.
+     *
+     * The goal of this method should always be conveying an error message to a user in a friendly manner. The {@link net.communitycraft.core.modular.command.CommandException} can be extended by your {@link net.communitycraft.core.modular.ModularPlugin} to provide extended functionality.
+     *
+     * The {@code args} are the same args that would be passed to your handlers. Meaning, if this is a sub-command they will be cut to fit that sub-command, and if this is a root level command they will be all of the arguments.
+     *
+     * @param ex The exception used to hold the error message and any other details about the failure. If there was an exception during the handling of the command this will be an {@link net.communitycraft.core.modular.command.UnhandledCommandExceptionException}.
+     * @param args The arguments passed to the command.
+     * @param sender The sender of the command, cannot be directly cast to {@link net.communitycraft.core.player.CPlayer}.
+     */
+    @SuppressWarnings("UnusedParameters")
     protected void handleCommandException(CommandException ex, String[] args, CommandSender sender) {
         sender.sendMessage(ChatColor.RED + ex.getClass().getSimpleName() + ": " + ex.getMessage() + "!");
     }
+
+    @SuppressWarnings("UnusedParameters")
+    protected void preSubCommandDispatch(CommandSender sender, String[] args, ModuleCommand subCommand) {}
 
     public final ModuleCommand getSubCommandFor(String s) {
         //If we have an exact match, case and all, don't waste the CPU cycles on the lower for loop.
@@ -194,12 +196,17 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
         return commands;
     }
 
-    //Default behavior is to do nothing, these methods can be overrided by the sub-class.
-    protected void handleCommand(CPlayer player, String[] args) throws CommandException {}
-    protected void handleCommand(ConsoleCommandSender commandSender, String[] args) throws CommandException {}
-    protected void handleCommand(BlockCommandSender commandSender, String[] args) throws CommandException {}
+    //Default behavior is to do nothing, these methods can be overridden by the sub-class.
+    protected void handleCommand(CPlayer player, String[] args) throws CommandException {throw new EmptyHandlerException();}
+    protected void handleCommand(ConsoleCommandSender commandSender, String[] args) throws CommandException {throw new EmptyHandlerException();}
+    protected void handleCommand(BlockCommandSender commandSender, String[] args) throws CommandException {throw new EmptyHandlerException();}
+
+    //Handles for all types in the event that no specific handler is overridden above.
+    @SuppressWarnings("UnusedParameters")
+    protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {throw new EmptyHandlerException();}
 
     //Default behavior if we delegate the call to the sub-class
+    @SuppressWarnings("UnusedParameters")
     protected List<String> handleTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> ss = new ArrayList<>(); //Create a list to put possible names
         String arg = args[args.length - 1]; //Get the last argument

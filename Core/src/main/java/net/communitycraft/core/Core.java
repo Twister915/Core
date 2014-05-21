@@ -2,9 +2,12 @@ package net.communitycraft.core;
 
 import lombok.Getter;
 import net.communitycraft.core.config.YAMLConfigurationFile;
+import net.communitycraft.core.model.ModelManager;
 import net.communitycraft.core.modular.ModularPlugin;
+import net.communitycraft.core.netfiles.NetFileManager;
 import net.communitycraft.core.network.NetworkManager;
 import net.communitycraft.core.player.COfflinePlayer;
+import net.communitycraft.core.player.CPermissionsManager;
 import net.communitycraft.core.player.CPlayer;
 import net.communitycraft.core.player.CPlayerManager;
 import org.bukkit.Bukkit;
@@ -27,11 +30,16 @@ public class Core extends JavaPlugin {
     @Getter private static Core instance;
     @Getter private static Random random;
 
-    private CPlayerManager playerManager;
-    @Getter private NetworkManager networkManager;
-    @Getter private YAMLConfigurationFile databaseConfiguration;
     @Getter private List<ModularPlugin> modules = new ArrayList<>();
     @Getter protected Provider provider;
+
+    private CPlayerManager playerManager;
+    private CPermissionsManager permissionsManager;
+    private NetworkManager networkManager;
+    private NetFileManager netFileManager;
+    private ModelManager<?> modelManager;
+
+    @Getter private YAMLConfigurationFile databaseConfiguration;
 
     @Override
     public final void onEnable() {
@@ -59,6 +67,14 @@ public class Core extends JavaPlugin {
 
             //Setup network manager through the provider as well
             this.networkManager = provider.getNewNetworkManager(this);
+
+            //noinspection unchecked
+            this.permissionsManager = provider.getNewPermissionsManager(this, this.playerManager.getDatabase(), this.playerManager);
+
+            this.netFileManager = provider.getNewNetFileManager(this);
+
+            //noinspection unchecked
+            this.modelManager = provider.getNewModelManager(this.playerManager.getDatabase());
         } catch (Throwable t) {
             t.printStackTrace();
             Bukkit.getPluginManager().disablePlugin(this);
@@ -90,9 +106,6 @@ public class Core extends JavaPlugin {
 
     /* Public singleton methods!*/
 
-    public static CPlayerManager getPlayerManager() {
-        return instance.playerManager;
-    }
 
     public static <T extends ModularPlugin> T getModule(Class<T> moduleClass) {
         return getInstance().getModuleProvider(moduleClass);
@@ -114,7 +127,19 @@ public class Core extends JavaPlugin {
         instance.getLogger().info(s);
     }
 
+    public static CPlayerManager getPlayerManager() {
+        return instance.playerManager;
+    }
+
     public static NetworkManager getNetworkManager() {
         return instance.networkManager;
     }
+
+    public static CPermissionsManager getPermissionsManager() {
+        return instance.permissionsManager;
+    }
+
+    public static NetFileManager getNetFileManager() {return instance.netFileManager;}
+
+    public static ModelManager<?> getModelManager() {return instance.modelManager;}
 }

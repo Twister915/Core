@@ -11,7 +11,9 @@ import net.communitycraft.core.Core;
 import net.communitycraft.core.network.*;
 import net.communitycraft.core.player.COfflinePlayer;
 import net.communitycraft.core.player.CPlayer;
+import net.communitycraft.core.player.CPlayerManagerSaveTask;
 import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitTask;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -19,6 +21,7 @@ import org.json.simple.JSONValue;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 public final class LilyPadNetworkManager implements NetworkManager {
@@ -32,6 +35,8 @@ public final class LilyPadNetworkManager implements NetworkManager {
     @Getter private final Connect connect;
     private final Map<Class, List<NetCommandHandler>> netCommandHandlers = new HashMap<>();
 
+    private BukkitTask heartbeatScheduled;
+
     public LilyPadNetworkManager() {
         connect = Core.getInstance().getServer().getServicesManager().getRegistration(Connect.class).getProvider(); //Gets the Connect plugin as per LilyPad docs.
         if (connect == null) throw new IllegalStateException("We don't have a LilyPad Connect provider");
@@ -39,7 +44,7 @@ public final class LilyPadNetworkManager implements NetworkManager {
         LilyPadServer thisServer = new LilyPadServer(connect.getSettings().getUsername(), this);
         servers.add(thisServer);
         updateThisServer();
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new NetworkUpdaterTask(this), 200L, 200L); //Setup the updater
+
     }
 
     @Override
@@ -114,6 +119,8 @@ public final class LilyPadNetworkManager implements NetworkManager {
         //Lastly, update this server.
         updateThisServer();
         if (!completedHeartbeat) throw new RuntimeException("Unable to send the request to do a heartbeat!");
+        //Try again in four seconds.
+        resetHeartbeat(4L, TimeUnit.SECONDS);
     }
 
     @Override
@@ -166,6 +173,44 @@ public final class LilyPadNetworkManager implements NetworkManager {
         return handlers;
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    @SneakyThrows
+    public void sendMassNetCommand(NetCommand command) {
+        //Create a new message request, destination: Empty_List (aka all servers) on the net command channel with the text from the encodeNetCommand method.
+        connect.request(new MessageRequest(Collections.EMPTY_LIST, NET_COMMAND_CHANNEL, encodeNetCommand(command).toJSONString()));
+    }
+
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
+    static JSONObject encodeNetCommand(NetCommand command) {
+        JSONObject object = new JSONObject(); //Create a holder for this NetCommand
+        Class<? extends NetCommand> commandType = command.getClass(); //Command type
+        object.put(LilyPadKeys.NET_COMMAND_CLASS_NAME, commandType.getName()); //Put the class name
+        //Find the objects and values
+        JSONObject arguments = new JSONObject();
+        boolean allFields = commandType.isAnnotationPresent(NetCommandField.class); //Denotes if we should assume all fields have NetCommandField
+        //Gets all the fields
+        for (Field field : commandType.getDeclaredFields()) {
+            boolean annotationPresent = field.isAnnotationPresent(NetCommandField.class);
+            /*
+             * this is short for short for (annotationPresent && allFields) || (!annotationPresent && !allFields)
+             *
+             * If the annotation is present on a field and on the type (annotationPresent && allFields) then we ignore the field
+             * If the annotation is present on neither the field or type (!annotationPresent && !allFields) then we also ignore the field
+             *
+             * In any case where one of these did not agree, true/false or false/true true && false || true && false would be false, so it only works when false/false or true/true
+             * True always equals true and false always equals false, thus this statement works.
+             */
+            if (allFields == annotationPresent) continue;
+            //And adds them when they have a NetCommandField annotation.
+            arguments.put(field.getName(), field.get(command));
+        }
+        object.put(LilyPadKeys.NET_COMMAND_ARGUMENTS, arguments);
+        object.put(LilyPadKeys.NET_COMMAND_TIME, new Date());
+        return object;
+    }
+
     private void receivedUpdate(String server, List<UUID> uuids) {
         LilyPadServer s;
         boolean shouldAdd = false; //Hold a marker if this is a new server...
@@ -209,8 +254,13 @@ public final class LilyPadNetworkManager implements NetworkManager {
     /* event handlers */
     @EventListener
     public synchronized void onMessage(MessageEvent event) {
-        if (event.getChannel().equals(NETWORK_MANAGER_CHANNEL)) handleHeartbeatMessageEvent(event); //Handle a heartbeat
-        if (event.getChannel().equals(NET_COMMAND_CHANNEL)) handleNetCommandMessageEvent(event); //Handle a NetCommand
+        if (event.getChannel().equals(NETWORK_MANAGER_CHANNEL)) {
+            handleHeartbeatMessageEvent(event); //Handle a heartbeat
+            return;
+        }
+        if (event.getChannel().equals(NET_COMMAND_CHANNEL)) {
+            handleNetCommandMessageEvent(event); //Handle a NetCommand
+        }
     }
 
     @SneakyThrows
@@ -260,5 +310,16 @@ public final class LilyPadNetworkManager implements NetworkManager {
         for (NetCommandHandler netCommandHandler : netCommandHandlers.get(netCommandType)) {
             netCommandHandler.handleNetCommand(sender, netCommand1); //"Yo dude... we got a NetCommand being sent by sender, check out netCommand1 param."
         }
+    }
+
+    private void scheduleHeartbeat(Long time, TimeUnit unit) {
+        long ticks = unit.convert(time, TimeUnit.SECONDS) * 20;
+        this.heartbeatScheduled = Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new CPlayerManagerSaveTask(Core.getPlayerManager()), ticks, ticks);
+    }
+
+    //This will cancel any scheduled heartbeat and reschedule it for this time. Useful for doing a heartbeat at the maximum time and sending one out when people join/leave
+    private void resetHeartbeat(Long time, TimeUnit unit) {
+        this.heartbeatScheduled.cancel();
+        scheduleHeartbeat(time, unit);
     }
 }

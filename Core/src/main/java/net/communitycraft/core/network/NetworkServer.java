@@ -43,8 +43,8 @@ public interface NetworkServer {
     Date getLastPing();
 
     /**
-     *
-     * @param command
+     * Sends a {@link net.communitycraft.core.network.NetCommand} to any listeners on the target {@link net.communitycraft.core.network.NetworkServer}.
+     * @param command The {@link net.communitycraft.core.network.NetCommand} for the target server to receive.
      */
     void sendNetCommand(NetCommand command);
 }

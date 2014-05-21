@@ -48,7 +48,7 @@ public final class CMongoDatabase implements CDatabase {
         this.client = null;
     }
 
-    DBCollection getCollection(String name) {
+    public DBCollection getCollection(String name) {
         return mongoDatabase.getCollection((collectionPrefix == null ? "" : collectionPrefix) + name);
     }
 }

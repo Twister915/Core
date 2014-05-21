@@ -5,7 +5,7 @@ import org.bukkit.ChatColor;
 import java.util.Map;
 
 /**
- *
+ * Interface for
  */
 public interface CPermissible {
     /**

@@ -32,7 +32,7 @@ package net.communitycraft.core.network;
  * <pre>
  *     public class MyNetCommandHandler implements {@link net.communitycraft.core.network.NetCommandHandler}<MyNetCommand> {
  *         public void {@link net.communitycraft.core.network.NetCommandHandler#handleNetCommand(NetworkServer, NetCommand)} {
- *             System.out.printLn("The status is " + comamnd.getStatus());
+ *             System.out.printLn("The status is " + command.getStatus());
  *         }
  *     }
  * </pre>

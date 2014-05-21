@@ -1,6 +1,6 @@
 package net.communitycraft.core.network.lilypad;
 
-public enum LilyPadKeys {
+enum LilyPadKeys {
     NET_COMMAND_CLASS_NAME("class"),
     NET_COMMAND_ARGUMENTS("args"),
     NET_COMMAND_TIME("time_sent");

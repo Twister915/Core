@@ -43,6 +43,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     private Map<String, Boolean> declaredPermissions;
     @Getter private Map<String, Boolean> allPermissions;
     private List<CGroup> groups;
+    @Getter private CGroup primaryGroup;
     private List<ObjectId> groupIds;
 
     //Called in all instances when we're loading a player from the database
@@ -59,7 +60,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
         }
         this.objectId = getValueFrom(player, MongoKey.ID_KEY, ObjectId.class);
         updateFromDBObject(player); //Updates the states of our variables using the database object.
-        manager.getPermissionsManager().registerObserver(this);
+        Core.getPermissionsManager().registerObserver(this);
     }
 
     //Used as the super-constructor when we're creating a CPlayer from a COfflinePlayer (when a player comes online)
@@ -68,7 +69,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
         this.playerManager = manager;
         this.objectId = otherCPlayer.getObjectId();
         updateFromDBObject(otherCPlayer.getObjectForPlayer());
-        manager.getPermissionsManager().registerObserver(this);
+        Core.getPermissionsManager().registerObserver(this);
     }
 
     final DBObject getObjectForPlayer() {
@@ -194,11 +195,11 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
                 Core.getInstance().getLogger().severe("Could not load asset for player " + this.lastKnownUsername + " - " + fqcn + " - " + e.getMessage());
             }
         }
-        CPermissible permissibileDataFor = getPermissibileDataFor(player);
-        this.chatColor = permissibileDataFor.getChatColor();
-        this.chatPrefix = permissibileDataFor.getChatPrefix();
-        this.tablistColor = permissibileDataFor.getTablistColor();
-        this.declaredPermissions = permissibileDataFor.getDeclaredPermissions();
+        CPermissible permissibleDataFor = getPermissibileDataFor(player);
+        this.chatColor = permissibleDataFor.getChatColor();
+        this.chatPrefix = permissibleDataFor.getChatPrefix();
+        this.tablistColor = permissibleDataFor.getTablistColor();
+        this.declaredPermissions = permissibleDataFor.getDeclaredPermissions();
         if (this.declaredPermissions == null) this.declaredPermissions = new HashMap<>();
         groupIds = getListFor(getValueFrom(player, MongoKey.USER_GROUPS_KEY, BasicDBList.class), ObjectId.class);
         reloadPermissions0();
@@ -226,7 +227,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
         return new HashMap<>(declaredPermissions);
     }
 
-    //This is overrided in the subclass, and as such we do not want to call this method directly from within our class. That would trigger the subclass in times we do not want to.
+    //This is overridden in the subclass, and as such we do not want to call this method directly from within our class. That would trigger the subclass in times we do not want to.
     @Override
     public synchronized void reloadPermissions() {
         reloadPermissions0();
@@ -236,7 +237,10 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     private synchronized void reloadPermissions0() {
         //Why do we need this? When the permissions manager reloads, it creates new instances to represent the same groups, so we need to reload our group instances.
         this.groups = new ArrayList<>();
-        CMongoPermissionsManager permissionsManager = playerManager.getPermissionsManager();
+        this.primaryGroup = null;
+        CPermissionsManager permissionsManager1 = Core.getPermissionsManager();
+        assert permissionsManager1 instanceof CMongoPermissionsManager;
+        CMongoPermissionsManager permissionsManager = (CMongoPermissionsManager) permissionsManager1;
         if (groupIds != null) {
             for (ObjectId groupId : groupIds) {
                 CGroup groupByObjectId = permissionsManager.getGroupByObjectId(groupId);
@@ -251,6 +255,15 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
         for (CGroup group : groups) {
             processGroupInternal(group);
         }
+
+        //And now we get our primary group
+        for (CGroup group : this.groups) {
+            if (this.primaryGroup == null) {
+                this.primaryGroup = group;
+                continue;
+            }
+            if (this.primaryGroup.getPriority() < group.getPriority()) this.primaryGroup = group;
+        }
     }
 
     //Process a group into our allPermissions map, use care when calling as this can mess things up really bad.
@@ -264,6 +277,6 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
 
     @Override
     public void onReloadPermissions(CMongoPermissionsManager manager) {
-        reloadPermissions0();
+        reloadPermissions(); //Reload and re-attach permissions if needed.
     }
 }

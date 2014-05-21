@@ -32,6 +32,6 @@ public final class CPlayerManagerListener implements Listener {
     //no docs
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerKick(PlayerKickEvent event) {
-        playerManager.playerLoggedOut(event.getPlayer());
+        if (playerManager.getCPlayerForPlayer(event.getPlayer()) != null) playerManager.playerLoggedOut(event.getPlayer());
     }
 }

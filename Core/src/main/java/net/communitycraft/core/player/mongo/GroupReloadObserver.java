@@ -1,5 +1,5 @@
 package net.communitycraft.core.player.mongo;
 
-interface GroupReloadObserver {
+public interface GroupReloadObserver {
     void onReloadPermissions(CMongoPermissionsManager manager);
 }

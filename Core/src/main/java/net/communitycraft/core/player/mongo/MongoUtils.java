@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-final class MongoUtils {
-    static BasicDBObjectBuilder getObjectForPermissible(CPermissible permissible) {
+public final class MongoUtils {
+    public static BasicDBObjectBuilder getObjectForPermissible(CPermissible permissible) {
         BasicDBObjectBuilder builder = new BasicDBObjectBuilder();
         if (permissible.getTablistColor() != null) builder.add(MongoKey.GROUPS_TABLIST_COLOR_KEY.toString(), permissible.getTablistColor().name());
         if (permissible.getChatColor() != null) builder.add(MongoKey.GROUPS_CHAT_COLOR_KEY.toString(), permissible.getChatColor().name());
@@ -23,14 +23,14 @@ final class MongoUtils {
         return builder;
     }
 
-    static void combineObjectBuilders(BasicDBObjectBuilder h, BasicDBObjectBuilder k) {
+    public static void combineObjectBuilders(BasicDBObjectBuilder h, BasicDBObjectBuilder k) {
         DBObject kObject = k.get();
         for (String s : kObject.keySet()) {
             h.add(s, kObject.get(s));
         }
     }
 
-    static CPermissible getPermissibileDataFor(DBObject object) {
+    public static CPermissible getPermissibileDataFor(DBObject object) {
         final Map<String, Boolean> declaredPermissions = getMapFor(getValueFrom(object, MongoKey.GROUPS_PERMISSIONS_KEY, BasicDBObject.class), Boolean.class);
         String cColor = getValueFrom(object, MongoKey.GROUPS_CHAT_COLOR_KEY, String.class); final ChatColor chatColor = cColor == null ? null : ChatColor.valueOf(cColor);
         String tColor = getValueFrom(object, MongoKey.GROUPS_TABLIST_COLOR_KEY, String.class); final ChatColor tablistColor = tColor == null ? null : ChatColor.valueOf(tColor);
@@ -92,12 +92,12 @@ final class MongoUtils {
             }
         };
     }
-    static <T> T getValueFrom(DBObject object, @NonNull Object key, Class<T> clazz) {
+    public static <T> T getValueFrom(DBObject object, @NonNull Object key, Class<T> clazz) {
         return getValueFrom(object, key.toString(), clazz);
     }
 
     @SuppressWarnings("UnusedParameters")
-    static <T> T getValueFrom(DBObject object, @NonNull String key, Class<T> clazz) {
+    public static <T> T getValueFrom(DBObject object, @NonNull String key, Class<T> clazz) {
         if (object == null) return null;
         try {
             //noinspection unchecked
@@ -108,7 +108,7 @@ final class MongoUtils {
     }
 
     @SuppressWarnings("UnusedParameters")
-    static <T> List<T> getListFor(BasicDBList list, Class<T> clazz) {
+    public static <T> List<T> getListFor(BasicDBList list, Class<T> clazz) {
         List<T> tList = new ArrayList<>();
         if (list == null) return null;
         for (Object o : list) {
@@ -120,7 +120,7 @@ final class MongoUtils {
         return tList;
     }
 
-    static BasicDBList getDBListFor(List<?> list) {
+    public static BasicDBList getDBListFor(List<?> list) {
         BasicDBList dbList = new BasicDBList();
         if (list == null) return null;
         for (Object o : list) {
@@ -129,7 +129,7 @@ final class MongoUtils {
         return dbList;
     }
 
-    static DBObject getDBObjectFor(Map<?,?> map) {
+    public static DBObject getDBObjectFor(Map<?,?> map) {
         BasicDBObject basicDBObject = new BasicDBObject();
         if (map == null) return null;
         for (Map.Entry<?, ?> stringEntry : map.entrySet()) {
@@ -138,26 +138,26 @@ final class MongoUtils {
         return basicDBObject;
     }
 
-    static Object applyTypeFiltersForDB(Object i) {
+    public static Object applyTypeFiltersForDB(Object i) {
         Object value = i;
         if (value instanceof List && !(i instanceof BasicDBList)) value = getDBListFor((List<?>) value);
         else if (value instanceof Map && !(i instanceof DBObject)) value = getDBObjectFor((Map) value);
         return value;
     }
 
-    static Object applyTypeFiltersForObject(Object i) {
+    public static Object applyTypeFiltersForObject(Object i) {
         Object value = i;
         if (i instanceof BasicDBList) value = getListFor((BasicDBList) i, Object.class);
         else if (i instanceof DBObject) value = getMapFor((DBObject) i);
         return value;
     }
 
-    static Map<String, Object> getMapFor(DBObject object) {
+    public static Map<String, Object> getMapFor(DBObject object) {
         return getMapFor(object, Object.class);
     }
 
     @SuppressWarnings("UnusedParameters")
-    static <T> Map<String, T> getMapFor(DBObject object, Class<T> valueType) {
+    public static <T> Map<String, T> getMapFor(DBObject object, Class<T> valueType) {
         HashMap<String, T> map = new HashMap<>();
         if (object == null) return null;
         for (String s : object.keySet()) {

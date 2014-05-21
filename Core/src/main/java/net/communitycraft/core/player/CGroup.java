@@ -49,4 +49,16 @@ public interface CGroup extends CPermissible {
      * @return
      */
     List<CPlayer> getOnlineDirectMembers();
+
+    /**
+     *
+     * @return
+     */
+    Integer getPriority();
+
+    /**
+     *
+     * @param priority
+     */
+    void setPriority(Integer priority);
 }

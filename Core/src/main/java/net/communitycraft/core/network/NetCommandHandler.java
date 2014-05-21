@@ -11,10 +11,4 @@ public interface NetCommandHandler<NetCommandType extends NetCommand> {
      * @param netCommand The instance of the {@link net.communitycraft.core.network.NetCommand} that was sent to this server.
      */
     void handleNetCommand(NetworkServer sender, NetCommandType netCommand);
-
-    /**
-     * Should return the type that you are handling.
-     * @return The type being handled.
-     */
-    Class<NetCommandType> getTypeHandling();
 }

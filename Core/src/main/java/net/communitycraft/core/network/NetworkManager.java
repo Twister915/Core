@@ -64,32 +64,40 @@ public interface NetworkManager {
     List<COfflinePlayer> getTotalPlayersOnline();
 
     /**
+     * Gets the number of players online for each {@link net.communitycraft.core.network.NetworkServer} that we are aware of.
      *
-     * @return
+     * This method is especially useful for sorting data about which servers have the most online players.
+     * @return A {@link java.util.Map} relating each individual {@link net.communitycraft.core.network.NetworkServer} to an {@link java.lang.Integer} denoting the number of players online on that particular server.
      */
     Map<NetworkServer, Integer> getOnlinePlayersPerServer();
 
     /**
-     *
-     * @param handler
-     * @param type
-     * @param <T>
+     * Registers a handler for an incoming {@link net.communitycraft.core.network.NetCommand}.
+     * @param handler The handler you wish to register.
+     * @param type The type of {@link net.communitycraft.core.network.NetCommand} you wish to handle. This must agree with the type that the {@link net.communitycraft.core.network.NetCommandHandler} specified in the {@code handler} parameter.
+     * @param <T> The type of {@link net.communitycraft.core.network.NetCommand} that both the {@code type} and {@code handler} agree upon.
      */
     <T extends NetCommand> void registerNetCommandHandler(NetCommandHandler<T> handler, Class<T> type);
 
     /**
-     *
-     * @param handler
-     * @param type
-     * @param <T>
+     * Un-registers a handler for an incoming {@link net.communitycraft.core.network.NetCommand}
+     * @param handler The handler to un-register for the {@link net.communitycraft.core.network.NetCommand}
+     * @param type The type of {@link net.communitycraft.core.network.NetCommand} that the {@link net.communitycraft.core.network.NetCommandHandler} handles.
+     * @param <T> The type parameter that forces agreement between the {@code type} and {@code handler}.
      */
     <T extends NetCommand> void unregisterHandler(NetCommandHandler<T> handler, Class<T> type);
 
     /**
-     *
-     * @param type
-     * @param <T>
-     * @return
+     * Gets all {@link net.communitycraft.core.network.NetCommandHandler}s for a specific {@link net.communitycraft.core.network.NetCommand} type.
+     * @param type The type that the target {@link net.communitycraft.core.network.NetCommandHandler}s handle.
+     * @param <T> The type parameter used to discover said {@link net.communitycraft.core.network.NetCommandHandler}s.
+     * @return {@link java.util.List} of all discovered {@link net.communitycraft.core.network.NetCommandHandler}s.
      */
     <T extends NetCommand> List<NetCommandHandler<T>> getNetCommandHandlersFor(Class<T> type);
+
+    /**
+     * Sends a mass {@link net.communitycraft.core.network.NetCommand}. The contents of this command will, as expected appear to originate from this server. The contents of this command will also be targeted at every other server on the network, regardless of our knowledge of the servers.
+     * @param command The {@link net.communitycraft.core.network.NetCommand} with data intended to be sent out.
+     */
+    void sendMassNetCommand(NetCommand command);
 }
