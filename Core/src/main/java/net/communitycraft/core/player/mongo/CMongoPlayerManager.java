@@ -43,12 +43,19 @@ public final class CMongoPlayerManager implements CPlayerManager {
             cOfflinePlayers.add(onlinePlayer);
             return cOfflinePlayers;
         }
-        DBCursor dbObjects = database.getCollection(MongoKey.USERS_COLLETION.toString()).find(new BasicDBObject(MongoKey.USERNAMES_KEY.toString(), username));
+        DBCollection collection = database.getCollection(MongoKey.USERS_COLLETION.toString());
+        DBObject one = collection.findOne(new BasicDBObject(MongoKey.LAST_USERNAME_KEY.toString(), username));
+        if (one != null) return Arrays.asList(playerFrom(one));
+        DBCursor dbObjects = collection.find(new BasicDBObject(MongoKey.USERNAMES_KEY.toString(), username));
         List<COfflinePlayer> offlinePlayers = new ArrayList<>();
         for (DBObject dbObject : dbObjects) {
-            offlinePlayers.add(new COfflineMongoPlayer(UUID.fromString(getValueFrom(dbObject, MongoKey.UUID_KEY.toString(), String.class)), dbObject, this));
+            offlinePlayers.add(playerFrom(dbObject));
         }
         return offlinePlayers;
+    }
+
+    COfflinePlayer playerFrom(DBObject dbObject) {
+        return new COfflineMongoPlayer(UUID.fromString(getValueFrom(dbObject, MongoKey.UUID_KEY.toString(), String.class)), dbObject, this);
     }
 
     @Override

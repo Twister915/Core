@@ -5,7 +5,6 @@ import lombok.EqualsAndHashCode;
 import net.communitycraft.core.Core;
 import net.communitycraft.core.player.COfflinePlayer;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,5 +23,5 @@ public abstract class Asset {
      * This method will return any metadata associated with the asset.
      * @return A {@link java.util.Map} relating keys to values for information to be sored in the database. Keep these strictly to primitive objects any implementations of {@link java.util.List} or {@link java.util.Map} must only contain primitives at their lowest level.
      */
-    public Map<String, ?> getMetaVariables() { return new HashMap<>();}
+    public Map<String, ?> getMetaVariables() { return metaVariables; }
 }

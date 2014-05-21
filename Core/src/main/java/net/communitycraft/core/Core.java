@@ -37,7 +37,7 @@ public class Core extends JavaPlugin {
     private CPermissionsManager permissionsManager;
     private NetworkManager networkManager;
     private NetFileManager netFileManager;
-    private ModelManager<?> modelManager;
+    private ModelManager modelManager;
 
     @Getter private YAMLConfigurationFile databaseConfiguration;
 
@@ -62,18 +62,11 @@ public class Core extends JavaPlugin {
                 provider = new DefaultProvider();
             }
 
-            //Talk to the provider and setup the database
+            //Setup everything.
             this.playerManager = provider.getNewPlayerManager(this);
-
-            //Setup network manager through the provider as well
             this.networkManager = provider.getNewNetworkManager(this);
-
-            //noinspection unchecked
             this.permissionsManager = provider.getNewPermissionsManager(this, this.playerManager.getDatabase(), this.playerManager);
-
             this.netFileManager = provider.getNewNetFileManager(this);
-
-            //noinspection unchecked
             this.modelManager = provider.getNewModelManager(this.playerManager.getDatabase());
         } catch (Throwable t) {
             t.printStackTrace();
@@ -141,5 +134,5 @@ public class Core extends JavaPlugin {
 
     public static NetFileManager getNetFileManager() {return instance.netFileManager;}
 
-    public static ModelManager<?> getModelManager() {return instance.modelManager;}
+    public static ModelManager getModelManager() {return instance.modelManager;}
 }

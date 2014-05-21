@@ -5,6 +5,7 @@ import net.communitycraft.core.model.mongo.MongoModelManager;
 import net.communitycraft.core.netfiles.NetFileManager;
 import net.communitycraft.core.network.NetworkManager;
 import net.communitycraft.core.network.lilypad.LilyPadNetworkManager;
+import net.communitycraft.core.player.CDatabase;
 import net.communitycraft.core.player.CPermissionsManager;
 import net.communitycraft.core.player.CPlayerManager;
 import net.communitycraft.core.player.DatabaseConnectException;
@@ -13,7 +14,7 @@ import net.communitycraft.core.player.mongo.CMongoPermissionsManager;
 import net.communitycraft.core.player.mongo.CMongoPlayerManager;
 import org.bukkit.configuration.file.FileConfiguration;
 
-public final class DefaultProvider implements Provider<CMongoDatabase> {
+public final class DefaultProvider implements Provider {
     @Override
     public CPlayerManager getNewPlayerManager(Core core) throws DatabaseConnectException {
         FileConfiguration config = core.getDatabaseConfiguration().getConfig();
@@ -38,8 +39,8 @@ public final class DefaultProvider implements Provider<CMongoDatabase> {
     }
 
     @Override
-    public CPermissionsManager getNewPermissionsManager(Core core, CMongoDatabase database, CPlayerManager playerManager) {
-        return new CMongoPermissionsManager(database, playerManager);
+    public CPermissionsManager getNewPermissionsManager(Core core, CDatabase database, CPlayerManager playerManager) {
+        return new CMongoPermissionsManager((CMongoDatabase) database, playerManager);
     }
 
     @Override
@@ -48,7 +49,7 @@ public final class DefaultProvider implements Provider<CMongoDatabase> {
     }
 
     @Override
-    public ModelManager getNewModelManager(CMongoDatabase database) {
-        return new MongoModelManager(database);
+    public ModelManager getNewModelManager(CDatabase database) {
+        return new MongoModelManager((CMongoDatabase)database);
     }
 }

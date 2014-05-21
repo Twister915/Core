@@ -1,14 +1,14 @@
 package net.communitycraft.permissions.commands;
 
 import net.communitycraft.core.modular.command.ModuleCommand;
-import net.communitycraft.core.player.CPlayer;
+import net.communitycraft.permissions.commands.player.PlayerSubCommand;
 
 public final class PermissionsCommand extends ModuleCommand {
     /*
      * The command should be structured as follows
      *  - player
-     *      - setgroup [name] [group]
-     *      - addgroup [name] [group]
+     *      - setgroup [name] [group] D
+     *      - addgroup [name] [group] D
      *      - delgroup [name] [group]
      *      - has [name] [permission]
      *      - set [name] [permission]
@@ -32,11 +32,11 @@ public final class PermissionsCommand extends ModuleCommand {
      *      - network
      */
     public PermissionsCommand() {
-        super("permissions");
+        super("permissions", new PlayerSubCommand());
     }
 
     @Override
-    protected void handleCommand(CPlayer player, String[] args) {
-
+    protected boolean isUsingSubCommandsOnly() {
+        return true;
     }
 }

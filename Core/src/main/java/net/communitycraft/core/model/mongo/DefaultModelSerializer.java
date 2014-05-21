@@ -17,10 +17,10 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 
-final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T, DBObject> {
+final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T> {
     @Override
     @SneakyThrows
-    public DBObject serialize(T model) {
+    public Object serialize(T model) {
         DBObject object = new BasicDBObject();
         Class<? extends Model> modelClass = model.getClass();
         boolean typeAnnotated = modelClass.isAnnotationPresent(ModelField.class);
@@ -35,8 +35,9 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
 
     @Override
     @SneakyThrows
-    public T deserialize(DBObject dbObject, Class<T> modelClass) {
+    public T deserialize(Object object, Class<T> modelClass) {
         T t = modelClass.newInstance();
+        DBObject dbObject = (DBObject)object;
         for (String key : dbObject.keySet()) {
             Field declaredField = modelClass.getDeclaredField(key);
             if (declaredField == null) continue;

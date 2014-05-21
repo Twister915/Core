@@ -279,4 +279,9 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     public void onReloadPermissions(CMongoPermissionsManager manager) {
         reloadPermissions(); //Reload and re-attach permissions if needed.
     }
+
+    @Override
+    public boolean isDirectlyInGroup(CGroup group) {
+        return groups.contains(group);
+    }
 }

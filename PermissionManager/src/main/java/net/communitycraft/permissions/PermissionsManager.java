@@ -14,19 +14,19 @@ import net.communitycraft.core.player.CPermissionsManager;
 )
 public final class PermissionsManager extends ModularPlugin {
     @Getter private static PermissionsManager instance;
-    @Getter private ModelStorage<PermissionChange> changelog;
+    @Getter private ModelStorage<PermissionChange> changeLog;
 
     @Override
     public void onModuleEnable() {
-        PermissionsManager.instance = this;
+        instance = this;
         //Create default group
         CPermissionsManager permissionsManager = Core.getPermissionsManager();
         if (permissionsManager.getGroups().size() == 0) {
-            CGroup aDefault = permissionsManager.createNewGroup("Default");
-            aDefault.setPermission("test.permission", true);
+            CGroup defaultGroup = permissionsManager.createNewGroup("Default");
+            defaultGroup.setPermission("test.permission", true);
         }
         //Get the changelog
-        this.changelog = Core.getModelManager().getModelStorage(PermissionChange.class);
-        this.changelog.reload();
+        changeLog = Core.getModelManager().getModelStorage(PermissionChange.class);
+        changeLog.reload();
     }
 }

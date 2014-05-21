@@ -161,5 +161,16 @@ public interface COfflinePlayer extends CPermissible {
      */
     Map<String, Boolean> getAllPermissions();
 
+    /**
+     *
+     * @return
+     */
     CGroup getPrimaryGroup();
+
+    /**
+     *
+     * @param group
+     * @return
+     */
+    boolean isDirectlyInGroup(CGroup group);
 }

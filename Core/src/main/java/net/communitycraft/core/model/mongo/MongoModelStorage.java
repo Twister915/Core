@@ -20,14 +20,14 @@ import java.util.List;
 class MongoModelStorage<T extends Model> implements ModelStorage<T> {
     @NonNull private final DBCollection collection;
     @NonNull private final CMongoDatabase database;
-    @NonNull private final ModelSerializer<T, DBObject> modelSerializer;
+    @NonNull private final ModelSerializer<T> modelSerializer;
     @NonNull private final Class<T> modelType;
 
     @Setter(AccessLevel.NONE) private ImmutableList<T> values;
 
     @Override
     public void saveValue(T value) throws SerializationException {
-        DBObject serialize = modelSerializer.serialize(value);
+        DBObject serialize = (DBObject) modelSerializer.serialize(value);
         if (value.getId() != null) serialize.put("_id", new ObjectId(value.getId()));
         collection.save(serialize);
         reload();
