@@ -2,6 +2,6 @@ name: Core
 soft-depend: [LilyPad-Connect]
 main: net.communitycraft.core.Core
 version: 1.0
-description: Core for UrbisMC modular model. Performs database operations and module management.
-authors: [Twister915, Zewlzor, NoyHillel1, pokuit]
+description: Core.
+authors: [Twister915, pokuit]
 website: http://urbismc.com
