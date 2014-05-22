@@ -11,12 +11,6 @@ public interface CGroup extends CPermissible {
      *
      * @return
      */
-    String getName();
-
-    /**
-     *
-     * @return
-     */
     List<CGroup> getParents();
 
     /**

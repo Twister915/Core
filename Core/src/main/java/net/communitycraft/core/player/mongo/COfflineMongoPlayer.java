@@ -231,6 +231,11 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
         reloadPermissions0();
     }
 
+    @Override
+    public String getName() {
+        return lastKnownUsername;
+    }
+
     //Reloads the allPermissions map based on declaredPermissions and inheritance
     private synchronized void reloadPermissions0() {
         //Why do we need this? When the permissions manager reloads, it creates new instances to represent the same groups, so we need to reload our group instances.

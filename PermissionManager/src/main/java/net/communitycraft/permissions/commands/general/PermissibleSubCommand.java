@@ -20,14 +20,25 @@ public abstract class PermissibleSubCommand<PermissibleType extends CPermissible
         //Get the permissible
         PermissibleType permissible = getPermissible(args[0]);
         if (permissible == null) throw new ArgumentRequirementException("The argument you specified is not a valid " + getNameOfPermissibleType());
+        boolean tookControlOfMessage = false;
         if (needsSecondArgument()) {
             String arg = args[1];
             if (!validateArgument(arg)) throw new ArgumentRequirementException("The argument you passed is not valid!");
-            doAction(permissible, arg);
+            try {
+                doAction(permissible, arg);
+            } catch (EmptyHandlerException e) {
+                doAction(permissible, arg, sender);
+                tookControlOfMessage = true;
+            }
         } else {
-            doAction(permissible);
+            try {
+                doAction(permissible);
+            } catch (EmptyHandlerException e) {
+                doAction(permissible, sender);
+                tookControlOfMessage = true;
+            }
         }
-        sender.sendMessage(getSuccessMessage());
+        if (!tookControlOfMessage) sender.sendMessage(getSuccessMessage());
     }
 
     protected abstract PermissibleType getPermissible(String name);
@@ -36,6 +47,10 @@ public abstract class PermissibleSubCommand<PermissibleType extends CPermissible
 
     protected void doAction(PermissibleType permissible, String argument) throws CommandException {throw new EmptyHandlerException();}
     protected void doAction(PermissibleType permissible) throws CommandException {throw new EmptyHandlerException();}
+
+    protected void doAction(PermissibleType permissible, String argument, CommandSender sender) throws CommandException {throw new EmptyHandlerException();}
+    protected void doAction(PermissibleType permissible, CommandSender sender) throws CommandException {throw new EmptyHandlerException();}
+
     protected boolean validateArgument(String argument) {return true;}
     protected String getSuccessMessage() {return PermissionsManager.getInstance().getFormat("success-command");}
 }

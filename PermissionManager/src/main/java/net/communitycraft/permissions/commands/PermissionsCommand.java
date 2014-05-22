@@ -1,6 +1,7 @@
 package net.communitycraft.permissions.commands;
 
 import net.communitycraft.core.modular.command.ModuleCommand;
+import net.communitycraft.permissions.commands.group.GroupSubCommand;
 import net.communitycraft.permissions.commands.player.PlayerSubCommand;
 
 public final class PermissionsCommand extends ModuleCommand {
@@ -10,7 +11,7 @@ public final class PermissionsCommand extends ModuleCommand {
      *      - setgroup [name] [group] D
      *      - addgroup [name] [group] D
      *      - delgroup [name] [group] D
-     *      - has [name] [permission]
+     *      - has [name] [permission] D
      *      - set [name] [permission]
      *      - unset [name] [permission]
      *      - purge [name]
@@ -20,7 +21,7 @@ public final class PermissionsCommand extends ModuleCommand {
      *      - tabcolor [name] [tabcolor]
      *  - group
      *      - set [name] [permission]
-     *      - has [name] [permission]
+     *      - has [name] [permission] D
      *      - unset [name] [permission]
      *      - show [name]
      *      - prefix [name] [prefix]
@@ -33,7 +34,7 @@ public final class PermissionsCommand extends ModuleCommand {
      *      - network
      */
     public PermissionsCommand() {
-        super("permissions", new PlayerSubCommand());
+        super("permissions", new PlayerSubCommand(), new GroupSubCommand());
     }
 
     @Override

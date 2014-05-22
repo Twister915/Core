@@ -90,6 +90,11 @@ public final class MongoUtils {
             public void reloadPermissions() {
                 throw new UnsupportedOperationException("This CPermissible is for data access only!");
             }
+
+            @Override
+            public String getName() {
+                throw new UnsupportedOperationException("This data is currently not available!");
+            }
         };
     }
     public static <T> T getValueFrom(DBObject object, @NonNull Object key, Class<T> clazz) {

@@ -74,4 +74,6 @@ public interface CPermissible {
      *
      */
     void reloadPermissions();
+
+    String getName();
 }
