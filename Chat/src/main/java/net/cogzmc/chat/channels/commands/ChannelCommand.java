@@ -13,10 +13,8 @@ package net.cogzmc.chat.channels.commands;
 
 import net.cogzmc.chat.ChatManager;
 import net.cogzmc.chat.channels.Channel;
-import net.communitycraft.core.modular.command.ArgumentRequirementException;
-import net.communitycraft.core.modular.command.CommandException;
-import net.communitycraft.core.modular.command.ModuleCommand;
-import net.communitycraft.core.modular.command.PermissionException;
+import net.communitycraft.core.modular.command.*;
+import net.communitycraft.core.player.CPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -32,6 +30,9 @@ import org.bukkit.entity.Player;
  * @author Jake0oo0
  * @since 1/18/2014
  */
+@CommandMeta(
+        aliases = {"ch", "chan"}
+)
 public final class ChannelCommand extends ModuleCommand {
 
     public ChannelCommand() {
@@ -39,7 +40,7 @@ public final class ChannelCommand extends ModuleCommand {
     }
 
     @Override
-    protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
+    protected void handleCommand(CPlayer sender, String[] args) throws CommandException {
         if (args.length != 1) throw new ArgumentRequirementException("You must specify a channel to join.");
 
         Channel channel = ChatManager.getInstance().getChannelManager().getChannelByName(args[0].toLowerCase());
@@ -50,7 +51,7 @@ public final class ChannelCommand extends ModuleCommand {
         if (channel.hasPermission() && !sender.hasPermission(channel.getPermission())) {
             throw new PermissionException("You need the permission " + channel.getPermission() + " to use this channel.");
         }
-        ChatManager.getInstance().getChannelManager().setChannel((Player) sender, channel);
+        ChatManager.getInstance().getChannelManager().setChannel(sender, channel);
         sender.sendMessage(ChatManager.getInstance().getFormat("formats.switched", false, new String[]{"<channel>", channel.getName()}));
     }
 }

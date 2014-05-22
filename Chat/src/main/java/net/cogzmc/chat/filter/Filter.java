@@ -14,6 +14,7 @@ package net.cogzmc.chat.filter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.cogzmc.chat.ChatManager;
+import net.communitycraft.core.player.CPlayer;
 import org.bukkit.entity.Player;
 
 /**
@@ -29,7 +30,7 @@ import org.bukkit.entity.Player;
  * @since 12/28/2013
  */
 public final class Filter {
-    public static FilterData filter(String message, Player player) {
+    public static FilterData filter(String message, CPlayer player) {
         FilterData filterData = new FilterData(message, player, false);
         if (player.hasPermission("gearz.chat.filters.bypass")) return filterData;
 
@@ -56,7 +57,7 @@ public final class Filter {
         }*/
 
         if (filterData.getMessage().matches("connected with an ([^\\s]+) using MineChat")) {
-            player.kickPlayer(ChatManager.getInstance().getFormat("formats.minechat-banned"));
+            player.getBukkitPlayer().kickPlayer(ChatManager.getInstance().getFormat("formats.minechat-banned"));
             filterData.setCancelled(true);
             return filterData;
         }
@@ -110,7 +111,7 @@ public final class Filter {
     @Data
     public static class FilterData {
         private String message;
-        private final Player proxiedPlayer;
+        private final CPlayer player;
         private boolean cancelled;
     }
 }

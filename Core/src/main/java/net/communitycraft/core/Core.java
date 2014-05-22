@@ -112,6 +112,10 @@ public class Core extends JavaPlugin {
         return getPlayerManager().getOnlineCPlayerForName(name);
     }
 
+    public static CPlayer getOnlinePlayer(Player player) {
+        return getPlayerManager().getCPlayerForPlayer(player);
+    }
+
     public static COfflinePlayer getOfflinePlayerByUUID(UUID uuid) {
         return getPlayerManager().getOfflinePlayerByUUID(uuid);
     }

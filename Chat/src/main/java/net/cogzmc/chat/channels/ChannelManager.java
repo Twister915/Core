@@ -60,7 +60,7 @@ public final class ChannelManager {
     /**
      * A map of players to their respective channels
      */
-    private final Map<String, Channel> playerChannels = new HashMap<>();
+    private final Map<CPlayer, Channel> playerChannels = new HashMap<>();
 
     public static final char COLOR_CHAR = '\u0026';
     private static final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + String.valueOf(COLOR_CHAR) + "[0-9A-FK-OR]");
@@ -119,7 +119,7 @@ public final class ChannelManager {
      */
     private void unregisterChannel(Channel channel) {
         if (channels.contains(channel)) {
-            for (Player player : channel.getMembers()) {
+            for (CPlayer player : channel.getMembers()) {
                 setChannel(player, getDefaultChannel());
             }
             channels.remove(channel);
@@ -156,7 +156,7 @@ public final class ChannelManager {
      * @param player the player to lookup
      * @return the channel that the player is currently on
      */
-    public Channel getCurrentChannel(Player player) {
+    public Channel getCurrentChannel(CPlayer player) {
         return getChannel(player);
     }
 
@@ -169,7 +169,7 @@ public final class ChannelManager {
      * @param message message sent
      * @return the channel that the message was sent to
      */
-    public Channel sendMessage(Player sender, String message) {
+    public Channel sendMessage(CPlayer sender, String message) {
         Channel channel = getCurrentChannel(sender);
         if (channel == null) {
             setChannel(sender, getDefaultChannel());
@@ -188,18 +188,17 @@ public final class ChannelManager {
         return channel;
     }
 
-    private String formatMessage(String message, Player player) {
+    private String formatMessage(String message, CPlayer player) {
         String chanFormat = getCurrentChannel(player).getFormat();
-        CPlayer cplayer = Core.getPlayerManager().getCPlayerForPlayer(player);
-        CGroup playerGroup = cplayer.getPrimaryGroup();
+        CGroup playerGroup = player.getPrimaryGroup();
         MessageFormat formatter = new MessageFormat(chanFormat);
         String senderName = player.getName();
-        String senderDisplay = player.getDisplayName();
+        String senderDisplay = player.getName();
         String cleanMessage = STRIP_COLOR_PATTERN.matcher(message).replaceAll("");
-        String prefix = cplayer.getChatPrefix() != null ? cplayer.getChatPrefix() : playerGroup.getChatPrefix();
-        String suffix = cplayer.getChatSuffix() != null ? cplayer.getChatSuffix() : playerGroup.getChatSuffix();
+        String prefix = player.getChatPrefix() != null ? player.getChatPrefix() : playerGroup.getChatPrefix();
+        String suffix = player.getChatSuffix() != null ? player.getChatSuffix() : playerGroup.getChatSuffix();
         String resetColor = ChatColor.RESET + "";
-        ChatColor rawColor = cplayer.getChatColor() != null ? cplayer.getChatColor() : playerGroup.getChatColor();
+        ChatColor rawColor = player.getChatColor() != null ? player.getChatColor() : playerGroup.getChatColor();
         String chatColor = rawColor != null ? "\u0026" + rawColor.getChar() : "";
         Object[] args = {senderName, senderDisplay, message, cleanMessage, prefix, suffix, chatColor, resetColor};
         return ChatColor.translateAlternateColorCodes('&', formatter.format(args));
@@ -211,9 +210,9 @@ public final class ChannelManager {
      * @param player  player to set the channel of
      * @param channel channel to set the player to
      */
-    public void setChannel(Player player, Channel channel) {
-        if (this.playerChannels.containsKey(player.getName())) {
-            this.playerChannels.get(player.getName()).removeMember(player);
+    public void setChannel(CPlayer player, Channel channel) {
+        if (this.playerChannels.containsKey(player)) {
+            this.playerChannels.get(player).removeMember(player);
         }
         channel.addMember(player);
     }
@@ -224,9 +223,9 @@ public final class ChannelManager {
      *
      * @param player player to remove the channel from
      */
-    public void removeChannel(Player player) {
-        this.playerChannels.get(player.getName()).removeMember(player);
-        this.playerChannels.remove(player.getName());
+    public void removeChannel(CPlayer player) {
+        this.playerChannels.get(player).removeMember(player);
+        this.playerChannels.remove(player);
     }
 
     /**
@@ -235,7 +234,7 @@ public final class ChannelManager {
      * @param player player to get the channel of
      * @return the channel of the player parameter
      */
-    public Channel getChannel(Player player) {
-        return this.playerChannels.get(player.getName());
+    public Channel getChannel(CPlayer player) {
+        return this.playerChannels.get(player);
     }
 }

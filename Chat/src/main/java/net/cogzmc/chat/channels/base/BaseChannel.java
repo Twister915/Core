@@ -11,6 +11,7 @@
 
 package net.cogzmc.chat.channels.base;
 
+import net.communitycraft.core.player.CPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -101,7 +102,7 @@ public interface BaseChannel {
      * @param message message to send
      * @param sender  {@link org.bukkit.entity.Player} instance of the sender
      */
-    public void sendMessage(String message, Player sender);
+    public void sendMessage(String message, CPlayer sender);
 
     /**
      * {@link java.util.List} of Bukkit {@link org.bukkit.entity.Player} that are members of this channel.

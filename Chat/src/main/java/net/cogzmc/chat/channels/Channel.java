@@ -14,6 +14,7 @@ package net.cogzmc.chat.channels;
 import lombok.Data;
 import lombok.ToString;
 import net.cogzmc.chat.channels.base.BaseChannel;
+import net.communitycraft.core.player.CPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -37,7 +38,7 @@ public final class Channel implements BaseChannel {
     private boolean main; //Whether or not this is the default channel
     private boolean crossServer; //Whether or not messages in this channel are sent across the network
     private boolean filtered; //Whether or not this channel is filtered
-    private List<Player> members; //A list of members in this channel
+    private List<CPlayer> members; //A list of members in this channel
 
     public Channel(String name, String format, String permission) {
         this.name = name;
@@ -62,7 +63,7 @@ public final class Channel implements BaseChannel {
     }
 
     @Override
-    public void sendMessage(String message, Player sender) {
+    public void sendMessage(String message, CPlayer sender) {
         for (Player receiver : Bukkit.getOnlinePlayers()) {
             if (!receiver.isValid()) continue;
             if (this.hasPermission()) {
@@ -80,7 +81,7 @@ public final class Channel implements BaseChannel {
      *
      * @param player player to add to he channel
      */
-    public void addMember(Player player) {
+    public void addMember(CPlayer player) {
         this.members.add(player);
     }
 
@@ -89,7 +90,7 @@ public final class Channel implements BaseChannel {
      *
      * @param player {@link org.bukkit.entity.Player} to remove from the {@link net.cogzmc.chat.channels.Channel}
      */
-    public void removeMember(Player player) {
+    public void removeMember(CPlayer player) {
         this.members.remove(player);
     }
 
@@ -99,7 +100,7 @@ public final class Channel implements BaseChannel {
      * @param player player to check for
      * @return whether or not the {@link org.bukkit.entity.Player} is a member
      */
-    public boolean hasMember(Player player) {
+    public boolean hasMember(CPlayer player) {
         return this.members.contains(player);
     }
 }

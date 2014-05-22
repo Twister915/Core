@@ -12,6 +12,7 @@
 package net.cogzmc.chat.channels;
 
 import net.cogzmc.chat.ChatManager;
+import net.communitycraft.core.Core;
 import net.communitycraft.core.player.CPlayer;
 import net.communitycraft.core.player.CPlayerConnectionListener;
 import net.communitycraft.core.player.CPlayerJoinException;
@@ -48,19 +49,18 @@ public final class ChannelsListener implements Listener, CPlayerConnectionListen
     public void onChat(AsyncPlayerChatEvent event) {
         if (!ChatManager.getInstance().getChannelManager().isEnabled()) return;
         if (event.isCancelled()) return;
-        Player sender = event.getPlayer();
-
+        CPlayer sender = Core.getOnlinePlayer(event.getPlayer());
         ChatManager.getInstance().getChannelManager().sendMessage(sender, event.getMessage());
         event.setCancelled(true);
     }
 
     @Override
     public void onPlayerJoin(CPlayer player, InetAddress address) throws CPlayerJoinException {
-        channelManager.setChannel(player.getBukkitPlayer(), channelManager.getDefaultChannel());
+        channelManager.setChannel(player, channelManager.getDefaultChannel());
     }
 
     @Override
     public void onPlayerDisconnect(CPlayer player) {
-        channelManager.removeChannel(player.getBukkitPlayer());
+        channelManager.removeChannel(player);
     }
 }
