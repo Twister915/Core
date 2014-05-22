@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.ToString;
 import net.communitycraft.core.Core;
 import net.communitycraft.core.player.CPlayer;
+import net.communitycraft.core.player.CooldownManager;
 import net.communitycraft.core.player.DatabaseConnectException;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -24,6 +25,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     private PermissionAttachment permissionAttachment;
     @Getter private boolean firstJoin = false;
     @Getter private InetAddress address = null;
+    @Getter private final CooldownManager cooldownManager = new CooldownManager();
 
     public CMongoPlayer(Player player, COfflineMongoPlayer offlinePlayer, CMongoPlayerManager manager) {
         super(offlinePlayer, manager);

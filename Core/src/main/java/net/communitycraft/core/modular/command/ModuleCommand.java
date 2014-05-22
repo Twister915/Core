@@ -101,8 +101,13 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
                 subCommand.onCommand(sender, command, s, choppedArgs);
                 return true;
             }
+            //Get the permission and test for it
+            if (getClass().isAnnotationPresent(CommandPermission.class)) {
+                CommandPermission annotation = getClass().getAnnotation(CommandPermission.class);
+                if (!sender.hasPermission(annotation.value()) && !(sender.isOp() && annotation.isOpExempt())) throw new PermissionException("You do not have permission for this command!");
+            }
 
-            //Now that we've made it past the sub commands, STEP TWO: actually handle the command and it's args.
+            //Now that we've made it past the sub commands and permissions, STEP TWO: actually handle the command and it's args.
             try {
                 if (sender instanceof Player) {
                     CPlayer player = Core.getPlayerManager().getCPlayerForPlayer((Player) sender);

@@ -82,4 +82,9 @@ public interface CPlayer extends COfflinePlayer {
      */
     Player getBukkitPlayer();
 
+    /**
+     * Gets you a {@link net.communitycraft.core.player.CooldownManager} for watching the time an action is performed by the player.
+     * @return The cooldown manager.
+     */
+    CooldownManager getCooldownManager();
 }
