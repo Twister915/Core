@@ -20,13 +20,18 @@
             <id>lilypad</id>
             <url>http://ci.lilypadmc.org/plugin/repository/everything</url>
         </repository>
+        <repository>
+            <id>comphenix-rep</id>
+            <name>Comphenix Repository</name>
+            <url>http://repo.comphenix.net/content/groups/public</url>
+        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.7.8-R0.1-SNAPSHOT</version>
+            <version>1.7.9-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
