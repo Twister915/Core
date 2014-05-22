@@ -9,7 +9,7 @@ public final class PermissionsCommand extends ModuleCommand {
      *  - player
      *      - setgroup [name] [group] D
      *      - addgroup [name] [group] D
-     *      - delgroup [name] [group]
+     *      - delgroup [name] [group] D
      *      - has [name] [permission]
      *      - set [name] [permission]
      *      - unset [name] [permission]

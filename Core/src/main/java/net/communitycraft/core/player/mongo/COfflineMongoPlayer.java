@@ -3,10 +3,7 @@ package net.communitycraft.core.player.mongo;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
 import net.communitycraft.core.Core;
 import net.communitycraft.core.asset.Asset;
 import net.communitycraft.core.player.*;
@@ -20,6 +17,7 @@ import java.util.*;
 import static net.communitycraft.core.RandomUtils.safeCast;
 import static net.communitycraft.core.player.mongo.MongoUtils.*;
 
+@EqualsAndHashCode(of = {"uniqueIdentifier"})
 class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     @Getter private List<String> knownUsernames;
     @Getter @Setter(AccessLevel.PROTECTED) private String lastKnownUsername;

@@ -3,9 +3,12 @@ package net.communitycraft.core.modular;
 import lombok.Getter;
 import net.communitycraft.core.Core;
 import net.communitycraft.core.config.YAMLConfigurationFile;
+import net.communitycraft.core.model.ModelManager;
 import net.communitycraft.core.modular.command.ModuleCommand;
 import net.communitycraft.core.modular.command.ModuleCommandMap;
+import net.communitycraft.core.netfiles.NetFileManager;
 import net.communitycraft.core.network.NetworkManager;
+import net.communitycraft.core.player.CPermissionsManager;
 import net.communitycraft.core.player.CPlayerManager;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -104,5 +107,17 @@ public abstract class ModularPlugin extends JavaPlugin {
 
     public final NetworkManager getNetworkManager() {
         return Core.getNetworkManager();
+    }
+
+    public final CPermissionsManager getPermissionsManager() {
+        return Core.getPermissionsManager();
+    }
+
+    public final ModelManager getModelManager() {
+        return Core.getModelManager();
+    }
+
+    public final NetFileManager getNetFileManager() {
+        return Core.getNetFileManager();
     }
 }

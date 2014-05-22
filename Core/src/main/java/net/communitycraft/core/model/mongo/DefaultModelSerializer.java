@@ -24,10 +24,13 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
         DBObject object = new BasicDBObject();
         Class<? extends Model> modelClass = model.getClass();
         boolean typeAnnotated = modelClass.isAnnotationPresent(ModelField.class);
+        ModelField annotation = typeAnnotated ? modelClass.getAnnotation(ModelField.class) : null;
         for (Field field : modelClass.getDeclaredFields()) {
             if (typeAnnotated == field.isAnnotationPresent(ModelField.class)) continue; //check NetCommand source for more info on how this works, very similar pattern there.
+            if (!typeAnnotated) annotation = field.getAnnotation(ModelField.class);
             field.setAccessible(true);
             Object o = field.get(model);
+            if (o == null && annotation.storeNulls()) continue; //If the field's value (o) is null and we cannot store nulls, continue.
             object.put(field.getName(), applyTypeFiltersForDB(o));
         }
         return object;

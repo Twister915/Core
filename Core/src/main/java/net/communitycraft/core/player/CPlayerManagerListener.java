@@ -7,6 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
@@ -18,9 +19,15 @@ public final class CPlayerManagerListener implements Listener {
 
     //no docs
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(PlayerLoginEvent event) {
+        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) return; //Prevent whitelist from causing memory leaks.
         Player player = event.getPlayer();
-        playerManager.playerLoggedIn(player, player.getAddress().getAddress());
+        try {
+            playerManager.playerLoggedIn(player, player.getAddress().getAddress());
+        } catch (CPlayerJoinException e) {
+            event.setKickMessage(e.getDisconectMessage());
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+        }
     }
 
     //no docs

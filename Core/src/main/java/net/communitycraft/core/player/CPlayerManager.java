@@ -95,7 +95,7 @@ public interface CPlayerManager extends Iterable<CPlayer> {
      * @param player The {@link org.bukkit.entity.Player} object that represents the player who is logging in.
      * @param address The {@code player}'s {@link java.net.InetAddress} representing their connection address for logging.
      */
-    void playerLoggedIn(Player player, InetAddress address);
+    void playerLoggedIn(Player player, InetAddress address) throws CPlayerJoinException;
 
     /**
      * Called strictly by a listener, internal method that you should <b>NEVER</b> call under normal circumstances.
@@ -113,4 +113,16 @@ public interface CPlayerManager extends Iterable<CPlayer> {
      * <b>Should only be called during disable, internal method!</b>
      */
     void onDisable();
+
+    /**
+     *
+     * @param processor
+     */
+    void registerCPlayerConnectionListener(CPlayerConnectionListener processor);
+
+    /**
+     *
+     * @param processor
+     */
+    void unregisterCPlayerConnectionListener(CPlayerConnectionListener processor);
 }

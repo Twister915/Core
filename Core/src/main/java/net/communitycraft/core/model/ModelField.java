@@ -8,4 +8,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = {ElementType.FIELD, ElementType.TYPE})
 public @interface ModelField {
+    boolean storeNulls() default false;
 }

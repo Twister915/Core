@@ -17,14 +17,13 @@ import static net.communitycraft.core.player.mongo.MongoUtils.getValueFrom;
 
 public final class CMongoPlayerManager implements CPlayerManager {
     @Getter private CMongoDatabase database;
-//    @Getter private CMongoPermissionsManager permissionsManager;
 
     private Map<String, CPlayer> onlinePlayerMap = new HashMap<>();
+    private List<CPlayerConnectionListener> playerConnectionListeners = new ArrayList<>();
 
     public CMongoPlayerManager(CMongoDatabase database) throws DatabaseConnectException {
         this.database = database;
         database.connect();
-//        this.permissionsManager = new CMongoPermissionsManager(database, this);
         Core.getInstance().registerListener(new CPlayerManagerListener(this));
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new CPlayerManagerSaveTask(this), 1200, 1200);
         DBCollection users = database.getCollection(MongoKey.USERS_COLLETION.toString());
@@ -129,7 +128,7 @@ public final class CMongoPlayerManager implements CPlayerManager {
     }
 
     @Override
-    public void playerLoggedIn(Player player, InetAddress address) {
+    public void playerLoggedIn(Player player, InetAddress address) throws CPlayerJoinException {
         //Creates a new CMongoPlayer by passing the player, the offline player (for data), and this.
         CMongoPlayer cMongoPlayer = new CMongoPlayer(player, getOfflinePlayerByUUID(player.getUniqueId()), this);
         try {
@@ -137,8 +136,10 @@ public final class CMongoPlayerManager implements CPlayerManager {
         } catch (DatabaseConnectException | MongoException e) {
             //But in the instance when we cannot, we log a severe error.
             Core.getInstance().getLogger().severe("Could not read player from the database " + e.getMessage() + " - " + player.getName());
-            player.kickPlayer("Error while logging you in in the CPlayerManager " + e.getClass().getSimpleName() + " : " + e.getMessage() + "\nPlease contact a developer!");
-            return;
+            throw new CPlayerJoinException("Error while logging you in in the CPlayerManager " + e.getClass().getSimpleName() + " : " + e.getMessage() + "\nPlease contact a developer!");
+        }
+        for (CPlayerConnectionListener playerConnectionListener : playerConnectionListeners) {
+            playerConnectionListener.onPlayerJoin(cMongoPlayer, address);
         }
         Core.getNetworkManager().updateHeartbeat(); //Send out a heartbeat.
         //Now, let's place this player in our online player map
@@ -155,6 +156,9 @@ public final class CMongoPlayerManager implements CPlayerManager {
         } catch (DatabaseConnectException | MongoException e) {
             Core.getInstance().getLogger().severe("Could not save player into the database " + e.getMessage() + " - " + cPlayerForPlayer.getName());
         }
+        for (CPlayerConnectionListener playerConnectionListener : playerConnectionListeners) {
+            playerConnectionListener.onPlayerDisconnect(cPlayerForPlayer);
+        }
         Core.getNetworkManager().updateHeartbeat();
         this.onlinePlayerMap.remove(player.getName());
     }
@@ -169,6 +173,18 @@ public final class CMongoPlayerManager implements CPlayerManager {
             }
         }
         this.database.disconnect();
+    }
+
+    @Override
+    public void registerCPlayerConnectionListener(CPlayerConnectionListener processor) {
+        if (this.playerConnectionListeners.contains(processor)) return;
+        this.playerConnectionListeners.add(processor);
+    }
+
+    @Override
+    public void unregisterCPlayerConnectionListener(CPlayerConnectionListener processor) {
+        if (!this.playerConnectionListeners.contains(processor)) return;
+        this.playerConnectionListeners.remove(processor);
     }
 
     @Override

@@ -47,6 +47,13 @@ class MongoModelStorage<T extends Model> implements ModelStorage<T> {
     @Override
     @SneakyThrows
     public T findValue(String key, Object value) {
+        List<T> values1 = findValues(key, value);
+        return values1 == null || values1.isEmpty() ? null : values1.get(0);
+    }
+
+    @Override
+    @SneakyThrows
+    public List<T> findValues(String key, Object value) {
         Field declaredField;
         try {
             declaredField = modelType.getDeclaredField(key);
@@ -54,10 +61,11 @@ class MongoModelStorage<T extends Model> implements ModelStorage<T> {
             return null;
         }
         if (!value.getClass().isAssignableFrom(declaredField.getType())) return null;
+        List<T> ts = new ArrayList<>();
         for (T t : values) {
-            if (declaredField.get(t).equals(value)) return t;
+            if (declaredField.get(t).equals(value)) ts.add(t);
         }
-        return null;
+        return ts;
     }
 
     @Override

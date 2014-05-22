@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, of = {"username"})
 @ToString(of = {"username"})
 final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 

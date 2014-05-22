@@ -1,6 +1,6 @@
 package net.communitycraft.core.model.mongo;
 
-public enum MongoModelKeys {
+enum MongoModelKeys {
     EMBEDDED_VALUE_TYPE("element_type"),
     EMBEDDED_MAP_FLAG("map"),
     EMBEDDED_LIST_FLAG("list"),
