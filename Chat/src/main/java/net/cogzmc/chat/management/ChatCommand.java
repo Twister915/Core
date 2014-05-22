@@ -27,18 +27,18 @@ public class ChatCommand extends ModuleCommand {
         switch (args[0]) {
             case "mute":
                 if (chat.isMuted()) {
-                    sender.sendMessage(ChatManager.getInstance().getFormat("formats.chat-is-muted"));
+                    sender.sendMessage(ChatManager.getInstance().getFormat("chat-is-muted"));
                 } else {
-                    sender.sendMessage(ChatManager.getInstance().getFormat("formats.chat-mute-on"));
+                    sender.sendMessage(ChatManager.getInstance().getFormat("chat-mute-on"));
                     chat.setMuted(true);
                 }
                 break;
             case "unmute":
                 if (chat.isMuted()) {
-                    sender.sendMessage(ChatManager.getInstance().getFormat("formats.chat-mute-off"));
+                    sender.sendMessage(ChatManager.getInstance().getFormat("chat-mute-off"));
                     chat.setMuted(false);
                 } else {
-                    sender.sendMessage(ChatManager.getInstance().getFormat("formats.chat-not-muted"));
+                    sender.sendMessage(ChatManager.getInstance().getFormat("chat-not-muted"));
                     chat.setMuted(true);
                 }
                 break;

@@ -15,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.cogzmc.chat.ChatManager;
 import net.communitycraft.core.player.CPlayer;
-import org.bukkit.entity.Player;
 
 /**
  * Manages filtering of chat by passing the
@@ -35,7 +34,7 @@ public final class Filter {
         if (player.hasPermission("gearz.chat.filters.bypass")) return filterData;
 
         if (ChatManager.getInstance().getChat().isMuted() && !player.hasPermission("gearz.mute.bypass")) {
-            player.sendMessage(ChatManager.getInstance().getFormat("formats.chat-muted"));
+            player.sendMessage(ChatManager.getInstance().getFormat("chat-muted"));
             filterData.setCancelled(true);
             return filterData;
         }
@@ -45,43 +44,43 @@ public final class Filter {
         }
 
         /*if (!TCooldownManager.canContinueLocal(player.getName() + "chat", new TCooldown(1000))) {
-            player.sendMessage(ChatManager.getInstance().getFormat("formats.chat-speed"));
+            player.sendMessage(ChatManager.getInstance().getFormat("chat-speed"));
             filterData.setCancelled(true);
             return filterData;
         }*/
 
         /*if (!TCooldownManager.canContinueLocal("allchat", new TCooldown(5))) {
-            player.sendMessage(ChatManager.getInstance().getFormat("formats.chat-gspeed"));
+            player.sendMessage(ChatManager.getInstance().getFormat("chat-gspeed"));
             filterData.setCancelled(true);
             return filterData;
         }*/
 
         if (filterData.getMessage().matches("connected with an ([^\\s]+) using MineChat")) {
-            player.getBukkitPlayer().kickPlayer(ChatManager.getInstance().getFormat("formats.minechat-banned"));
+            player.getBukkitPlayer().kickPlayer(ChatManager.getInstance().getFormat("minechat-banned"));
             filterData.setCancelled(true);
             return filterData;
         }
 
         if (filterData.getMessage().length() == 1 && !(filterData.getMessage().equalsIgnoreCase("k"))) {
-            player.sendMessage(ChatManager.getInstance().getFormat("formats.chat-short"));
+            player.sendMessage(ChatManager.getInstance().getFormat("chat-short"));
             filterData.setCancelled(true);
             return filterData;
         }
 
         if (filterData.getMessage().matches(".*(([\\w]){1,2} ){10}.*")) {
-            player.sendMessage(ChatManager.getInstance().getFormat("formats.chat-many-words"));
+            player.sendMessage(ChatManager.getInstance().getFormat("chat-many-words"));
             filterData.setCancelled(true);
             return filterData;
         }
 
         if (filterData.getMessage().matches(".*([\\w]{17,}).*")) {
-            player.sendMessage(ChatManager.getInstance().getFormat("formats.chat-long-word"));
+            player.sendMessage(ChatManager.getInstance().getFormat("chat-long-word"));
             filterData.setCancelled(true);
             return filterData;
         }
 
         if ((filterData.getMessage().matches(".*(([\\w]+\\.)+[\\w]+).*") || filterData.getMessage().matches(".*([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}).*"))) {
-            player.sendMessage(ChatManager.getInstance().getFormat("formats.chat-advertising"));
+            player.sendMessage(ChatManager.getInstance().getFormat("chat-advertising"));
             filterData.setCancelled(true);
             return filterData;
         }
@@ -97,7 +96,7 @@ public final class Filter {
         if (ChatManager.getInstance().getChat().getLastMessages().containsKey(player.getName())) {
             String lastMessage = ChatManager.getInstance().getChat().getLastMessages().get(player.getName());
             if (lastMessage.equalsIgnoreCase(filterData.getMessage())) {
-                player.sendMessage(ChatManager.getInstance().getFormat("formats.chat-repeat"));
+                player.sendMessage(ChatManager.getInstance().getFormat("chat-repeat"));
                 filterData.setCancelled(true);
                 return filterData;
             }

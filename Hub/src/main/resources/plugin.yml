@@ -1,0 +1,6 @@
+name: Hub
+version: 1.0
+authors: [Jake0oo0]
+description: Hub API Plugin
+main: net.cogzmc.hub.Hub
+depend: [Core]

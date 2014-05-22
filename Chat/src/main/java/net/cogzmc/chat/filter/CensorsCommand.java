@@ -31,13 +31,13 @@ public class CensorsCommand extends ModuleCommand {
         String cmd = args[0];
         Object[] censoredWords1 = ChatManager.getInstance().getCensoredWords();
         if (cmd.equalsIgnoreCase("list")) {
-            sender.sendMessage(ChatManager.getInstance().getFormat("formats.header-censorlist", false));
+            sender.sendMessage(ChatManager.getInstance().getFormat("header-censorlist", false));
             int index = 0;
             for (Object o : censoredWords1) {
                 index++;
                 if (!(o instanceof String)) continue;
                 String s = (String) o;
-                sender.sendMessage(ChatManager.getInstance().getFormat("formats.list-motdlist", false, new String[]{"<index>", String.valueOf(index)}, new String[]{"<motd>", s}));
+                sender.sendMessage(ChatManager.getInstance().getFormat("list-motdlist", false, new String[]{"<index>", String.valueOf(index)}, new String[]{"<motd>", s}));
             }
             return;
         }
@@ -51,12 +51,12 @@ public class CensorsCommand extends ModuleCommand {
         if (cmd.equalsIgnoreCase("remove")) {
             Integer toRemove = Integer.parseInt(args[1]);
             if (toRemove < 1 || toRemove > censoredWords1.length) {
-                sender.sendMessage(ChatManager.getInstance().getFormat("formats.index-out-of-range", false));
+                sender.sendMessage(ChatManager.getInstance().getFormat("index-out-of-range", false));
                 return;
             }
             String s = strings.get(toRemove - 1);
             strings.remove(toRemove - 1);
-            sender.sendMessage(ChatManager.getInstance().getFormat("formats.removed-motd", false, new String[]{"<motd>", s}));
+            sender.sendMessage(ChatManager.getInstance().getFormat("removed-motd", false, new String[]{"<motd>", s}));
         } else if (cmd.equalsIgnoreCase("add")) {
             StringBuilder build = new StringBuilder();
             int index = 1;
@@ -66,7 +66,7 @@ public class CensorsCommand extends ModuleCommand {
             }
             String s = build.substring(0, build.length() - 1);
             strings.add(s);
-            sender.sendMessage(ChatManager.getInstance().getFormat("formats.added-motd", false, new String[]{"<motd>", s}));
+            sender.sendMessage(ChatManager.getInstance().getFormat("added-motd", false, new String[]{"<motd>", s}));
         } else {
             throw new IllegalArgumentException("Invalid parameter");
         }

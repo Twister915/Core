@@ -32,7 +32,7 @@ public final class CMongoPermissionsManager implements CPermissionsManager {
     public CGroup createNewGroup(String name) { //How to create a group:
         if (getGroup(name) != null) throw new IllegalStateException("Group already exists!"); //Check if we already have this group name
         @SuppressWarnings("unchecked") CMongoGroup group =
-                new CMongoGroup(name, Collections.EMPTY_MAP, Collections.EMPTY_LIST, ChatColor.WHITE, ChatColor.WHITE, name); //Setup some default values
+                new CMongoGroup(name, Collections.EMPTY_MAP, Collections.EMPTY_LIST, ChatColor.WHITE, ChatColor.WHITE, name, name); //Setup some default values
         saveGroup(group); //Save the group
         if (this.getDefaultGroup() == null) setDefaultGroup(group); //Set this as the default group
         reloadPermissions(); //Reload our permissions
@@ -138,7 +138,7 @@ public final class CMongoPermissionsManager implements CPermissionsManager {
         ObjectId objectId = getValueFrom(object, MongoKey.ID_KEY, ObjectId.class);
         Integer priority = getValueFrom(object, MongoKey.GROUPS_PRIORITY_KEY, Integer.class);
         CPermissible perm = getPermissibileDataFor(object);
-        CMongoGroup cMongoGroup = new CMongoGroup(name, perm.getDeclaredPermissions(), parents, perm.getTablistColor(), perm.getChatColor(), perm.getChatPrefix());
+        CMongoGroup cMongoGroup = new CMongoGroup(name, perm.getDeclaredPermissions(), parents, perm.getTablistColor(), perm.getChatColor(), perm.getChatPrefix(), perm.getChatSuffix());
         cMongoGroup.setObjectId(objectId);
         cMongoGroup.setPriority(priority);
         return cMongoGroup;

@@ -32,6 +32,7 @@ final class CMongoGroup implements CGroup {
     @NonNull private ChatColor tablistColor;
     @NonNull private ChatColor chatColor;
     @NonNull private String chatPrefix;
+    @NonNull private String chatSuffix;
     @Setter(AccessLevel.NONE) private Map<String, Boolean> allPermissions;
     private Integer priority;
 

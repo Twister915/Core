@@ -38,6 +38,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     @Getter @Setter private ChatColor tablistColor;
     @Getter @Setter private ChatColor chatColor;
     @Getter @Setter private String chatPrefix;
+    @Getter @Setter private String chatSuffix;
     private Map<String, Boolean> declaredPermissions;
     @Getter private Map<String, Boolean> allPermissions;
     private List<CGroup> groups;

@@ -15,8 +15,6 @@ import net.cogzmc.chat.ChatManager;
 import net.cogzmc.chat.channels.Channel;
 import net.communitycraft.core.modular.command.*;
 import net.communitycraft.core.player.CPlayer;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 /**
  * Commands to manage a player's channel
@@ -51,7 +49,8 @@ public final class ChannelCommand extends ModuleCommand {
         if (channel.hasPermission() && !sender.hasPermission(channel.getPermission())) {
             throw new PermissionException("You need the permission " + channel.getPermission() + " to use this channel.");
         }
+
         ChatManager.getInstance().getChannelManager().setChannel(sender, channel);
-        sender.sendMessage(ChatManager.getInstance().getFormat("formats.switched", false, new String[]{"<channel>", channel.getName()}));
+        sender.sendMessage(ChatManager.getInstance().getFormat("switched", false, new String[]{"<channel>", channel.getName()}));
     }
 }

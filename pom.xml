@@ -13,6 +13,7 @@
         <module>PermissionManager</module>
         <module>Bashurverse</module>
         <module>Chat</module>
+        <module>Hub</module>
     </modules>
 
     <packaging>pom</packaging>

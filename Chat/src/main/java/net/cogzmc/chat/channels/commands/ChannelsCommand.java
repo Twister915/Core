@@ -24,10 +24,10 @@ public class ChannelsCommand extends ModuleCommand {
     protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
         if (args.length != 0) throw new ArgumentRequirementException("No arguments are required.");
 
-        sender.sendMessage(ChatManager.getInstance().getFormat("formats.channels", false));
+        sender.sendMessage(ChatManager.getInstance().getFormat("channels", false));
         for (Channel channel : ChatManager.getInstance().getChannelManager().getChannels()) {
             if (channel.hasPermission() && !sender.hasPermission(channel.getPermission())) continue;
-            sender.sendMessage(ChatManager.getInstance().getFormat("formats.channel", false, new String[]{"<channel>", channel.getName()}));
+            sender.sendMessage(ChatManager.getInstance().getFormat("channel", false, new String[]{"<channel>", channel.getName()}));
         }
     }
 }
