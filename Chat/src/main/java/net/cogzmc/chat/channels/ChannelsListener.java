@@ -20,7 +20,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.net.InetAddress;
 
@@ -28,7 +27,7 @@ import java.net.InetAddress;
  * Handles messaging on channels
  * and join and quit events
  * which allow the {@link ChannelManager} to
- * register a player to a channel.
+ * register a {@link org.bukkit.entity.Player} to a {@link net.cogzmc.chat.channels.Channel}.
  * <p/>
  * <p/>
  * Latest Change: Rewrite for Bukkit
@@ -53,13 +52,6 @@ public final class ChannelsListener implements Listener, CPlayerConnectionListen
 
         ChatManager.getInstance().getChannelManager().sendMessage(sender, event.getMessage());
         event.setCancelled(true);
-    }
-
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    @SuppressWarnings("unused")
-    public void onQuit(PlayerQuitEvent event) {
-        channelManager.removeChannel(event.getPlayer());
     }
 
     @Override
