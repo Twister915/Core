@@ -8,7 +8,7 @@ import net.communitycraft.core.player.CPermissionsManager;
 import net.communitycraft.core.player.CPlayerManager;
 import net.communitycraft.core.player.DatabaseConnectException;
 
-interface Provider {
+public interface Provider {
     CPlayerManager getNewPlayerManager(Core core) throws DatabaseConnectException;
     NetworkManager getNewNetworkManager(Core core);
     CPermissionsManager getNewPermissionsManager(Core core, CDatabase database, CPlayerManager playerManager);

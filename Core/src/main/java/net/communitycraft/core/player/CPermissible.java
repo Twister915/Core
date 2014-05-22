@@ -5,7 +5,7 @@ import org.bukkit.ChatColor;
 import java.util.Map;
 
 /**
- * Interface for
+ * Interface for anything that can have permissions and their associated metadata in the Core permission system.
  */
 public interface CPermissible {
     /**

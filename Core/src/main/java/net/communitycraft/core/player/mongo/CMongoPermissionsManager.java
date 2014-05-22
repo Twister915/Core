@@ -118,6 +118,16 @@ public final class CMongoPermissionsManager implements CPermissionsManager {
         this.groupReloadObservers.add(new WeakReference<>(observer));
     }
 
+    @Override
+    public void unregisterObserver(GroupReloadObserver observer) {
+        Iterator<WeakReference<GroupReloadObserver>> iterator = groupReloadObservers.iterator();
+        while (iterator.hasNext()) {
+            WeakReference<GroupReloadObserver> next = iterator.next();
+            GroupReloadObserver groupReloadObserver = next.get();
+            if (groupReloadObserver == null || groupReloadObserver.equals(observer)) iterator.remove();
+        }
+    }
+
     CMongoGroup getGroupFor(DBObject object) {
         String name = getValueFrom(object, MongoKey.GROUPS_NAME_KEY, String.class);
         List<ObjectId> parentIds = getListFor(getValueFrom(object, MongoKey.GROUPS_PARENTS_KEY, BasicDBList.class), ObjectId.class);

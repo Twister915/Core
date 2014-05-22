@@ -42,7 +42,7 @@ public final class ModuleCommandMap {
             command1.setDescription(annotation.description());
             command1.setUsage(annotation.usage());
         }
-        getCommandMap().register(module.getDescription().getName(), command1);
+        getCommandMap().register(module.getDescription().getName(), command1); //Register it with Bukkit
         this.topLevelCommands.put(command.getName(), command); //Put it in the hash map now that we've registered it.
     }
 

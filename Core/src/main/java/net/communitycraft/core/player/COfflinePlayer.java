@@ -162,15 +162,15 @@ public interface COfflinePlayer extends CPermissible {
     Map<String, Boolean> getAllPermissions();
 
     /**
-     *
-     * @return
+     * Gets the group that has the highest priority that the user is a direct member of.
+     * @return The {@link net.communitycraft.core.player.CGroup} denoted as "primary" using priories.
      */
     CGroup getPrimaryGroup();
 
     /**
-     *
-     * @param group
-     * @return
+     * Checks if the user is a direct member of the group.
+     * @param group The {@link net.communitycraft.core.player.CGroup} to check membership of.
+     * @return A boolean status of membership.
      */
     boolean isDirectlyInGroup(CGroup group);
 }

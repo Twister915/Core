@@ -171,6 +171,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
      */
     @SuppressWarnings("UnusedParameters")
     protected void handleCommandException(CommandException ex, String[] args, CommandSender sender) {
+        //Get the friendly message if supported
         if (ex instanceof FriendlyException) sender.sendMessage(((FriendlyException) ex).getFriendlyMessage(this));
         else sender.sendMessage(ChatColor.RED + ex.getClass().getSimpleName() + ": " + ex.getMessage() + "!");
     }

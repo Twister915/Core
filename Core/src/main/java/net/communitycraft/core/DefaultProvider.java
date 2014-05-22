@@ -14,7 +14,7 @@ import net.communitycraft.core.player.mongo.CMongoPermissionsManager;
 import net.communitycraft.core.player.mongo.CMongoPlayerManager;
 import org.bukkit.configuration.file.FileConfiguration;
 
-public final class DefaultProvider implements Provider {
+final class DefaultProvider implements Provider {
     @Override
     public CPlayerManager getNewPlayerManager(Core core) throws DatabaseConnectException {
         FileConfiguration config = core.getDatabaseConfiguration().getConfig();
