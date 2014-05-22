@@ -78,6 +78,7 @@ public abstract class HubItem implements Listener {
     }
 
     public final <T> T getPropertyByType(@NonNull String property, @NonNull Class<T> classType) {
+        //noinspection unchecked
         return (T) instance.getConfig().get("hub-items." + meta.key() + ".properties." + property);
     }
 
