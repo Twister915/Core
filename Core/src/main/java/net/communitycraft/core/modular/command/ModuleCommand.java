@@ -29,6 +29,7 @@ import java.util.*;
  *
  * If you require usage of a sub-command, please override {@link #isUsingSubCommandsOnly()} and have it return true.
  */
+@SuppressWarnings("UnusedParameters")
 public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
     /**
      * Holds a list of the sub-commands bound to their names used for quick access.
@@ -170,7 +171,8 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
      */
     @SuppressWarnings("UnusedParameters")
     protected void handleCommandException(CommandException ex, String[] args, CommandSender sender) {
-        sender.sendMessage(ChatColor.RED + ex.getClass().getSimpleName() + ": " + ex.getMessage() + "!");
+        if (ex instanceof FriendlyException) sender.sendMessage(((FriendlyException) ex).getFriendlyMessage(this));
+        else sender.sendMessage(ChatColor.RED + ex.getClass().getSimpleName() + ": " + ex.getMessage() + "!");
     }
 
     @SuppressWarnings("UnusedParameters")

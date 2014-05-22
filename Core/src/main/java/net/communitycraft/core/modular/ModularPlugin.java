@@ -101,6 +101,10 @@ public abstract class ModularPlugin extends JavaPlugin {
         return getFormatRaw(key);
     }
 
+    public final boolean hasFormat(String key) {
+        return formatsFile.getConfig().contains(key);
+    }
+
     public final CPlayerManager getPlayerManager() {
         return Core.getPlayerManager();
     }
