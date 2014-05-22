@@ -12,6 +12,7 @@
         <module>Punishments</module>
         <module>PermissionManager</module>
         <module>Bashurverse</module>
+        <module>Chat</module>
     </modules>
 
     <packaging>pom</packaging>

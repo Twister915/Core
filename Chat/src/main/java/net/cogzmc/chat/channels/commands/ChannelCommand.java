@@ -1,0 +1,56 @@
+/*
+ * Copyright (c) 2014.
+ * CogzMC LLC USA
+ * All Right reserved
+ *
+ * This software is the confidential and proprietary information of Cogz Development, LLC.
+ * ("Confidential Information").
+ * You shall not disclose such Confidential Information and shall use it only in accordance
+ * with the terms of the license agreement you entered into with Cogz LLC.
+ */
+
+package net.cogzmc.chat.channels.commands;
+
+import net.cogzmc.chat.ChatManager;
+import net.cogzmc.chat.channels.Channel;
+import net.communitycraft.core.modular.command.ArgumentRequirementException;
+import net.communitycraft.core.modular.command.CommandException;
+import net.communitycraft.core.modular.command.ModuleCommand;
+import net.communitycraft.core.modular.command.PermissionException;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+/**
+ * Commands to manage a player's channel
+ * including listing and switching between
+ * channels.
+ *
+ * <p>
+ * Latest Change: Rewrite for Bukkit
+ * <p>
+ *
+ * @author Jake0oo0
+ * @since 1/18/2014
+ */
+public final class ChannelCommand extends ModuleCommand {
+
+    public ChannelCommand() {
+        super("channel");
+    }
+
+    @Override
+    protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
+        if (args.length != 1) throw new ArgumentRequirementException("You must specify a channel to join.");
+
+        Channel channel = ChatManager.getInstance().getChannelManager().getChannelByName(args[0].toLowerCase());
+        if (channel == null) {
+            throw new CommandException("The channel " + args[0] + " does not exist!");
+        }
+
+        if (channel.hasPermission() && !sender.hasPermission(channel.getPermission())) {
+            throw new PermissionException("You need the permission " + channel.getPermission() + " to use this channel.");
+        }
+        ChatManager.getInstance().getChannelManager().setChannel((Player) sender, channel);
+        sender.sendMessage(ChatManager.getInstance().getFormat("formats.switched", false, new String[]{"<channel>", channel.getName()}));
+    }
+}

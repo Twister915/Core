@@ -1,0 +1,6 @@
+name: ChatManager
+version: 1.0
+authors: [Jake0oo0]
+description: Chat Management Plugin
+main: net.cogzmc.chat.ChatManager
+depend: [Core]

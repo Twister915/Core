@@ -28,6 +28,12 @@ public interface CPermissible {
 
     /**
      *
+     * @return
+     */
+    String getChatSuffix();
+
+    /**
+     *
      * @param color
      */
     void setChatColor(ChatColor color);
@@ -43,6 +49,12 @@ public interface CPermissible {
      * @param prefix
      */
     void setChatPrefix(String prefix);
+
+    /**
+     *
+     * @param suffix
+     */
+    void setChatSuffix(String suffix);
 
     /**
      *
