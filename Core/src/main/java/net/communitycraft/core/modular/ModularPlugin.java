@@ -16,7 +16,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class ModularPlugin extends JavaPlugin {
-
     private YAMLConfigurationFile formatsFile;
     @Getter private ModuleMeta meta;
     @Getter private ModuleCommandMap commandMap;
@@ -62,6 +61,11 @@ public abstract class ModularPlugin extends JavaPlugin {
     public final <T extends Listener> T registerListener(T listener) {
         getServer().getPluginManager().registerEvents(listener, this);
         return listener;
+    }
+
+    public final <T extends ModuleCommand> T registerCommand(T command) {
+        getCommandMap().registerCommand(command);
+        return command;
     }
 
     public final void logMessage(String message) {
