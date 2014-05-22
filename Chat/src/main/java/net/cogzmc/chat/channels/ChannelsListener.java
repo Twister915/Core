@@ -12,13 +12,17 @@
 package net.cogzmc.chat.channels;
 
 import net.cogzmc.chat.ChatManager;
+import net.communitycraft.core.player.CPlayer;
+import net.communitycraft.core.player.CPlayerConnectionListener;
+import net.communitycraft.core.player.CPlayerJoinException;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import java.net.InetAddress;
 
 /**
  * Handles messaging on channels
@@ -33,7 +37,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * @author Jake
  * @since 1/16/2014
  */
-public final class ChannelsListener implements Listener {
+public final class ChannelsListener implements Listener, CPlayerConnectionListener {
     private ChannelManager channelManager;
 
     public ChannelsListener(ChannelManager channelManager) {
@@ -51,15 +55,20 @@ public final class ChannelsListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    @SuppressWarnings("unused")
-    public void onJoin(PlayerJoinEvent event) {
-        channelManager.setChannel(event.getPlayer(), channelManager.getDefaultChannel());
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onQuit(PlayerQuitEvent event) {
         channelManager.removeChannel(event.getPlayer());
+    }
+
+    @Override
+    public void onPlayerJoin(CPlayer player, InetAddress address) throws CPlayerJoinException {
+        channelManager.setChannel(player.getBukkitPlayer(), channelManager.getDefaultChannel());
+    }
+
+    @Override
+    public void onPlayerDisconnect(CPlayer player) {
+        channelManager.removeChannel(player.getBukkitPlayer());
     }
 }
