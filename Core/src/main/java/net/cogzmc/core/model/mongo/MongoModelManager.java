@@ -27,6 +27,7 @@ public class MongoModelManager implements ModelManager {
         if (serializer == null) serializer = new DefaultModelSerializer();
         MongoModelStorage<T> storage = new MongoModelStorage<>(collection, database, serializer, modelClass);
         this.modelStorageMap.put(modelClass, storage);
+        storage.reload();
         return storage;
     }
 
