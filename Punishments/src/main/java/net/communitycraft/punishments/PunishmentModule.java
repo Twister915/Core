@@ -1,7 +1,7 @@
 package net.communitycraft.punishments;
 
-import net.communitycraft.core.modular.ModularPlugin;
-import net.communitycraft.core.modular.ModuleMeta;
+import net.cogzmc.core.modular.ModularPlugin;
+import net.cogzmc.core.modular.ModuleMeta;
 
 @ModuleMeta(
         name = "Punishments",

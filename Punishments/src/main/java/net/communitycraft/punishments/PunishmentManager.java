@@ -1,8 +1,8 @@
 package net.communitycraft.punishments;
 
-import net.communitycraft.core.player.CPlayer;
-import net.communitycraft.core.player.CPlayerConnectionListener;
-import net.communitycraft.core.player.CPlayerJoinException;
+import net.cogzmc.core.player.CPlayer;
+import net.cogzmc.core.player.CPlayerConnectionListener;
+import net.cogzmc.core.player.CPlayerJoinException;
 
 import java.net.InetAddress;
 

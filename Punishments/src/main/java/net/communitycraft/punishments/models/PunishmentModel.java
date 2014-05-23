@@ -1,6 +1,6 @@
 package net.communitycraft.punishments.models;
 
-import net.communitycraft.core.player.COfflinePlayer;
+import net.cogzmc.core.player.COfflinePlayer;
 
 public interface PunishmentModel {
     COfflinePlayer getTarget();

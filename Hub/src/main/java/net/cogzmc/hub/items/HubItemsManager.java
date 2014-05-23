@@ -1,8 +1,8 @@
 package net.cogzmc.hub.items;
 
-import net.communitycraft.core.player.CPlayer;
-import net.communitycraft.core.player.CPlayerConnectionListener;
-import net.communitycraft.core.player.CPlayerJoinException;
+import net.cogzmc.core.player.CPlayer;
+import net.cogzmc.core.player.CPlayerConnectionListener;
+import net.cogzmc.core.player.CPlayerJoinException;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 

@@ -1,10 +1,10 @@
 package net.communitycraft.permissions.commands.general;
 
-import net.communitycraft.core.modular.command.ArgumentRequirementException;
-import net.communitycraft.core.modular.command.CommandException;
-import net.communitycraft.core.modular.command.EmptyHandlerException;
-import net.communitycraft.core.modular.command.ModuleCommand;
-import net.communitycraft.core.player.CPermissible;
+import net.cogzmc.core.modular.command.ArgumentRequirementException;
+import net.cogzmc.core.modular.command.CommandException;
+import net.cogzmc.core.modular.command.EmptyHandlerException;
+import net.cogzmc.core.modular.command.ModuleCommand;
+import net.cogzmc.core.player.CPermissible;
 import net.communitycraft.permissions.PermissionsManager;
 import org.bukkit.command.CommandSender;
 

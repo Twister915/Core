@@ -1,6 +1,6 @@
 name: Core
 soft-depend: [LilyPad-Connect]
-main: net.communitycraft.core.Core
+main: net.cogzmc.core.Core
 version: 1.0
 description: Core.
 authors: [Twister915, pokuit]

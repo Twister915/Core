@@ -1,7 +1,7 @@
 package net.communitycraft.permissions.commands.permissibile;
 
-import net.communitycraft.core.Core;
-import net.communitycraft.core.player.COfflinePlayer;
+import net.cogzmc.core.Core;
+import net.cogzmc.core.player.COfflinePlayer;
 
 import java.util.List;
 

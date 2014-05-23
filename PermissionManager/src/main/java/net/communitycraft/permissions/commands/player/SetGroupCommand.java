@@ -1,10 +1,10 @@
 package net.communitycraft.permissions.commands.player;
 
-import net.communitycraft.core.Core;
-import net.communitycraft.core.modular.command.ArgumentRequirementException;
-import net.communitycraft.core.modular.command.CommandException;
-import net.communitycraft.core.player.CGroup;
-import net.communitycraft.core.player.COfflinePlayer;
+import net.cogzmc.core.Core;
+import net.cogzmc.core.modular.command.ArgumentRequirementException;
+import net.cogzmc.core.modular.command.CommandException;
+import net.cogzmc.core.player.CGroup;
+import net.cogzmc.core.player.COfflinePlayer;
 import net.communitycraft.permissions.commands.general.AbstractPlayerSubCommand;
 
 import java.util.List;

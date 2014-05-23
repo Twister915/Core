@@ -3,8 +3,8 @@ package net.communitycraft.permissions;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import net.communitycraft.core.model.Model;
-import net.communitycraft.core.player.COfflinePlayer;
+import net.cogzmc.core.model.Model;
+import net.cogzmc.core.player.COfflinePlayer;
 
 import java.util.Date;
 

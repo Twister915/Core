@@ -3,9 +3,9 @@ package net.communitycraft.punishments.models;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import net.communitycraft.core.model.Model;
-import net.communitycraft.core.model.ModelField;
-import net.communitycraft.core.player.COfflinePlayer;
+import net.cogzmc.core.model.Model;
+import net.cogzmc.core.model.ModelField;
+import net.cogzmc.core.player.COfflinePlayer;
 
 import java.util.Date;
 

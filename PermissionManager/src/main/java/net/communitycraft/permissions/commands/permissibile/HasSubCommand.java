@@ -1,6 +1,6 @@
 package net.communitycraft.permissions.commands.permissibile;
 
-import net.communitycraft.core.player.CPermissible;
+import net.cogzmc.core.player.CPermissible;
 import net.communitycraft.permissions.PermissionsManager;
 import net.communitycraft.permissions.commands.general.PermissibleSubCommand;
 import org.bukkit.ChatColor;

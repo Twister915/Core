@@ -2,7 +2,7 @@ package net.cogzmc.hub.modules;
 
 import lombok.Getter;
 import net.cogzmc.hub.Hub;
-import net.communitycraft.core.modular.ModularPlugin;
+import net.cogzmc.core.modular.ModularPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;

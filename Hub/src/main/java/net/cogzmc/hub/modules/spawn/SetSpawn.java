@@ -1,9 +1,9 @@
 package net.cogzmc.hub.modules.spawn;
 
 import net.cogzmc.hub.Hub;
-import net.communitycraft.core.modular.command.CommandException;
-import net.communitycraft.core.modular.command.ModuleCommand;
-import net.communitycraft.core.player.CPlayer;
+import net.cogzmc.core.modular.command.CommandException;
+import net.cogzmc.core.modular.command.ModuleCommand;
+import net.cogzmc.core.player.CPlayer;
 import org.bukkit.ChatColor;
 
 /**

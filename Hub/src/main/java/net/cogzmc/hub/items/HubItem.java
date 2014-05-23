@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import net.cogzmc.hub.Hub;
 import net.cogzmc.hub.items.annotations.HubItemMeta;
-import net.communitycraft.core.modular.ModularPlugin;
+import net.cogzmc.core.modular.ModularPlugin;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;

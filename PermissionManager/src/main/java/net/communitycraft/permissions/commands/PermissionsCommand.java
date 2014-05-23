@@ -1,6 +1,6 @@
 package net.communitycraft.permissions.commands;
 
-import net.communitycraft.core.modular.command.ModuleCommand;
+import net.cogzmc.core.modular.command.ModuleCommand;
 import net.communitycraft.permissions.commands.group.GroupSubCommand;
 import net.communitycraft.permissions.commands.player.PlayerSubCommand;
 

@@ -1,6 +1,6 @@
 package net.communitycraft.permissions.commands.player;
 
-import net.communitycraft.core.modular.command.ModuleCommand;
+import net.cogzmc.core.modular.command.ModuleCommand;
 import net.communitycraft.permissions.commands.permissibile.HasSubCommand;
 import net.communitycraft.permissions.commands.permissibile.PlayerResolutionDelegate;
 

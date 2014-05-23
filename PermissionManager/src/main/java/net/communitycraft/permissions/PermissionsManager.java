@@ -1,12 +1,12 @@
 package net.communitycraft.permissions;
 
 import lombok.Getter;
-import net.communitycraft.core.Core;
-import net.communitycraft.core.model.ModelStorage;
-import net.communitycraft.core.modular.ModularPlugin;
-import net.communitycraft.core.modular.ModuleMeta;
-import net.communitycraft.core.player.CGroup;
-import net.communitycraft.core.player.CPermissionsManager;
+import net.cogzmc.core.Core;
+import net.cogzmc.core.model.ModelStorage;
+import net.cogzmc.core.modular.ModularPlugin;
+import net.cogzmc.core.modular.ModuleMeta;
+import net.cogzmc.core.player.CGroup;
+import net.cogzmc.core.player.CPermissionsManager;
 
 @ModuleMeta(
         name = "Permissions Manager",

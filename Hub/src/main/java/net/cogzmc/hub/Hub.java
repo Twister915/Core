@@ -8,7 +8,7 @@ import net.cogzmc.hub.modules.NoWeather;
 import net.cogzmc.hub.modules.spawn.SetSpawn;
 import net.cogzmc.hub.modules.spawn.Spawn;
 import net.cogzmc.hub.modules.spawn.SpawnHandler;
-import net.communitycraft.core.modular.ModularPlugin;
+import net.cogzmc.core.modular.ModularPlugin;
 
 /**
  * <p>
