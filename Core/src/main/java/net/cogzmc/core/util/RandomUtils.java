@@ -1,4 +1,4 @@
-package net.cogzmc.core;
+package net.cogzmc.core.util;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;

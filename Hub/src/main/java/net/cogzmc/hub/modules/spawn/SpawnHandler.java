@@ -1,8 +1,8 @@
 package net.cogzmc.hub.modules.spawn;
 
 import lombok.Getter;
+import net.cogzmc.core.util.LocationUtils;
 import net.cogzmc.hub.Hub;
-import net.cogzmc.hub.util.LocationUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

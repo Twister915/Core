@@ -14,8 +14,8 @@ import org.bukkit.ChatColor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-import static net.cogzmc.core.RandomUtils.safeCast;
 import static net.cogzmc.core.player.mongo.MongoUtils.*;
+import static net.cogzmc.core.util.RandomUtils.safeCast;
 
 @EqualsAndHashCode(of = {"uniqueIdentifier"})
 class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {

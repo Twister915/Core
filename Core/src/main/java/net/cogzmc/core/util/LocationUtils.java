@@ -1,4 +1,4 @@
-package net.cogzmc.hub.util;
+package net.cogzmc.core.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

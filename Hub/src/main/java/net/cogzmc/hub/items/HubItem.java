@@ -2,9 +2,9 @@ package net.cogzmc.hub.items;
 
 import lombok.Getter;
 import lombok.NonNull;
+import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.hub.Hub;
 import net.cogzmc.hub.items.annotations.HubItemMeta;
-import net.cogzmc.core.modular.ModularPlugin;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -14,6 +14,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+
+import java.util.List;
 
 /**
  * <p>
@@ -26,7 +28,7 @@ import org.bukkit.inventory.PlayerInventory;
 public abstract class HubItem implements Listener {
     protected abstract void onLeftClick(Player player);
     protected abstract void onRightClick(Player player);
-    protected abstract ItemStack getItemStack();
+    protected abstract List<ItemStack> getItemStacks();
 
     @Getter private ModularPlugin instance;
     @Getter private HubItemMeta meta;
@@ -49,7 +51,7 @@ public abstract class HubItem implements Listener {
                 itemStack.getType() == Material.AIR ||
                 !itemStack.hasItemMeta() ||
                 !itemStack.getItemMeta().hasDisplayName() ||
-                !itemStack.getItemMeta().getDisplayName().equals(getItemStack().getItemMeta().getDisplayName()))
+                !itemStack.getItemMeta().getDisplayName().equals(getItemStacks().get(0).getItemMeta().getDisplayName()))
             return;
         switch (event.getAction()) {
             case RIGHT_CLICK_AIR:
@@ -71,9 +73,9 @@ public abstract class HubItem implements Listener {
         for (ItemStack i : inventory.getContents()) {
             if (player.getInventory().contains(i)) return false;
         }
-        return getItemStack() != null &&
+        return getItemStacks() != null &&
                 (this.meta.permission().isEmpty() || player.hasPermission(this.meta.permission())) &&
-                !player.getInventory().contains(getItemStack()) &&
+                !player.getInventory().contains(getItemStacks().get(0)) &&
                 getPropertyByType("enabled", Boolean.class);
     }
 
