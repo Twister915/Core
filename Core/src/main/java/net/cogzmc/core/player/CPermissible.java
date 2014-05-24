@@ -78,6 +78,13 @@ public interface CPermissible {
 
     /**
      *
+     * @param permission
+     * @return
+     */
+    boolean isSet(String permission);
+
+    /**
+     *
      * @return
      */
     Map<String, Boolean> getDeclaredPermissions();
@@ -87,5 +94,9 @@ public interface CPermissible {
      */
     void reloadPermissions();
 
+    /**
+     *
+     * @return
+     */
     String getName();
 }

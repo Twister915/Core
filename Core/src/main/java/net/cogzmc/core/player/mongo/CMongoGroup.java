@@ -54,6 +54,11 @@ final class CMongoGroup implements CGroup {
     }
 
     @Override
+    public boolean isSet(String permission) {
+        return this.declaredPermissions.containsKey(permission);
+    }
+
+    @Override
     public Map<String, Boolean> getDeclaredPermissions() {
         return new HashMap<>(declaredPermissions);
     }
@@ -70,6 +75,7 @@ final class CMongoGroup implements CGroup {
         }
         builder.add(MongoKey.GROUPS_PARENTS_KEY.toString(), parentList);
         builder.add(MongoKey.GROUPS_PRIORITY_KEY.toString(), priority);
+        builder.add(MongoKey.GROUPS_CHAT_SUFFIX_KEY.toString(), chatSuffix);
         return builder.get();
     }
 

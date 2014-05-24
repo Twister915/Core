@@ -19,6 +19,7 @@ public final class MongoUtils {
         if (permissible.getTablistColor() != null) builder.add(MongoKey.GROUPS_TABLIST_COLOR_KEY.toString(), permissible.getTablistColor().name());
         if (permissible.getChatColor() != null) builder.add(MongoKey.GROUPS_CHAT_COLOR_KEY.toString(), permissible.getChatColor().name());
         if (permissible.getChatPrefix() != null) builder.add(MongoKey.GROUPS_CHAT_PREFIX_KEY.toString(), permissible.getChatPrefix());
+        if (permissible.getChatSuffix() != null) builder.add(MongoKey.GROUPS_CHAT_SUFFIX_KEY.toString(), permissible.getChatSuffix());
         if (permissible.getDeclaredPermissions().size() > 0) builder.add(MongoKey.GROUPS_PERMISSIONS_KEY.toString(), getDBObjectFor(permissible.getDeclaredPermissions()));
         return builder;
     }
@@ -35,6 +36,7 @@ public final class MongoUtils {
         String cColor = getValueFrom(object, MongoKey.GROUPS_CHAT_COLOR_KEY, String.class); final ChatColor chatColor = cColor == null ? null : ChatColor.valueOf(cColor);
         String tColor = getValueFrom(object, MongoKey.GROUPS_TABLIST_COLOR_KEY, String.class); final ChatColor tablistColor = tColor == null ? null : ChatColor.valueOf(tColor);
         final String chatPrefix = getValueFrom(object, MongoKey.GROUPS_CHAT_PREFIX_KEY, String.class);
+        final String chatSuffix = getValueFrom(object, MongoKey.GROUPS_CHAT_SUFFIX_KEY, String.class);
         return new CPermissible() {
             @Override
             public ChatColor getChatColor() {
@@ -52,6 +54,9 @@ public final class MongoUtils {
             }
 
             @Override
+            public String getChatSuffix() {return chatSuffix;}
+
+            @Override
             public void setChatColor(ChatColor color) {
                 throw new UnsupportedOperationException("This CPermissible is for data access only!");
             }
@@ -67,6 +72,11 @@ public final class MongoUtils {
             }
 
             @Override
+            public void setChatSuffix(String suffix) {
+                throw new UnsupportedOperationException("This CPermissible is for data access only!");
+            }
+
+            @Override
             public void setPermission(String permission, Boolean value) {
                 throw new UnsupportedOperationException("This CPermissible is for data access only!");
             }
@@ -78,6 +88,11 @@ public final class MongoUtils {
 
             @Override
             public boolean hasPermission(String permission) {
+                throw new UnsupportedOperationException("This CPermissible is for data access only!");
+            }
+
+            @Override
+            public boolean isSet(String permission) {
                 throw new UnsupportedOperationException("This CPermissible is for data access only!");
             }
 

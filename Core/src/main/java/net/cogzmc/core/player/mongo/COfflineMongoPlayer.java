@@ -198,6 +198,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
         CPermissible permissibleDataFor = getPermissibileDataFor(player);
         this.chatColor = permissibleDataFor.getChatColor();
         this.chatPrefix = permissibleDataFor.getChatPrefix();
+        this.chatSuffix = permissibleDataFor.getChatSuffix();
         this.tablistColor = permissibleDataFor.getTablistColor();
         this.declaredPermissions = permissibleDataFor.getDeclaredPermissions();
         if (this.declaredPermissions == null) this.declaredPermissions = new HashMap<>();
@@ -220,6 +221,11 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     @Override
     public boolean hasPermission(String permission) {
         return allPermissions.containsKey(permission) && allPermissions.get(permission);
+    }
+
+    @Override
+    public boolean isSet(String permission) {
+        return this.declaredPermissions.containsKey(permission);
     }
 
     @Override
