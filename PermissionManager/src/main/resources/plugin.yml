@@ -1,0 +1,6 @@
+name: PermissionsManager
+main: net.communitycraft.permissions.PermissionsManager
+depend: [Core]
+version: 1.0
+authors: [Twister915]
+description: Does stuff for Permissions.

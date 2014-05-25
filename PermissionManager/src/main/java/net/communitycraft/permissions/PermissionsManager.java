@@ -7,6 +7,7 @@ import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.modular.ModuleMeta;
 import net.cogzmc.core.player.CGroup;
 import net.cogzmc.core.player.CPermissionsManager;
+import net.communitycraft.permissions.commands.PermissionsCommand;
 
 @ModuleMeta(
         name = "Permissions Manager",
@@ -24,7 +25,9 @@ public final class PermissionsManager extends ModularPlugin {
         if (permissionsManager.getGroups().size() == 0) {
             CGroup defaultGroup = permissionsManager.createNewGroup("Default");
             defaultGroup.setPermission("test.permission", true);
+            permissionsManager.saveGroup(defaultGroup);
         }
+        registerCommand(new PermissionsCommand());
         //Get the changelog
         changeLog = Core.getModelManager().getModelStorage(PermissionChange.class);
         changeLog.reload();

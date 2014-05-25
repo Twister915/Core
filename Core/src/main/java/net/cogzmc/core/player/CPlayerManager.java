@@ -104,12 +104,6 @@ public interface CPlayerManager extends Iterable<CPlayer> {
     void playerLoggedOut(Player player);
 
     /**
-     * Gets the current database connection.
-     * @return The database connection.
-     */
-    CDatabase getDatabase();
-
-    /**
      * <b>Should only be called during disable, internal method!</b>
      */
     void onDisable();

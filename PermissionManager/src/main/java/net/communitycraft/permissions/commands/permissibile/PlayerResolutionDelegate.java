@@ -12,4 +12,9 @@ public final class PlayerResolutionDelegate implements PermissibleResolutionDele
         if (offlinePlayerByName.size() >= 1) return offlinePlayerByName.get(0);
         return null;
     }
+
+    @Override
+    public String getNameOfType() {
+        return "Player";
+    }
 }

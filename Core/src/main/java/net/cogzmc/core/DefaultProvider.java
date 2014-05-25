@@ -16,10 +16,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 final class DefaultProvider implements Provider {
     @Override
-    public CPlayerManager getNewPlayerManager(Core core) throws DatabaseConnectException {
+    public CDatabase getNewDatabase(Core core) throws DatabaseConnectException {
         FileConfiguration config = core.getDatabaseConfiguration().getConfig();
         //This will get the database values from the database.yml file
-        CMongoDatabase mongoDatabase = new CMongoDatabase(
+        return new CMongoDatabase(
                 config.getString("host", "127.0.0.1"),
                 config.getInt("port", 28017),
                 config.getString("database", "communitycraft"),
@@ -27,7 +27,12 @@ final class DefaultProvider implements Provider {
                 config.getString("password", null),
                 config.getString("collectionPrefix")
         );
-        return new CMongoPlayerManager(mongoDatabase);
+    }
+
+    @Override
+    public CPlayerManager getNewPlayerManager(Core core){
+        //This will get the database values from the database.yml file
+        return new CMongoPlayerManager((CMongoDatabase) Core.getInstance().getCDatabase());
     }
 
     @Override
@@ -39,8 +44,8 @@ final class DefaultProvider implements Provider {
     }
 
     @Override
-    public CPermissionsManager getNewPermissionsManager(Core core, CDatabase database, CPlayerManager playerManager) {
-        return new CMongoPermissionsManager((CMongoDatabase) database, playerManager);
+    public CPermissionsManager getNewPermissionsManager(Core core, CPlayerManager playerManager) {
+        return new CMongoPermissionsManager((CMongoDatabase) Core.getInstance().getCDatabase(), playerManager);
     }
 
     @Override
@@ -49,7 +54,7 @@ final class DefaultProvider implements Provider {
     }
 
     @Override
-    public ModelManager getNewModelManager(CDatabase database) {
-        return new MongoModelManager((CMongoDatabase)database);
+    public ModelManager getNewModelManager(Core core) {
+        return new MongoModelManager((CMongoDatabase)core.getCDatabase());
     }
 }

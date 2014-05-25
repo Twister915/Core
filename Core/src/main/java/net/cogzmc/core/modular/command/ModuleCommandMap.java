@@ -3,6 +3,7 @@ package net.cogzmc.core.modular.command;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
+import net.cogzmc.core.Core;
 import net.cogzmc.core.modular.ModularPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
@@ -43,6 +44,7 @@ public final class ModuleCommandMap {
             command1.setUsage(annotation.usage());
         }
         getCommandMap().register(module.getDescription().getName(), command1); //Register it with Bukkit
+        Core.logInfo("Registered command " + command.toString());
         this.topLevelCommands.put(command.getName(), command); //Put it in the hash map now that we've registered it.
     }
 

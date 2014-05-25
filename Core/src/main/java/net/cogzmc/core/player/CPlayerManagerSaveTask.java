@@ -12,10 +12,10 @@ public final class CPlayerManagerSaveTask implements Runnable {
 
     @Override
     public void run() {
-        Core.getPermissionsManager().reloadPermissions();
         List<CPlayer> failedToSave = new ArrayList<>();
         int savedPlayers = 0;
-        synchronized (manager.getOnlinePlayers()) {
+        synchronized (manager) {
+            Core.getPermissionsManager().reloadPermissions();
             for (CPlayer cPlayer : manager.getOnlinePlayers()) {
                 try {
                     cPlayer.saveIntoDatabase();
@@ -29,6 +29,6 @@ public final class CPlayerManagerSaveTask implements Runnable {
         for (CPlayer cPlayer : failedToSave) {
             Core.logInfo("Failed to save " + cPlayer.toString());
         }
-        Core.logInfo("Saved " + savedPlayers + " players!");
+        if (savedPlayers > 0) Core.logInfo("Saved " + savedPlayers + " players!");
     }
 }

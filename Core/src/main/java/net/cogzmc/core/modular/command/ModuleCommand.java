@@ -1,6 +1,9 @@
 package net.cogzmc.core.modular.command;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CPlayer;
 import org.bukkit.Bukkit;
@@ -40,6 +43,8 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
      */
     @Getter private final String name;
 
+    @Setter(AccessLevel.PROTECTED) @Getter private ModuleCommand superCommand = null;
+
     /**
      * Main constructor without sub-commands.
      * @param name The name of the command.
@@ -58,9 +63,11 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
         //Toss all the sub commands in the map
         for (ModuleCommand subCommand : subCommands) {
             this.subCommands.put(subCommand.getName(), subCommand);
+            subCommand.setSuperCommand(this);
         }
         //Add a provided help command
         final Map<String, ModuleCommand> subCommandsLV = this.subCommands;
+        final ModuleCommand superHelpCommand = this;
         this.subCommands.put("help", new ModuleCommand("help") {
             @Override
             public void handleCommandUnspecific(CommandSender sender, String[] args) {
@@ -70,7 +77,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
                 }
                 String s = builder.toString();
                 //Looks like this /name - [subcommand1|subcommand2|]
-                sender.sendMessage(ChatColor.AQUA + "/" + ChatColor.DARK_AQUA + name + ChatColor.YELLOW + " - [" + s.substring(0, s.length()-2) + "]");
+                sender.sendMessage(ChatColor.AQUA + "/" + ChatColor.DARK_AQUA + superHelpCommand.getFormattedName() + ChatColor.YELLOW + " - [" + s.substring(0, s.length()-1) + "]");
             }
         });
     }
@@ -93,11 +100,12 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
                 if ((subCommand = getSubCommandFor(args[0])) == null)
                     throw new ArgumentRequirementException("The sub command you have specified is invalid!");
             }
+            if (subCommand == null && args.length > 0) subCommand = getSubCommandFor(args[0]); //If we're not requiring sub-commands but we can have them, let's try that
             //By now we have validated that the sub command can be executed if it MUST, now lets see if we can execute it
             //In this case, if we must execute the sub command, this check will always past. In cases where it's an option, this check willa also pass.
             //That way, we can use this feature of sub commands without actually requiring it.
             if (subCommand != null) {
-                String[] choppedArgs = Arrays.copyOfRange(args, 1, args.length - 1);
+                String[] choppedArgs = Arrays.copyOfRange(args, Math.min(1, args.length-1), args.length);
                 preSubCommandDispatch(sender, choppedArgs, subCommand); //Notify the subclass that we are using a sub-command in case any staging needs to take place.
                 subCommand.onCommand(sender, command, s, choppedArgs);
                 return true;
@@ -137,7 +145,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
             //If so, check if there's an actual match for the sub-command to delegate to.
             ModuleCommand possibleHigherLevelSubCommand;
             if ((possibleHigherLevelSubCommand = getSubCommandFor(args[0])) != null)
-                return possibleHigherLevelSubCommand.onTabComplete(sender, command, alias, Arrays.copyOfRange(args, 1, args.length-1));
+                return possibleHigherLevelSubCommand.onTabComplete(sender, command, alias, Arrays.copyOfRange(args, 1, args.length));
             //NOW THINK. If there's not one, you'll reach this line, and exit this block of the if statement. The next statement is an else if, so it will skip that
             //And go to the very bottom "handleTabComplete."
         } else if (args.length == 1) { //So if we have exactly one argument, let's try and complete the sub-command for that argument
@@ -174,6 +182,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
         //Get the friendly message if supported
         if (ex instanceof FriendlyException) sender.sendMessage(((FriendlyException) ex).getFriendlyMessage(this));
         else sender.sendMessage(ChatColor.RED + ex.getClass().getSimpleName() + ": " + ex.getMessage() + "!");
+        if (ex instanceof UnhandledCommandExceptionException) ((UnhandledCommandExceptionException) ex).getCausingException().printStackTrace();
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -217,7 +226,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
     @SuppressWarnings("UnusedParameters")
     protected List<String> handleTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> ss = new ArrayList<>(); //Create a list to put possible names
-        String arg = args[args.length - 1]; //Get the last argument
+        String arg = args.length > 0 ? args[args.length - 1] : ""; //Get the last argument
         for (Player player : Bukkit.getOnlinePlayers()) { //Loop through all the players
             String name1 = player.getName(); //Get this players name (since we reference it twice)
             if (name1.startsWith(arg)) ss.add(name1); //And if it starts with the argument we add it to this list
@@ -226,4 +235,11 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
     }
 
     protected boolean isUsingSubCommandsOnly() {return false;}
+
+    protected String getFormattedName() {return superCommand == null ? name : superCommand.getFormattedName() + " " + name;}
+
+    @Override
+    public String toString() {
+        return "Command -> " + getFormattedName();
+    }
 }

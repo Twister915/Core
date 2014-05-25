@@ -30,6 +30,7 @@ public abstract class PermissibleSubCommand<PermissibleType extends CPermissible
                 doAction(permissible, arg, sender);
                 tookControlOfMessage = true;
             }
+            if (!tookControlOfMessage) sender.sendMessage(getSuccessMessage(permissible, arg));
         } else {
             try {
                 doAction(permissible);
@@ -37,8 +38,8 @@ public abstract class PermissibleSubCommand<PermissibleType extends CPermissible
                 doAction(permissible, sender);
                 tookControlOfMessage = true;
             }
+            if (!tookControlOfMessage) sender.sendMessage(getSuccessMessage(permissible));
         }
-        if (!tookControlOfMessage) sender.sendMessage(getSuccessMessage());
     }
 
     protected abstract PermissibleType getPermissible(String name);
@@ -52,5 +53,6 @@ public abstract class PermissibleSubCommand<PermissibleType extends CPermissible
     protected void doAction(PermissibleType permissible, CommandSender sender) throws CommandException {throw new EmptyHandlerException();}
 
     protected boolean validateArgument(String argument) {return true;}
-    protected String getSuccessMessage() {return PermissionsManager.getInstance().getFormat("success-command");}
+    protected String getSuccessMessage(PermissibleType target) {return PermissionsManager.getInstance().getFormat("success-command");}
+    protected String getSuccessMessage(PermissibleType target, String argument) {return PermissionsManager.getInstance().getFormat("success-command");}
 }

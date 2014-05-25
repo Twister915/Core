@@ -8,4 +8,9 @@ public final class GroupResolutionDelegate implements PermissibleResolutionDeleg
     public CGroup getFor(String name) {
         return Core.getPermissionsManager().getGroup(name);
     }
+
+    @Override
+    public String getNameOfType() {
+        return "Group";
+    }
 }

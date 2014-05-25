@@ -27,10 +27,12 @@ public abstract class ModularPlugin extends JavaPlugin {
                 onFailureToEnable();
                 return;
             }
+            Core.getInstance().onModulePreEnable(this);
             meta = getClass().getAnnotation(ModuleMeta.class);
             saveDefaultConfig();
             this.formatsFile = new YAMLConfigurationFile(this, "formats.yml");
             this.formatsFile.saveDefaultConfig();
+            this.commandMap = new ModuleCommandMap(this)    ;
             onModuleEnable();
         } catch (Exception e) {
             e.printStackTrace();
@@ -44,6 +46,7 @@ public abstract class ModularPlugin extends JavaPlugin {
     public final void onDisable() {
         try {
             onModuleDisable();
+            Core.getInstance().onModulePreDisable(this);
         } catch (Exception e) {
             onFailureToDisable();
             e.printStackTrace();
@@ -69,7 +72,7 @@ public abstract class ModularPlugin extends JavaPlugin {
     }
 
     public final void logMessage(String message) {
-        getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+        getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6" + getMeta().name() + "&7] " + message));
     }
 
     protected final void addCommand(ModuleCommand command) {
@@ -85,7 +88,7 @@ public abstract class ModularPlugin extends JavaPlugin {
     public final String getFormatRaw(String key, String[]... formatters) {
         FileConfiguration config = formatsFile.getConfig(); //Get the formats file
         if (!config.contains(key)) return null; //Check if it has this format key, and if not return null
-        String unFormattedString = config.getString(key); //Get the un-formatted key
+        String unFormattedString = ChatColor.translateAlternateColorCodes('&',config.getString(key)); //Get the un-formatted key
         for (String[] formatter : formatters) { //Iterate through the formatters
             if (formatter.length < 2) continue; //Validate the length
             unFormattedString = unFormattedString.replace(formatter[0], formatter[1]); //Replace all in the unformatted string
@@ -94,7 +97,9 @@ public abstract class ModularPlugin extends JavaPlugin {
     }
 
     public final String getFormat(String key, boolean prefix, String[]... formatters) {
-        return !prefix ? "" : getFormatRaw("prefix") + getFormatRaw(key, formatters);
+        String formatRaw = getFormatRaw(key, formatters);
+        String prefix1 = getFormatRaw("prefix");
+        return !prefix || prefix1 == null ? formatRaw : prefix1 + formatRaw;
     }
 
     public final String getFormat(String key, String[]... formatters) {

@@ -9,9 +9,10 @@ import net.cogzmc.core.player.CPlayerManager;
 import net.cogzmc.core.player.DatabaseConnectException;
 
 public interface Provider {
-    CPlayerManager getNewPlayerManager(Core core) throws DatabaseConnectException;
+    CDatabase getNewDatabase(Core core) throws DatabaseConnectException;
+    CPlayerManager getNewPlayerManager(Core core);
     NetworkManager getNewNetworkManager(Core core);
-    CPermissionsManager getNewPermissionsManager(Core core, CDatabase database, CPlayerManager playerManager);
+    CPermissionsManager getNewPermissionsManager(Core core, CPlayerManager playerManager);
     NetFileManager getNewNetFileManager(Core core);
-    ModelManager getNewModelManager(CDatabase database);
+    ModelManager getNewModelManager(Core core);
 }

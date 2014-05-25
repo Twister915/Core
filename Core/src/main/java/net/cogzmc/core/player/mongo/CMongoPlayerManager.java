@@ -3,10 +3,12 @@ package net.cogzmc.core.player.mongo;
 import com.mongodb.*;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Synchronized;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.*;
 import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -16,20 +18,28 @@ import java.util.*;
 import static net.cogzmc.core.player.mongo.MongoUtils.getValueFrom;
 
 public final class CMongoPlayerManager implements CPlayerManager {
-    @Getter private CMongoDatabase database;
+    private CMongoDatabase database;
 
     private Map<String, CPlayer> onlinePlayerMap = new HashMap<>();
     private List<CPlayerConnectionListener> playerConnectionListeners = new ArrayList<>();
 
-    public CMongoPlayerManager(CMongoDatabase database) throws DatabaseConnectException {
+    public CMongoPlayerManager(CMongoDatabase database) {
         this.database = database;
-        database.connect();
         Core.getInstance().registerListener(new CPlayerManagerListener(this));
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new CPlayerManagerSaveTask(this), 1200, 1200);
         DBCollection users = database.getCollection(MongoKey.USERS_COLLETION.toString());
         if (users.count() == 0) { //Looks like a new collection to me
             //Need to setup the index
             users.createIndex(new BasicDBObject(MongoKey.UUID_KEY.toString(), 1));
+        }
+        //Setup online player map
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            try {
+                playerLoggedIn(player, player.getAddress().getAddress());
+            } catch (CPlayerJoinException e) {
+                e.printStackTrace();
+                player.kickPlayer(ChatColor.RED + "Unable to reload player!");
+            }
         }
     }
 
@@ -128,6 +138,7 @@ public final class CMongoPlayerManager implements CPlayerManager {
     }
 
     @Override
+    @Synchronized
     public void playerLoggedIn(Player player, InetAddress address) throws CPlayerJoinException {
         //Creates a new CMongoPlayer by passing the player, the offline player (for data), and this.
         CMongoPlayer cMongoPlayer = new CMongoPlayer(player, getOfflinePlayerByUUID(player.getUniqueId()), this);
@@ -141,12 +152,13 @@ public final class CMongoPlayerManager implements CPlayerManager {
         for (CPlayerConnectionListener playerConnectionListener : playerConnectionListeners) {
             playerConnectionListener.onPlayerJoin(cMongoPlayer, address);
         }
-        Core.getNetworkManager().updateHeartbeat(); //Send out a heartbeat.
+        if (Core.getNetworkManager() != null) Core.getNetworkManager().updateHeartbeat(); //Send out a heartbeat.
         //Now, let's place this player in our online player map
         this.onlinePlayerMap.put(player.getName(), cMongoPlayer);
     }
 
     @Override
+    @Synchronized
     public void playerLoggedOut(Player player) {
         CMongoPlayer cPlayerForPlayer = getCPlayerForPlayer(player);
         if (cPlayerForPlayer == null) return;
@@ -159,7 +171,7 @@ public final class CMongoPlayerManager implements CPlayerManager {
         for (CPlayerConnectionListener playerConnectionListener : playerConnectionListeners) {
             playerConnectionListener.onPlayerDisconnect(cPlayerForPlayer);
         }
-        Core.getNetworkManager().updateHeartbeat();
+        if (Core.getNetworkManager() != null) Core.getNetworkManager().updateHeartbeat();
         this.onlinePlayerMap.remove(player.getName());
     }
 

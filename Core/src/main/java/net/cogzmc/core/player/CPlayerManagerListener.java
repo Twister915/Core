@@ -22,7 +22,7 @@ public final class CPlayerManagerListener implements Listener {
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) return; //Prevent whitelist from causing memory leaks.
         Player player = event.getPlayer();
         try {
-            playerManager.playerLoggedIn(player, player.getAddress().getAddress());
+            playerManager.playerLoggedIn(player, event.getAddress());
         } catch (CPlayerJoinException e) {
             event.setKickMessage(e.getDisconectMessage());
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);

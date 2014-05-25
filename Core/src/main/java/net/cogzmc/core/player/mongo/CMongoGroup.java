@@ -10,10 +10,7 @@ import net.cogzmc.core.player.CPlayer;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static net.cogzmc.core.player.mongo.MongoUtils.combineObjectBuilders;
 import static net.cogzmc.core.player.mongo.MongoUtils.getObjectForPermissible;
@@ -91,8 +88,22 @@ final class CMongoGroup implements CGroup {
     @Override
     public void reloadPermissions() {
         allPermissions = new HashMap<>(declaredPermissions);
+
+        Collections.sort(parents, new Comparator<CGroup>() {
+            @Override
+            public int compare(CGroup o1, CGroup o2) {
+                return o1.getPriority()-o2.getPriority(); //Sort by priority.
+            }
+        }); //Sort the parents in order so that we end up going through the parents in the right order.
         //For every parent
-        for (CGroup parent : parents) {
+        List<CGroup> parents1 = new ArrayList<>(parents);
+        Collections.reverse(parents1);
+        /*
+         * Reverse the order of the parents so we end up putting the LOWEST priorities first, and overwriting them with
+         * the highest priority permissions LAST.
+         */
+
+        for (CGroup parent : parents1) {
             //get their permissions (inherited on their tree well)
             Map<String, Boolean> allPermissions1 = parent.getAllPermissions();
             //Iterate through them
@@ -103,6 +114,7 @@ final class CMongoGroup implements CGroup {
                 }
             }
         }
+
         //Get the online players, and force a reload.
         for (CPlayer cPlayer : getOnlineDirectMembers()) {
             cPlayer.reloadPermissions(); //This will ensure that all players with permissions from this group will get permissions.
@@ -111,13 +123,14 @@ final class CMongoGroup implements CGroup {
 
     @Override
     public void addParent(CGroup group) {
+        if (group == this || group.getName().equals(getName())) throw new IllegalStateException("You cannot make this group parent itself!");
         checkForRecursiveParenthood(group);
         this.parents.add(group);
         reloadPermissions();
     }
 
     void checkForRecursiveParenthood(CGroup group) {
-        if (isParent(group)) throw new IllegalStateException("You cannot parent a group that is your parent.");
+        if (group.isParent(this)) throw new IllegalStateException("You cannot parent a group that is your parent.");
         if (group.getParents().size() > 0)
             for (CGroup group2 : group.getParents())
                 checkForRecursiveParenthood(group2);
@@ -125,6 +138,7 @@ final class CMongoGroup implements CGroup {
 
     @Override
     public void removeParent(CGroup group) {
+        if (group == this || group.getName().equals(getName())) throw new IllegalStateException("You cannot make this group parent itself!");
         this.parents.remove(group);
         reloadPermissions();
     }

@@ -14,3 +14,4 @@ public interface ModelStorage<T extends Model> {
     T getByKey(String key);
     void reload();
 }
+

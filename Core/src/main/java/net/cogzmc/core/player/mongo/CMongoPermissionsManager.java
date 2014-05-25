@@ -32,7 +32,7 @@ public final class CMongoPermissionsManager implements CPermissionsManager {
     public CGroup createNewGroup(String name) { //How to create a group:
         if (getGroup(name) != null) throw new IllegalStateException("Group already exists!"); //Check if we already have this group name
         @SuppressWarnings("unchecked") CMongoGroup group =
-                new CMongoGroup(name, Collections.EMPTY_MAP, Collections.EMPTY_LIST, ChatColor.WHITE, ChatColor.WHITE, name, ""); //Setup some default values
+                new CMongoGroup(name, new HashMap<String, Boolean>(), new ArrayList<CGroup>(), ChatColor.WHITE, ChatColor.WHITE, name, ""); //Setup some default values
         saveGroup(group); //Save the group
         if (this.getDefaultGroup() == null) setDefaultGroup(group); //Set this as the default group
         reloadPermissions(); //Reload our permissions
@@ -78,7 +78,8 @@ public final class CMongoPermissionsManager implements CPermissionsManager {
         DBCollection collection = database.getCollection(MongoKey.GROUPS_COLLECTION.toString());
         CMongoGroup group1 = (CMongoGroup) group;
         DBObject dbObject = group1.getDBObject();
-        if (defaultGroup.equals(group1)) dbObject.put(MongoKey.GROUPS_DEFAULT_MARKER.toString(), true);
+        Core.logInfo(defaultGroup == null ? "DEFAULT GROUP IS NULL" : defaultGroup.toString());
+        if (defaultGroup != null && defaultGroup.equals(group1)) dbObject.put(MongoKey.GROUPS_DEFAULT_MARKER.toString(), true);
         else if (dbObject.containsField(MongoKey.GROUPS_DEFAULT_MARKER.toString())) dbObject.removeField(MongoKey.GROUPS_DEFAULT_MARKER.toString());
         collection.save(dbObject);
         group1.setObjectId(getValueFrom(dbObject, MongoKey.ID_KEY, ObjectId.class));
@@ -148,7 +149,7 @@ public final class CMongoPermissionsManager implements CPermissionsManager {
     public void setDefaultGroup(CGroup group) {
         CGroup defaultGroup1 = this.defaultGroup;
         this.defaultGroup = null;
-        saveGroup(defaultGroup1);
+        if (defaultGroup1 != null) saveGroup(defaultGroup1);
         this.defaultGroup = group;
         saveGroup(group);
     }

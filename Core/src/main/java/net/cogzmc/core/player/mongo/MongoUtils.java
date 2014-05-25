@@ -8,19 +8,22 @@ import lombok.NonNull;
 import net.cogzmc.core.player.CPermissible;
 import org.bukkit.ChatColor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class MongoUtils {
     public static BasicDBObjectBuilder getObjectForPermissible(CPermissible permissible) {
         BasicDBObjectBuilder builder = new BasicDBObjectBuilder();
-        if (permissible.getTablistColor() != null) builder.add(MongoKey.GROUPS_TABLIST_COLOR_KEY.toString(), permissible.getTablistColor().name());
-        if (permissible.getChatColor() != null) builder.add(MongoKey.GROUPS_CHAT_COLOR_KEY.toString(), permissible.getChatColor().name());
-        if (permissible.getChatPrefix() != null) builder.add(MongoKey.GROUPS_CHAT_PREFIX_KEY.toString(), permissible.getChatPrefix());
-        if (permissible.getChatSuffix() != null) builder.add(MongoKey.GROUPS_CHAT_SUFFIX_KEY.toString(), permissible.getChatSuffix());
-        if (permissible.getDeclaredPermissions().size() > 0) builder.add(MongoKey.GROUPS_PERMISSIONS_KEY.toString(), getDBObjectFor(permissible.getDeclaredPermissions()));
+        builder.add(MongoKey.GROUPS_TABLIST_COLOR_KEY.toString(), permissible.getTablistColor() == null ? null : permissible.getTablistColor().name());
+        builder.add(MongoKey.GROUPS_CHAT_COLOR_KEY.toString(), permissible.getChatColor() == null ? null : permissible.getChatColor().name());
+        builder.add(MongoKey.GROUPS_CHAT_PREFIX_KEY.toString(), permissible.getChatPrefix());
+        builder.add(MongoKey.GROUPS_CHAT_SUFFIX_KEY.toString(), permissible.getChatSuffix());
+        //builder.add(MongoKey.GROUPS_PERMISSIONS_KEY.toString(), getDBObjectFor(permissible.getDeclaredPermissions() == null ?  Collections.emptyMap() : permissible.getDeclaredPermissions()));
+        Map<String, Boolean> declaredPermissions = permissible.getDeclaredPermissions();
+        List<DBObject> permissions = new ArrayList<>();
+        for (Map.Entry<String, Boolean> stringBooleanEntry : declaredPermissions.entrySet()) {
+            permissions.add(BasicDBObjectBuilder.start(MongoKey.PERMISSION_PERM.toString(), stringBooleanEntry.getKey()).add(MongoKey.PERMISSION_VALUE.toString(), stringBooleanEntry.getValue()).get());
+        }
+        builder.add(MongoKey.GROUPS_PERMISSIONS_KEY.toString(), getDBListFor(permissions));
         return builder;
     }
 
@@ -32,7 +35,12 @@ public final class MongoUtils {
     }
 
     public static CPermissible getPermissibileDataFor(DBObject object) {
-        final Map<String, Boolean> declaredPermissions = getMapFor(getValueFrom(object, MongoKey.GROUPS_PERMISSIONS_KEY, BasicDBObject.class), Boolean.class);
+        //final Map<String, Boolean> declaredPermissions = getMapFor(getValueFrom(object, MongoKey.GROUPS_PERMISSIONS_KEY, BasicDBObject.class), Boolean.class);
+        final Map<String, Boolean> declaredPermissions = new HashMap<>();
+        List<Map> permissionObjects = getListFor(getValueFrom(object, MongoKey.GROUPS_PERMISSIONS_KEY, BasicDBList.class), Map.class);
+        for (Map permissionObject : permissionObjects) {
+            declaredPermissions.put((String) permissionObject.get(MongoKey.PERMISSION_PERM.toString()), (Boolean) permissionObject.get(MongoKey.PERMISSION_VALUE.toString()));
+        }
         String cColor = getValueFrom(object, MongoKey.GROUPS_CHAT_COLOR_KEY, String.class); final ChatColor chatColor = cColor == null ? null : ChatColor.valueOf(cColor);
         String tColor = getValueFrom(object, MongoKey.GROUPS_TABLIST_COLOR_KEY, String.class); final ChatColor tablistColor = tColor == null ? null : ChatColor.valueOf(tColor);
         final String chatPrefix = getValueFrom(object, MongoKey.GROUPS_CHAT_PREFIX_KEY, String.class);

@@ -6,10 +6,7 @@ import net.cogzmc.core.model.ModelManager;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.netfiles.NetFileManager;
 import net.cogzmc.core.network.NetworkManager;
-import net.cogzmc.core.player.COfflinePlayer;
-import net.cogzmc.core.player.CPermissionsManager;
-import net.cogzmc.core.player.CPlayer;
-import net.cogzmc.core.player.CPlayerManager;
+import net.cogzmc.core.player.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -25,6 +22,8 @@ import java.util.*;
  * The core managers includes the PlayerManager, NetworkManager, and ServiceManager.
  *
  * You can access instances of other modules by depending on them in your pom.xml, and then executing Core.get
+ *
+ * @author Joey Sacchini
  */
 public class Core extends JavaPlugin {
     @Getter private static Core instance;
@@ -32,6 +31,7 @@ public class Core extends JavaPlugin {
 
     @Getter private List<ModularPlugin> modules = new ArrayList<>();
     @Getter protected Provider provider;
+    @Getter private CDatabase cDatabase;
 
     private CPlayerManager playerManager;
     private CPermissionsManager permissionsManager;
@@ -50,7 +50,7 @@ public class Core extends JavaPlugin {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 player.kickPlayer("CORE KICK");
             }
-            //Connect to the database
+            //Connect to the cDatabase
             databaseConfiguration = new YAMLConfigurationFile(this, "database.yml");
             databaseConfiguration.reloadConfig();
             databaseConfiguration.saveDefaultConfig();
@@ -63,21 +63,31 @@ public class Core extends JavaPlugin {
             }
 
             //Setup everything.
+            this.cDatabase = provider.getNewDatabase(this);
+            this.cDatabase.connect();
             this.playerManager = provider.getNewPlayerManager(this);
             this.networkManager = provider.getNewNetworkManager(this);
-            this.permissionsManager = provider.getNewPermissionsManager(this, this.playerManager.getDatabase(), this.playerManager);
+            this.permissionsManager = provider.getNewPermissionsManager(this, this.playerManager);
             this.netFileManager = provider.getNewNetFileManager(this);
-            this.modelManager = provider.getNewModelManager(this.playerManager.getDatabase());
+            this.modelManager = provider.getNewModelManager(this);
         } catch (Throwable t) {
             t.printStackTrace();
             Bukkit.getPluginManager().disablePlugin(this);
         }
     }
 
+    public final void onModulePreEnable(ModularPlugin modularPlugin) {
+        this.modules.add(modularPlugin);
+    }
+
+    public final void onModulePreDisable(ModularPlugin modularPlugin) {
+        this.modules.remove(modularPlugin);
+    }
+
     @Override
     public final void onDisable() {
         try {
-            this.playerManager.onDisable();
+            if (this.playerManager != null) this.playerManager.onDisable();
         } catch (Throwable t) {
             t.printStackTrace();
         }

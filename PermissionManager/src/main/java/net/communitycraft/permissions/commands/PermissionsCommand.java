@@ -1,9 +1,13 @@
 package net.communitycraft.permissions.commands;
 
+import net.cogzmc.core.modular.command.CommandMeta;
 import net.cogzmc.core.modular.command.ModuleCommand;
 import net.communitycraft.permissions.commands.group.GroupSubCommand;
 import net.communitycraft.permissions.commands.player.PlayerSubCommand;
 
+@CommandMeta(
+        aliases = {"perm", "perms"}
+)
 public final class PermissionsCommand extends ModuleCommand {
     /*
      * The command should be structured as follows

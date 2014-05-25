@@ -27,7 +27,9 @@ enum MongoKey {
     GROUPS_PERMISSIONS_KEY("permissions"),
     GROUPS_DEFAULT_MARKER("default_marker"),
     GROUPS_PRIORITY_KEY("priority"),
-    GROUPS_CHAT_SUFFIX_KEY("suffix");
+    GROUPS_CHAT_SUFFIX_KEY("suffix"),
+    PERMISSION_PERM("permission"),
+    PERMISSION_VALUE("value");
     private final String value;
     MongoKey(String value) {
         this.value = value;

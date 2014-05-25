@@ -36,8 +36,9 @@ public final class HasSubCommand<T extends CPermissible> extends PermissibleSubC
         String has = b ? "Yes" : "No";
         sender.sendMessage(PermissionsManager.getInstance().
                 getFormat("has-permission",
+                        new String[]{"<name>", permissible.getName()},
                         new String[]{"<permission>", permission},
-                        new String[]{"<has>", b ? ChatColor.GREEN.toString() : ChatColor.RED.toString() + has}
+                        new String[]{"<has>", b ? ChatColor.GREEN.toString() + has : ChatColor.RED.toString() + has}
                 )
         );
     }

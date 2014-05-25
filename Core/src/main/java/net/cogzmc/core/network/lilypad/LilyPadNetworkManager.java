@@ -7,6 +7,7 @@ import lilypad.client.connect.api.request.RequestException;
 import lilypad.client.connect.api.request.impl.MessageRequest;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.Synchronized;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.network.*;
 import net.cogzmc.core.player.COfflinePlayer;
@@ -53,7 +54,8 @@ public final class LilyPadNetworkManager implements NetworkManager {
     }
 
     @Override
-    public synchronized List<NetworkServer> getServersMatchingRegex(Pattern regex) { //Sync because we want to lock this object to prevent any async updates while we are reading it.
+    @Synchronized
+    public List<NetworkServer> getServersMatchingRegex(Pattern regex) { //Sync because we want to lock this object to prevent any async updates while we are reading it.
         List<NetworkServer> networkServers = new ArrayList<>();
         for (NetworkServer server : servers) {
             if (regex.matcher(server.getName()).matches()) networkServers.add(server);
@@ -62,12 +64,14 @@ public final class LilyPadNetworkManager implements NetworkManager {
     }
 
     @Override
-    public synchronized List<NetworkServer> getServersMatchingRegex(String regex) {
+    @Synchronized
+    public List<NetworkServer> getServersMatchingRegex(String regex) {
         return getServersMatchingRegex(Pattern.compile(regex));
     }
 
     @Override
-    public synchronized NetworkServer getServer(String name) {
+    @Synchronized
+    public NetworkServer getServer(String name) {
         //Basic resolution loop
         for (NetworkServer server : this.servers) {
             if (server.getName().equals(name)) return server;
@@ -82,7 +86,8 @@ public final class LilyPadNetworkManager implements NetworkManager {
 
     @SuppressWarnings("unchecked")
     @Override
-    public synchronized void updateHeartbeat() {
+    @Synchronized
+    public void updateHeartbeat() {
         //First let's validate some of our own data here
         long time = new Date().getTime(); //Get the current date
         Iterator<NetworkServer> iterator = servers.iterator(); //Get the iterator for the servers
@@ -256,7 +261,8 @@ public final class LilyPadNetworkManager implements NetworkManager {
 
     /* event handlers */
     @EventListener
-    public synchronized void onMessage(MessageEvent event) {
+    @Synchronized
+    public void onMessage(MessageEvent event) {
         if (event.getChannel().equals(NETWORK_MANAGER_CHANNEL)) {
             handleHeartbeatMessageEvent(event); //Handle a heartbeat
             return;
