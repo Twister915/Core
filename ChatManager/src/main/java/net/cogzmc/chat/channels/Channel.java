@@ -11,7 +11,9 @@
 
 package net.cogzmc.chat.channels;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Setter;
 import lombok.ToString;
 import net.cogzmc.chat.channels.base.BaseChannel;
 import net.cogzmc.core.player.CPlayer;
@@ -32,13 +34,13 @@ import java.util.List;
 @Data
 @ToString(exclude = {"members", "format"})
 public final class Channel implements BaseChannel {
-    private String name; //Name of the channel
+    @Setter(AccessLevel.NONE) private String name; //Name of the channel
     private String format; //Format of the channel
     private String permission; //Permission required to see chat in this channel
     private boolean main; //Whether or not this is the default channel
     private boolean crossServer; //Whether or not messages in this channel are sent across the network
     private boolean filtered; //Whether or not this channel is filtered
-    private List<CPlayer> members; //A list of members in this channel
+    @Setter(AccessLevel.NONE) private List<CPlayer> members; //A list of members in this channel
 
     public Channel(String name, String format, String permission) {
         this.name = name;

@@ -12,7 +12,6 @@
 package net.cogzmc.chat.channels.base;
 
 import net.cogzmc.core.player.CPlayer;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -109,5 +108,5 @@ public interface BaseChannel {
      *
      * @return a list of {@link org.bukkit.entity.Player} who are members in this channel
      */
-    public List<Player> getMembers();
+    public List<CPlayer> getMembers();
 }
