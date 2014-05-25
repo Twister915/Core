@@ -15,7 +15,6 @@ import org.bukkit.event.weather.WeatherChangeEvent;
  */
 public final class NoWeather implements Listener {
     @EventHandler
-    @SuppressWarnings("unused")
     public final void onWeatherChange(WeatherChangeEvent event) {
         if (event.toWeatherState() && Hub.getInstance().getConfig().getBoolean("no-weather")) event.setCancelled(true);
     }

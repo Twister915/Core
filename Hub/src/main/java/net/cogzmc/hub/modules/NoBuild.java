@@ -17,23 +17,21 @@ import org.bukkit.event.player.PlayerDropItemEvent;
  */
 public final class NoBuild implements Listener {
     @EventHandler
-    @SuppressWarnings("unused")
     public final void onBlockPlace(BlockPlaceEvent event) {
-        if (!event.getPlayer().hasPermission("hub.build") && Hub.getInstance().getConfig().getBoolean("no-build")) {
+        if (!event.getPlayer().hasPermission("hub.build")) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    @SuppressWarnings("unused")
     public final void onBlockBreak(BlockBreakEvent event) {
-        if (!event.getPlayer().hasPermission("hub.build") && Hub.getInstance().getConfig().getBoolean("no-build")) {
+        if (!event.getPlayer().hasPermission("hub.build")) {
             event.setCancelled(true);
+            Hub.getInstance().getLogger().info(event.isCancelled() + "");
         }
     }
 
     @EventHandler
-    @SuppressWarnings("unused")
     public final void onPlayerDropItem(PlayerDropItemEvent event) {
         if (!event.getPlayer().hasPermission("hub.drop")) {
             event.setCancelled(true);
