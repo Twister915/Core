@@ -42,7 +42,7 @@ public final class SpawnHandler {
         } catch (NullPointerException ex) {
             spawn = null;
             Preconditions.checkNotNull(Hub.getInstance(), "instance");
-            Hub.getInstance().logMessage("No spawn point set!");
+            //Hub.getInstance().logMessage("No spawn point set!");
         }
     }
 }
