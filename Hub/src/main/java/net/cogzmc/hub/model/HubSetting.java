@@ -14,8 +14,8 @@ import net.cogzmc.core.model.ModelField;
  * Represents a stored setting about the hub. This can store any type that the database will accept.
  */
 public final class HubSetting<T> extends Model {
-    @Setter(AccessLevel.NONE) public String key;
-    public T value;
+    @Setter(AccessLevel.NONE) private String key;
+    private T value;
 
     public void setValue(Object value) {
         try {
