@@ -61,7 +61,6 @@ public final class SettingsManager {
         HubSetting<?> hubSetting = this.settingsMap.get(setting);
         hubSetting.setValue(value);
         modelStorage.saveValue(hubSetting);
-        save();
     }
 
     /**

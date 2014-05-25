@@ -11,7 +11,7 @@ public interface ModelStorage<T extends Model> {
     void deleteValue(T value);
     T findValue(String key, Object value);
     List<T> findValues(String key, Object value);
-    T getByKey(String key);
+    T getById(String key);
     void reload();
 }
 

@@ -1,9 +1,7 @@
 package net.cogzmc.hub.model;
 
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Setter;
 import net.cogzmc.core.model.Model;
 import net.cogzmc.core.model.ModelField;
 

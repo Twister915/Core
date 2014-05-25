@@ -22,7 +22,7 @@ public class MongoModelManager implements ModelManager {
     @Override
     public <T extends Model> ModelStorage<T> getModelStorage(Class<T> modelClass) {
         if (modelStorageMap.containsKey(modelClass)) return (ModelStorage<T>) modelStorageMap.get(modelClass);
-        DBCollection collection = database.getCollection(modelClass.getName().toLowerCase() + "s");
+        DBCollection collection = database.getCollection(modelClass.getSimpleName().toLowerCase() + "s");
         ModelSerializer<T> serializer = (ModelSerializer<T>) modelSerializers.get(modelClass);
         if (serializer == null) serializer = new DefaultModelSerializer();
         MongoModelStorage<T> storage = new MongoModelStorage<>(collection, database, serializer, modelClass);

@@ -5,6 +5,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import lombok.*;
+import net.cogzmc.core.Core;
 import net.cogzmc.core.model.Model;
 import net.cogzmc.core.model.ModelSerializer;
 import net.cogzmc.core.model.ModelStorage;
@@ -29,8 +30,10 @@ class MongoModelStorage<T extends Model> implements ModelStorage<T> {
     @Override
     public void saveValue(T value) throws SerializationException {
         DBObject serialize = (DBObject) modelSerializer.serialize(value);
-        if (value.getId() != null) serialize.put(MongoKey.ID_KEY.toString(), new ObjectId(value.getId()));
+        boolean needsId = value.getId() != null;
+        if (needsId) serialize.put(MongoKey.ID_KEY.toString(), new ObjectId(value.getId()));
         collection.save(serialize);
+        if (!needsId) value.setId(serialize.get(MongoKey.ID_KEY.toString()).toString());
         reload();
     }
 
@@ -72,9 +75,9 @@ class MongoModelStorage<T extends Model> implements ModelStorage<T> {
     }
 
     @Override
-    public T getByKey(String key) {
+    public T getById(String id) {
         for (T value : values) {
-            if (value.getId().equals(key)) return value;
+            if (value.getId().equals(id)) return value;
         }
         return null;
     }
