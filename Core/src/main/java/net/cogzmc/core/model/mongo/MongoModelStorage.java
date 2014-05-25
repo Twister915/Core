@@ -10,6 +10,7 @@ import net.cogzmc.core.model.ModelSerializer;
 import net.cogzmc.core.model.ModelStorage;
 import net.cogzmc.core.model.SerializationException;
 import net.cogzmc.core.player.mongo.CMongoDatabase;
+import net.cogzmc.core.player.mongo.MongoKey;
 import org.bson.types.ObjectId;
 
 import java.lang.reflect.Field;
@@ -28,7 +29,7 @@ class MongoModelStorage<T extends Model> implements ModelStorage<T> {
     @Override
     public void saveValue(T value) throws SerializationException {
         DBObject serialize = (DBObject) modelSerializer.serialize(value);
-        if (value.getId() != null) serialize.put("_id", new ObjectId(value.getId()));
+        if (value.getId() != null) serialize.put(MongoKey.ID_KEY.toString(), new ObjectId(value.getId()));
         collection.save(serialize);
         reload();
     }
@@ -40,7 +41,7 @@ class MongoModelStorage<T extends Model> implements ModelStorage<T> {
 
     @Override
     public void deleteValue(T value) {
-        collection.remove(new BasicDBObject("_id", new ObjectId(value.getId())));
+        collection.remove(new BasicDBObject(MongoKey.ID_KEY.toString(), new ObjectId(value.getId())));
         reload();
     }
 
@@ -60,7 +61,7 @@ class MongoModelStorage<T extends Model> implements ModelStorage<T> {
         } catch (NoSuchFieldException e) {
             return null;
         }
-        if (!value.getClass().isAssignableFrom(declaredField.getType())) return null;
+        if (!declaredField.getType().isAssignableFrom(value.getClass())) return null;
         List<T> ts = new ArrayList<>();
         declaredField.setAccessible(true);
         for (T t : values) {
@@ -84,6 +85,7 @@ class MongoModelStorage<T extends Model> implements ModelStorage<T> {
         for (DBObject dbObject : collection.find()) {
             try {
                 T model = modelSerializer.deserialize(dbObject, modelType);
+                model.setId(dbObject.get(MongoKey.ID_KEY.toString()).toString());
                 ts.add(model);
             } catch (SerializationException ignored) {} //Ignored because failure means we skip.
         }
