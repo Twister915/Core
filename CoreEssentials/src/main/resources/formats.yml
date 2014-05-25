@@ -1,0 +1,3 @@
+module-list: "&eCore Modules: &r<modules>"
+plugin-list: "&cThird Party Plugins: &r<plugins>"
+core-info: "&eRunning &aCore&e version &a<version>&e."

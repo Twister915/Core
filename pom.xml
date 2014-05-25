@@ -14,6 +14,7 @@
         <module>PermissionManager</module>
         <module>ChatManager</module>
         <module>Hub</module>
+        <module>CoreEssentials</module>
     </modules>
 
     <packaging>pom</packaging>

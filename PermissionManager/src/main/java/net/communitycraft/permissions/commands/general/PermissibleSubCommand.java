@@ -5,7 +5,10 @@ import net.cogzmc.core.modular.command.ArgumentRequirementException;
 import net.cogzmc.core.modular.command.CommandException;
 import net.cogzmc.core.modular.command.EmptyHandlerException;
 import net.cogzmc.core.modular.command.ModuleCommand;
+import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPermissible;
+import net.cogzmc.core.player.CPlayer;
+import net.cogzmc.core.player.DatabaseConnectException;
 import net.communitycraft.permissions.PermissionsManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -18,7 +21,7 @@ public abstract class PermissibleSubCommand<PermissibleType extends CPermissible
     }
 
     @Override
-    public final void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
+    protected final void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
         //Check argument lengths
         if (args.length < 1 + (needsSecondArgument() ? 1 : 0)) throw new ArgumentRequirementException("You must specify enough arguments for this command!");
         //Get the permissible
@@ -44,7 +47,14 @@ public abstract class PermissibleSubCommand<PermissibleType extends CPermissible
             }
             if (!tookControlOfMessage) sender.sendMessage(getSuccessMessage(permissible));
         }
-        if (shouldReload()) Core.getPermissionsManager().reloadPermissions();
+        if (shouldReload()) {
+            if (permissible instanceof COfflinePlayer && !(permissible instanceof CPlayer)) try {
+                Core.getPlayerManager().savePlayerData((COfflinePlayer) permissible);
+            } catch (DatabaseConnectException e) {
+                PermissionsManager.getInstance().logMessage("&cCould not save " + permissible.getName() + " to the database during command " + getFormattedName() + "!");
+            }
+            Core.getPermissionsManager().reloadPermissions();
+        }
     }
 
     @Override

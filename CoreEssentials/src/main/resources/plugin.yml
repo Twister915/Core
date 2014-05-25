@@ -1,0 +1,6 @@
+name: CoreEssentials
+main: net.cogzmc.coreessentials.CoreEssentials
+version: 1.0
+authors: [Twister915]
+description: Provides the Core with essential commands.
+depend: [Core]

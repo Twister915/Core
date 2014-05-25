@@ -18,7 +18,7 @@ public final class PermissionsCommand extends ModuleCommand {
      *      - has [name] [permission] D
      *      - set [name] [permission] D
      *      - unset [name] [permission] D
-     *      - purge [name]
+     *      - delete [name]
      *      - show [name]
      *      - prefix [name] [prefix]
      *      - chatcolor [name] [color] D
