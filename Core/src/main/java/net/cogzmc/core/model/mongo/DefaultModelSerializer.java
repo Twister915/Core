@@ -42,8 +42,12 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
         T t = modelClass.newInstance();
         DBObject dbObject = (DBObject)object;
         for (String key : dbObject.keySet()) {
-            Field declaredField = modelClass.getDeclaredField(key);
-            if (declaredField == null) continue;
+            Field declaredField;
+            try {
+                declaredField = modelClass.getDeclaredField(key);
+            } catch (NoSuchFieldException e) {
+                continue;
+            }
             declaredField.setAccessible(true);
             declaredField.set(t, applyTypeFiltersFromDB(dbObject.get(key), declaredField.getType()));
         }
