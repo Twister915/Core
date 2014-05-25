@@ -38,7 +38,7 @@ public final class HubItemsManager implements CPlayerConnectionListener {
         Player player = cPlayer.getBukkitPlayer();
         for (HubItem item : this.hubItems) {
             if (!item.shouldAdd(player)) continue;
-            ItemStack itemStack = item.getItemStack();
+            ItemStack itemStack = item.getItemStacks().get(0);
             if (item.getMeta().slot() == -1) {
                 player.getInventory().addItem(itemStack);
                 player.updateInventory();
