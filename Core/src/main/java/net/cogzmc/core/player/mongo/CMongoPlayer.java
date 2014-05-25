@@ -105,6 +105,11 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     }
 
     @Override
+    public boolean hasPermission(String permission) {
+        return bukkitPlayer.hasPermission(permission);
+    }
+
+    @Override
     public void clearChatAll() {
         for (int x = 0; x < 50; x++) {
             bukkitPlayer.sendMessage("");

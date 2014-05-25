@@ -46,7 +46,7 @@ public final class CMongoPermissionsManager implements CPermissionsManager {
 
     CGroup getGroupByObjectId(ObjectId id) {
         for (CGroup cGroup : getGroups()) {
-            if (cGroup.equals(id)) return cGroup;
+            if (((CMongoGroup)cGroup).getObjectId().equals(id)) return cGroup;
         }
         return null;
     }
@@ -149,7 +149,7 @@ public final class CMongoPermissionsManager implements CPermissionsManager {
         CPermissible perm = getPermissibileDataFor(object);
         CMongoGroup cMongoGroup = new CMongoGroup(name, perm.getDeclaredPermissions(), parents, perm.getTablistColor(), perm.getChatColor(), perm.getChatPrefix(), perm.getChatSuffix());
         cMongoGroup.setObjectId(objectId);
-        cMongoGroup.setPriority(priority);
+        cMongoGroup.setPriority(priority == null ? 0 : priority);
         return cMongoGroup;
     }
 

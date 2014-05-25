@@ -83,7 +83,10 @@ public final class SettingsManager {
         if (databaseReload) modelStorage.reload();
         for (Setting setting : Setting.values()) {
             HubSetting settingModel = modelStorage.findValue("key", setting.getKey());
-            if (settingModel == null) settingModel = new HubSetting();
+            if (settingModel == null) {
+                settingModel = new HubSetting();
+                settingModel.setKey(setting.getKey());
+            }
             settingsMap.put(setting, settingModel);
         }
     }

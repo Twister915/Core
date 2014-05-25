@@ -55,6 +55,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
             this.objectId = null;
             this.declaredPermissions = new HashMap<>();
             this.groups = new ArrayList<>();
+            this.groupIds = new ArrayList<>();
             return;
         }
         this.objectId = getValueFrom(player, MongoKey.ID_KEY, ObjectId.class);
@@ -91,9 +92,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
         }
         objectBuilder.add(MongoKey.ASSETS_KEY.toString(), getDBListFor(assetDefinition));
         List<ObjectId> groupIds = new ArrayList<>();
-        for (CGroup group : groups) {
-            groupIds.add(((CMongoGroup)group).getObjectId());
-        }
+        groupIds.addAll(this.groupIds);
         objectBuilder.add(MongoKey.USER_GROUPS_KEY.toString(), getDBListFor(groupIds));
         combineObjectBuilders(objectBuilder, getObjectForPermissible(this));
         return objectBuilder.get();
@@ -152,13 +151,13 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
 
     @Override
     public void addToGroup(CGroup group) {
-        this.groups.add(group);
+        this.groupIds.add(((CMongoGroup)group).getObjectId());
         reloadPermissions();
     }
 
     @Override
     public void removeFromGroup(CGroup group) {
-        this.groups.remove(group);
+        this.groupIds.remove(((CMongoGroup)group).getObjectId());
         reloadPermissions();
     }
 
@@ -245,7 +244,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     }
 
     //Reloads the allPermissions map based on declaredPermissions and inheritance
-    private synchronized void reloadPermissions0() {
+    @Synchronized private void reloadPermissions0() {
         //Why do we need this? When the permissions manager reloads, it creates new instances to represent the same groups, so we need to reload our group instances.
         this.groups = new ArrayList<>();
         this.primaryGroup = null;
