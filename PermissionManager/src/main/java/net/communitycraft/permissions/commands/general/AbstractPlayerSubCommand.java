@@ -2,6 +2,7 @@ package net.communitycraft.permissions.commands.general;
 
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.COfflinePlayer;
+import net.communitycraft.permissions.commands.player.PlayerSubCommand;
 
 import java.util.List;
 
@@ -20,5 +21,10 @@ public abstract class AbstractPlayerSubCommand extends PermissibleSubCommand<COf
     @Override
     protected String getNameOfPermissibleType() {
         return "Player";
+    }
+
+    @Override
+    protected List<String> getComplete(String arg) {
+        return PlayerSubCommand.PLAYER_RESOLUTION_DELEGATE.getAutoCompleteFor(arg);
     }
 }

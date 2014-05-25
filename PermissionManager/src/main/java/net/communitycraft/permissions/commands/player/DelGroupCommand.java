@@ -4,6 +4,8 @@ import net.cogzmc.core.modular.command.CommandException;
 import net.cogzmc.core.player.COfflinePlayer;
 import net.communitycraft.permissions.commands.general.AbstractPlayerSubCommand;
 
+import java.util.List;
+
 public final class DelGroupCommand extends AbstractPlayerSubCommand {
     protected DelGroupCommand() {
         super("delgroup");
@@ -12,6 +14,11 @@ public final class DelGroupCommand extends AbstractPlayerSubCommand {
     @Override
     protected boolean needsSecondArgument() {
         return true;
+    }
+
+    @Override
+    protected List<String> getComplete(String arg) {
+        return null;
     }
 
     @Override

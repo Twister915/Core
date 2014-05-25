@@ -5,6 +5,9 @@ import net.cogzmc.core.modular.command.CommandException;
 import net.cogzmc.core.player.CGroup;
 import net.cogzmc.core.player.COfflinePlayer;
 import net.communitycraft.permissions.commands.general.AbstractPlayerSubCommand;
+import net.communitycraft.permissions.commands.group.GroupSubCommand;
+
+import java.util.List;
 
 public final class AddGroupCommand extends AbstractPlayerSubCommand {
     protected AddGroupCommand() {
@@ -14,6 +17,11 @@ public final class AddGroupCommand extends AbstractPlayerSubCommand {
     @Override
     protected boolean needsSecondArgument() {
         return true;
+    }
+
+    @Override
+    protected List<String> getComplete(String arg) {
+        return GroupSubCommand.GROUP_RESOLUTION_DELEGATE.getAutoCompleteFor(arg);
     }
 
     @Override

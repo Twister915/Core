@@ -1,12 +1,16 @@
 package net.communitycraft.permissions.commands.general;
 
+import net.cogzmc.core.Core;
 import net.cogzmc.core.modular.command.ArgumentRequirementException;
 import net.cogzmc.core.modular.command.CommandException;
 import net.cogzmc.core.modular.command.EmptyHandlerException;
 import net.cogzmc.core.modular.command.ModuleCommand;
 import net.cogzmc.core.player.CPermissible;
 import net.communitycraft.permissions.PermissionsManager;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+
+import java.util.List;
 
 public abstract class PermissibleSubCommand<PermissibleType extends CPermissible> extends ModuleCommand {
     protected PermissibleSubCommand(String name) {
@@ -40,11 +44,19 @@ public abstract class PermissibleSubCommand<PermissibleType extends CPermissible
             }
             if (!tookControlOfMessage) sender.sendMessage(getSuccessMessage(permissible));
         }
+        if (shouldReload()) Core.getPermissionsManager().reloadPermissions();
+    }
+
+    @Override
+    protected List<String> handleTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length != 1) return super.handleTabComplete(sender, command, alias, args);
+        return getComplete(args[0]);
     }
 
     protected abstract PermissibleType getPermissible(String name);
     protected abstract String getNameOfPermissibleType();
     protected abstract boolean needsSecondArgument();
+    protected abstract List<String> getComplete(String arg);
 
     protected void doAction(PermissibleType permissible, String argument) throws CommandException {throw new EmptyHandlerException();}
     protected void doAction(PermissibleType permissible) throws CommandException {throw new EmptyHandlerException();}
@@ -55,4 +67,6 @@ public abstract class PermissibleSubCommand<PermissibleType extends CPermissible
     protected boolean validateArgument(String argument) {return true;}
     protected String getSuccessMessage(PermissibleType target) {return PermissionsManager.getInstance().getFormat("success-command");}
     protected String getSuccessMessage(PermissibleType target, String argument) {return PermissionsManager.getInstance().getFormat("success-command");}
+
+    protected boolean shouldReload() {return true;}
 }

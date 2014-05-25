@@ -3,20 +3,13 @@ package net.cogzmc.core.modular.command;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.BlockCommandSender;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
-import java.lang.String;
 import java.util.*;
 
 /**
@@ -108,10 +101,10 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
             if (isUsingSubCommandsOnly()) {
                 //Check if there are not enough args for there to be a sub command
                 if (args.length < 1)
-                    throw new ArgumentRequirementException("You must specify a subcommand for this command!");
+                    throw new ArgumentRequirementException("You must specify a sub-command for this command!");
                 //Also check if the sub command is valid by assigning and checking the value of the resolved sub command from the first argument.
                 if ((subCommand = getSubCommandFor(args[0])) == null)
-                    throw new ArgumentRequirementException("The sub command you have specified is invalid!");
+                    throw new ArgumentRequirementException("The sub-command you have specified is invalid!");
             }
             if (subCommand == null && args.length > 0) subCommand = getSubCommandFor(args[0]); //If we're not requiring sub-commands but we can have them, let's try that
             //By now we have validated that the sub command can be executed if it MUST, now lets see if we can execute it

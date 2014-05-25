@@ -2,7 +2,9 @@ package net.communitycraft.permissions.commands.permissibile;
 
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.COfflinePlayer;
+import net.cogzmc.core.player.CPlayer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class PlayerResolutionDelegate implements PermissibleResolutionDelegate<COfflinePlayer> {
@@ -16,5 +18,15 @@ public final class PlayerResolutionDelegate implements PermissibleResolutionDele
     @Override
     public String getNameOfType() {
         return "Player";
+    }
+
+    @Override
+    public List<String> getAutoCompleteFor(String s) {
+        List<String> players = new ArrayList<>();
+        for (CPlayer cPlayer : Core.getPlayerManager()) {
+            String name = cPlayer.getName();
+            if (name.startsWith(s)) players.add(name);
+        }
+        return players;
     }
 }

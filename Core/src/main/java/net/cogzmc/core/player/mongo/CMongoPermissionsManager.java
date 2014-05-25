@@ -78,7 +78,6 @@ public final class CMongoPermissionsManager implements CPermissionsManager {
         DBCollection collection = database.getCollection(MongoKey.GROUPS_COLLECTION.toString());
         CMongoGroup group1 = (CMongoGroup) group;
         DBObject dbObject = group1.getDBObject();
-        Core.logInfo(defaultGroup == null ? "DEFAULT GROUP IS NULL" : defaultGroup.toString());
         if (defaultGroup != null && defaultGroup.equals(group1)) dbObject.put(MongoKey.GROUPS_DEFAULT_MARKER.toString(), true);
         else if (dbObject.containsField(MongoKey.GROUPS_DEFAULT_MARKER.toString())) dbObject.removeField(MongoKey.GROUPS_DEFAULT_MARKER.toString());
         collection.save(dbObject);
@@ -92,6 +91,7 @@ public final class CMongoPermissionsManager implements CPermissionsManager {
 
     @Override
     public void reloadPermissions() {
+        save();
         this.groups = new HashMap<>();
         this.defaultGroup = null;
         DBCollection groups = database.getCollection(MongoKey.GROUPS_COLLECTION.toString());
@@ -126,6 +126,14 @@ public final class CMongoPermissionsManager implements CPermissionsManager {
             WeakReference<GroupReloadObserver> next = iterator.next();
             GroupReloadObserver groupReloadObserver = next.get();
             if (groupReloadObserver == null || groupReloadObserver.equals(observer)) iterator.remove();
+        }
+    }
+
+    @Override
+    public void save() {
+        if (groups == null) return;
+        for (CMongoGroup cMongoGroup : groups.values()) {
+            saveGroup(cMongoGroup);
         }
     }
 

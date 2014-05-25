@@ -76,4 +76,9 @@ public interface CPermissionsManager {
      * @param observer The observer to un-register.
      */
     void unregisterObserver(GroupReloadObserver observer);
+
+    /**
+     * Saves the current values into the database.
+     */
+    void save();
 }

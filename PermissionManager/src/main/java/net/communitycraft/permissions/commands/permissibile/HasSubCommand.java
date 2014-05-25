@@ -6,6 +6,8 @@ import net.communitycraft.permissions.commands.general.PermissibleSubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
+
 public final class HasSubCommand<T extends CPermissible> extends PermissibleSubCommand<T> {
 
     private final PermissibleResolutionDelegate<T> resolutionDelegate;
@@ -28,6 +30,11 @@ public final class HasSubCommand<T extends CPermissible> extends PermissibleSubC
     @Override
     protected boolean needsSecondArgument() {
         return true;
+    }
+
+    @Override
+    protected List<String> getComplete(String arg) {
+        return resolutionDelegate.getAutoCompleteFor(arg);
     }
 
     @Override

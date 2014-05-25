@@ -16,29 +16,29 @@ public final class PermissionsCommand extends ModuleCommand {
      *      - addgroup [name] [group] D
      *      - delgroup [name] [group] D
      *      - has [name] [permission] D
-     *      - set [name] [permission]
-     *      - unset [name] [permission]
+     *      - set [name] [permission] D
+     *      - unset [name] [permission] D
      *      - purge [name]
      *      - show [name]
      *      - prefix [name] [prefix]
-     *      - chatcolor [name] [color]
+     *      - chatcolor [name] [color] D
      *      - tabcolor [name] [tabcolor]
      *  - group
-     *      - set [name] [permission]
+     *      - set [name] [permission] D
      *      - has [name] [permission] D
-     *      - unset [name] [permission]
+     *      - unset [name] [permission] D
      *      - show [name]
      *      - prefix [name] [prefix]
-     *      - chatcolor [name] [color]
+     *      - chatcolor [name] [color] D
      *      - tabcolor [name] [tabcolor]
-     *      - create [name]
-     *      - purge [name]
-     *      - list
+     *      - create [name] D
+     *      - delete [name] D
+     *      - list D
      *  - refresh
      *      - network
      */
     public PermissionsCommand() {
-        super("permissions", new PlayerSubCommand(), new GroupSubCommand());
+        super("permissions", new PlayerSubCommand(), new GroupSubCommand(), new RefreshSubCommand());
     }
 
     @Override

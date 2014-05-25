@@ -4,9 +4,12 @@ import net.cogzmc.core.player.CPermissible;
 import net.communitycraft.permissions.PermissionsManager;
 import net.communitycraft.permissions.commands.general.PermissibleSubCommand;
 
+import java.util.List;
+
 public final class UnsetSubCommand<T extends CPermissible> extends PermissibleSubCommand<T> {
     private PermissibleResolutionDelegate<T> permissibleResolutionDelegate;
-    protected UnsetSubCommand(PermissibleResolutionDelegate<T> delegate) {
+
+    public UnsetSubCommand(PermissibleResolutionDelegate<T> delegate) {
         super("unset");
         permissibleResolutionDelegate = delegate;
     }
@@ -24,6 +27,11 @@ public final class UnsetSubCommand<T extends CPermissible> extends PermissibleSu
     @Override
     protected boolean needsSecondArgument() {
         return true;
+    }
+
+    @Override
+    protected List<String> getComplete(String arg) {
+        return permissibleResolutionDelegate.getAutoCompleteFor(arg);
     }
 
     @Override
