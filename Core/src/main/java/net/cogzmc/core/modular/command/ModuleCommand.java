@@ -31,6 +31,11 @@ import java.util.*;
  * You can override tab-completion using {@link #handleTabComplete(org.bukkit.command.CommandSender, org.bukkit.command.Command, String, String[])}
  *
  * If you require usage of a sub-command, please override {@link #isUsingSubCommandsOnly()} and have it return true.
+ *
+ * @author Joey Sacchini [Twister915]
+ * @see org.bukkit.command.CommandExecutor
+ * @see org.bukkit.command.TabCompleter
+ * @version 1.1
  */
 @SuppressWarnings("UnusedParameters")
 public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
@@ -63,6 +68,10 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
         registerSubCommand(subCommands);
     }
 
+    /**
+     * Registers sub commands with the command and re-creates the help command.
+     * @param subCommands The sub-commands you wish to register.
+     */
     public final void registerSubCommand(ModuleCommand... subCommands) {
         //Toss all the sub commands in the map
         for (ModuleCommand subCommand : subCommands) {
