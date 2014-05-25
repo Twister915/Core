@@ -1,6 +1,5 @@
 package net.cogzmc.hub.modules.spawn;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import net.cogzmc.core.util.LocationUtils;
 import net.cogzmc.hub.Hub;
@@ -41,8 +40,7 @@ public final class SpawnHandler {
             spawn = LocationUtils.parseLocationString(Hub.getInstance().getSettingsManager().getSettingValueFor(Setting.SPAWN, String.class));
         } catch (NullPointerException ex) {
             spawn = null;
-            Preconditions.checkNotNull(Hub.getInstance(), "instance");
-            //Hub.getInstance().logMessage("No spawn point set!");
+            Hub.getInstance().logMessage("No spawn point set!");
         }
     }
 }

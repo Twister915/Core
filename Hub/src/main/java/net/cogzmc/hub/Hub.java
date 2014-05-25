@@ -1,6 +1,8 @@
 package net.cogzmc.hub;
 
 import lombok.Getter;
+import net.cogzmc.core.modular.ModularPlugin;
+import net.cogzmc.core.modular.ModuleMeta;
 import net.cogzmc.hub.items.HubItemsManager;
 import net.cogzmc.hub.model.SettingsManager;
 import net.cogzmc.hub.modules.HideStream;
@@ -9,7 +11,6 @@ import net.cogzmc.hub.modules.NoWeather;
 import net.cogzmc.hub.modules.spawn.SetSpawn;
 import net.cogzmc.hub.modules.spawn.Spawn;
 import net.cogzmc.hub.modules.spawn.SpawnHandler;
-import net.cogzmc.core.modular.ModularPlugin;
 
 /**
  * <p>
@@ -19,6 +20,10 @@ import net.cogzmc.core.modular.ModularPlugin;
  * @author Jake
  * @since 5/21/2014
  */
+@ModuleMeta(
+        name = "Hub",
+        description = "The base hub API and plugin."
+)
 public final class Hub extends ModularPlugin {
     @Getter private static Hub instance;
     @Getter private SpawnHandler spawnHandler;
