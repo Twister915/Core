@@ -37,13 +37,13 @@ public final class Hub extends ModularPlugin {
 
         this.spawnHandler = new SpawnHandler();
         this.itemsManager = new HubItemsManager();
-        getPlayerManager().registerCPlayerConnectionListener(this.itemsManager);
+        registerListener(this.itemsManager);
         this.settingsManager = new SettingsManager();
 
         /* commands */
         registerCommand(new SetSpawn());
         registerCommand(new Spawn());
-        getPlayerManager().registerCPlayerConnectionListener(this.spawnHandler);
+        registerListener(this.spawnHandler);
 
         /* listeners */
         registerListener(new NoWeather());

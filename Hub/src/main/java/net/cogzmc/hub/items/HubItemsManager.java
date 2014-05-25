@@ -1,12 +1,11 @@
 package net.cogzmc.hub.items;
 
-import net.cogzmc.core.player.CPlayer;
-import net.cogzmc.core.player.CPlayerConnectionListener;
-import net.cogzmc.core.player.CPlayerJoinException;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,7 @@ import java.util.List;
  * @author Jake
  * @since 5/22/2014
  */
-public final class HubItemsManager implements CPlayerConnectionListener {
+public final class HubItemsManager implements Listener {
     private final List<HubItem> hubItems;
 
     public HubItemsManager() {
@@ -33,9 +32,9 @@ public final class HubItemsManager implements CPlayerConnectionListener {
         this.hubItems.remove(hubItem);
     }
 
-    @Override
-    public final void onPlayerJoin(CPlayer cPlayer, InetAddress address) throws CPlayerJoinException {
-        Player player = cPlayer.getBukkitPlayer();
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
         for (HubItem item : this.hubItems) {
             if (!item.shouldAdd(player)) continue;
             ItemStack itemStack = item.getItemStacks().get(0);
@@ -50,8 +49,4 @@ public final class HubItemsManager implements CPlayerConnectionListener {
         }
     }
 
-    @Override
-    public final void onPlayerDisconnect(CPlayer player) {
-
-    }
 }

@@ -1,17 +1,15 @@
 package net.cogzmc.hub.modules.spawn;
 
 import lombok.Getter;
-import net.cogzmc.core.player.CPlayer;
-import net.cogzmc.core.player.CPlayerConnectionListener;
-import net.cogzmc.core.player.CPlayerJoinException;
 import net.cogzmc.core.util.LocationUtils;
 import net.cogzmc.hub.Hub;
 import net.cogzmc.hub.model.Setting;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-
-import java.net.InetAddress;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 /**
  * <p>
@@ -21,7 +19,7 @@ import java.net.InetAddress;
  * @author Jake
  * @since 5/22/2014
  */
-public final class SpawnHandler implements CPlayerConnectionListener {
+public final class SpawnHandler implements Listener {
     @Getter private Location spawn;
     //private static final String CONFIG_KEY = "spawn";
 
@@ -49,15 +47,9 @@ public final class SpawnHandler implements CPlayerConnectionListener {
         }
     }
 
-
-    @Override
-    public void onPlayerJoin(CPlayer player, InetAddress address) throws CPlayerJoinException {
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
         if (this.spawn == null) return;
-        player.getBukkitPlayer().teleport(this.spawn);
-    }
-
-    @Override
-    public void onPlayerDisconnect(CPlayer player) {
-
+        event.getPlayer().teleport(this.spawn);
     }
 }
