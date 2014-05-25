@@ -1,5 +1,6 @@
 package net.cogzmc.hub.modules;
 
+import net.cogzmc.hub.Hub;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -26,6 +27,7 @@ public final class NoBuild implements Listener {
     public final void onBlockBreak(BlockBreakEvent event) {
         if (!event.getPlayer().hasPermission("hub.build")) {
             event.setCancelled(true);
+            Hub.getInstance().getLogger().info(event.isCancelled() + "");
         }
     }
 
