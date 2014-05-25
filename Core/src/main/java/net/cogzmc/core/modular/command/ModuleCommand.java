@@ -60,6 +60,10 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
      */
     protected ModuleCommand(final String name, ModuleCommand... subCommands) {
         this.name = name;
+        registerSubCommand(subCommands);
+    }
+
+    public final void registerSubCommand(ModuleCommand... subCommands) {
         //Toss all the sub commands in the map
         for (ModuleCommand subCommand : subCommands) {
             this.subCommands.put(subCommand.getName(), subCommand);
