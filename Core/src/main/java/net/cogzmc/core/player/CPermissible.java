@@ -9,8 +9,8 @@ import java.util.Map;
  */
 public interface CPermissible {
     /**
-     *
-     * @return
+     * Gets a {@link org.bukkit.ChatColor} instance that should be used to prefix the player's name in the chat.
+     * @return The {@link org.bukkit.ChatColor}
      */
     ChatColor getChatColor();
 
