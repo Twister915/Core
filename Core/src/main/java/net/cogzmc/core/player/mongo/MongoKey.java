@@ -17,6 +17,7 @@ public enum MongoKey {
     FULLY_QUALIFIED_CLASS_NAME_KEY("fqcn"),
     META_KEY("meta"),
     ASSETS_KEY("assets"),
+    DISPLAY_NAME("display_name"),
     USER_GROUPS_KEY("groups"),
     GROUPS_COLLECTION("groups"),
     GROUPS_NAME_KEY("name"),

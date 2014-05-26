@@ -191,7 +191,7 @@ public final class ChannelManager {
         CGroup playerGroup = player.getPrimaryGroup();
         MessageFormat formatter = new MessageFormat(chanFormat);
         String senderName = player.getName();
-        String senderDisplay = player.getName();
+        String senderDisplay = player.getDisplayName();
         String cleanMessage = STRIP_COLOR_PATTERN.matcher(message).replaceAll("");
         String prefix = player.getChatPrefix() != null ? player.getChatPrefix() : playerGroup.getChatPrefix();
         String suffix = player.getChatSuffix() != null ? player.getChatSuffix() : playerGroup.getChatSuffix();

@@ -39,6 +39,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     @Getter @Setter private ChatColor chatColor;
     @Getter @Setter private String chatPrefix;
     @Getter @Setter private String chatSuffix;
+    @Setter private String displayName;
     private Map<String, Boolean> declaredPermissions;
     @Getter private Map<String, Boolean> allPermissions;
     private List<CGroup> groups;
@@ -77,6 +78,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
         if (this.objectId != null) objectBuilder.add(MongoKey.ID_KEY.toString(), this.objectId);
         objectBuilder.add(MongoKey.LAST_USERNAME_KEY.toString(), lastKnownUsername);
         objectBuilder.add(MongoKey.UUID_KEY.toString(), uniqueIdentifier.toString());
+        objectBuilder.add(MongoKey.DISPLAY_NAME.toString(), displayName);
         objectBuilder.add(MongoKey.FIRST_JOIN_KEY.toString(), firstTimeOnline);
         objectBuilder.add(MongoKey.LAST_SEEN_KEY.toString(), lastTimeOnline);
         objectBuilder.add(MongoKey.TIME_ONLINE_KEY.toString(), millisecondsOnline);
@@ -151,7 +153,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
 
     @Override
     public void addToGroup(CGroup group) {
-        this.groupIds.add(((CMongoGroup)group).getObjectId());
+        this.groupIds.add(((CMongoGroup) group).getObjectId());
         reloadPermissions();
     }
 
@@ -169,6 +171,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     private void updateFromDBObject(@NonNull DBObject player) {
         this.lastKnownUsername = getValueFrom(player, MongoKey.LAST_USERNAME_KEY, String.class);
         this.uniqueIdentifier = UUID.fromString(getValueFrom(player, MongoKey.UUID_KEY, String.class));
+        this.displayName = getValueFrom(player, MongoKey.DISPLAY_NAME, String.class);
         this.firstTimeOnline = getValueFrom(player, MongoKey.FIRST_JOIN_KEY, Date.class);
         this.lastTimeOnline = getValueFrom(player, MongoKey.LAST_SEEN_KEY, Date.class);
         Long time_online = getValueFrom(player, MongoKey.TIME_ONLINE_KEY, Long.class);
@@ -293,5 +296,10 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     @Override
     public boolean isDirectlyInGroup(CGroup group) {
         return groups.contains(group);
+    }
+
+    @Override
+    public String getDisplayName() {
+        return displayName == null ? getName() : displayName;
     }
 }
