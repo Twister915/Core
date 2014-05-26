@@ -1,5 +1,7 @@
 package net.cogzmc.coreessentials;
 
+import lombok.Getter;
+import net.cogzmc.core.Core;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.modular.ModuleMeta;
 
@@ -10,8 +12,14 @@ import net.cogzmc.core.modular.ModuleMeta;
                 "instances."
 )
 public final class CoreEssentials extends ModularPlugin {
+    @Getter private TabColorManager tabColorManager;
+
     @Override
     protected void onModuleEnable() {
         registerCommand(new PluginsCommand());
+        registerCommand(new NickNameCommand());
+        tabColorManager = new TabColorManager();
+        Core.getPermissionsManager().registerObserver(tabColorManager);
+        registerListener(tabColorManager);
     }
 }

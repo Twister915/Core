@@ -115,6 +115,15 @@ public final class CMongoPlayerManager implements CPlayerManager {
     }
 
     @Override
+    public List<CPlayer> getCPlayerByStartOfName(String name) {
+        List<CPlayer> cPlayers = new ArrayList<>();
+        for (String s : this.onlinePlayerMap.keySet()) {
+            if (s.startsWith(name)) cPlayers.add(onlinePlayerMap.get(s));
+        }
+        return cPlayers;
+    }
+
+    @Override
     public COfflineMongoPlayer getCOfflinePlayerForOfflinePlayer(OfflinePlayer player) {
         return getOfflinePlayerByUUID(player.getUniqueId());
     }

@@ -84,6 +84,13 @@ public interface CPlayerManager extends Iterable<CPlayer> {
     CPlayer getOnlineCPlayerForName(String name);
 
     /**
+     * This will allow you to get a {@link java.util.List} of {@link net.cogzmc.core.player.CPlayer}s by simply sending the start of a person's name.
+     * @param name The name of the player that you wish to autocomplete.
+     * @return A {@link java.util.List} of {@link net.cogzmc.core.player.CPlayer} objects for this name.
+     */
+    List<CPlayer> getCPlayerByStartOfName(String name);
+
+    /**
      * Saves a player's data into the database, the exact process of this depends very much on the implementation of this class that you're using.
      * @param player The {@link net.cogzmc.core.player.COfflinePlayer} that you wish to save into the database.
      * @throws DatabaseConnectException If there is a failure in saving the database.

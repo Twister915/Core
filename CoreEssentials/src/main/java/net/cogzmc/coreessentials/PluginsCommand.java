@@ -22,7 +22,7 @@ public final class PluginsCommand extends ModuleCommand {
     @Override
     protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
         char[] plating = new char[52];
-        Arrays.fill(plating, '-');
+        Arrays.fill(plating, ' ');
         String boilerPlate = ChatColor.YELLOW + ChatColor.STRIKETHROUGH.toString() + new String(plating);
         StringBuilder moduleList = new StringBuilder();
         StringBuilder thirdParty = new StringBuilder();

@@ -1,3 +1,5 @@
 module-list: "&eCore Modules: &r<modules>"
 plugin-list: "&cThird Party Plugins: &r<plugins>"
 core-info: "&eRunning &aCore&e version &a<version>&e."
+nickname-changed: "&aYour nickname has been changed to &c<name>"
+nickname-changed-other: "&aYou have changed &c<target>&a's nick to &c<name>"
