@@ -29,17 +29,18 @@ public abstract class ModularPlugin extends JavaPlugin {
             }
             Core.getInstance().onModulePreEnable(this);
             meta = getClass().getAnnotation(ModuleMeta.class);
+            if (meta == null) throw new IllegalStateException("You must annotate your class with the @" + ModuleMeta.class.getName() + " annotation!");
             saveDefaultConfig();
             this.formatsFile = new YAMLConfigurationFile(this, "formats.yml");
             this.formatsFile.saveDefaultConfig();
-            this.commandMap = new ModuleCommandMap(this)    ;
+            this.commandMap = new ModuleCommandMap(this);
             onModuleEnable();
         } catch (Exception e) {
             e.printStackTrace();
             onFailureToEnable();
             getServer().getPluginManager().disablePlugin(this);
         }
-        logMessage("&cModule " + meta.name() + " &a&lEnabled");
+        logMessage("&cModule &6" + meta.name() + " &a&lEnabled");
     }
 
     @Override
@@ -51,7 +52,7 @@ public abstract class ModularPlugin extends JavaPlugin {
             onFailureToDisable();
             e.printStackTrace();
         }
-        logMessage("&cModule " + meta.name() + " &4&lDisabled");
+        logMessage("&cModule &6" + meta.name() + " &4&lDisabled");
     }
 
     /* Delegated Methods */

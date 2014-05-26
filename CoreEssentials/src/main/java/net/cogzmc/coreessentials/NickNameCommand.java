@@ -31,9 +31,9 @@ public final class NickNameCommand extends ModuleCommand {
         }
         target.setDisplayName(nick);
         String coloredNick = ChatColor.translateAlternateColorCodes('&', nick == null ? target.getName() : nick);
-        CoreEssentials moduleProvider = Core.getInstance().getModuleProvider(CoreEssentials.class);
-        target.sendMessage(moduleProvider.getFormat("nickname-changed", new String[]{"<name>", coloredNick}));
-        if (target != commandSender) commandSender.sendMessage(moduleProvider.getFormat("nickname-change-other", new String[]{"<target>", target.getName()}, new String[]{"<name>", coloredNick}));
-        moduleProvider.getTabColorManager().updatePlayerListName(target);
+        CoreEssentials coreEssentials = Core.getInstance().getModuleProvider(CoreEssentials.class);
+        target.sendMessage(coreEssentials.getFormat("nickname-changed", new String[]{"<name>", coloredNick}));
+        if (target != commandSender) commandSender.sendMessage(coreEssentials.getFormat("nickname-change-other", new String[]{"<target>", target.getName()}, new String[]{"<name>", coloredNick}));
+        coreEssentials.getTabColorManager().updatePlayerListName(target);
     }
 }
