@@ -52,14 +52,15 @@ public final class SettingsManager {
     }
 
     /**
-     *
-     * @param setting
-     * @param value
+     * Saves a value in the settings database and sends a mass command to reload all hub server settings.
+     * @param setting The setting to set the value for.
+     * @param value The value to set the setting to.
      */
     @SneakyThrows
     public void setSettingValue(Setting setting, Object value) {
         HubSetting<?> hubSetting = this.settingsMap.get(setting);
         hubSetting.setValue(value);
+        if (Core.getNetworkManager() != null) Core.getNetworkManager().sendMassNetCommand(new SettingReloadNetCommand());
         modelStorage.saveValue(hubSetting);
     }
 
