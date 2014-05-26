@@ -3,7 +3,6 @@ package net.communitycraft.punishments.models;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import net.cogzmc.core.model.Model;
 import net.cogzmc.core.model.ModelField;
 import net.cogzmc.core.player.COfflinePlayer;
 
@@ -13,7 +12,7 @@ import java.util.Date;
 @ModelField
 @Data
 @AllArgsConstructor
-public final class Kick extends Model implements PunishmentModel {
+public final class Kick extends AbstractPunishment {
     private String reason;
     private COfflinePlayer target;
     private COfflinePlayer issuer;
