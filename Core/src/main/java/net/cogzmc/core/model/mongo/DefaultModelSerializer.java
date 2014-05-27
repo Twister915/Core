@@ -11,7 +11,9 @@ import net.cogzmc.core.model.ModelSerializer;
 import net.cogzmc.core.netfiles.NetElement;
 import net.cogzmc.core.network.NetworkServer;
 import net.cogzmc.core.player.COfflinePlayer;
+import org.apache.commons.lang.IllegalClassException;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -39,7 +41,14 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
     @Override
     @SneakyThrows
     public T deserialize(Object object, Class<T> modelClass) {
-        T t = modelClass.newInstance();
+        Constructor<T> constructor;
+        try {
+            constructor = modelClass.getConstructor();
+        } catch (NoSuchMethodException e) {
+            throw new IllegalClassException("You do not have a zero-args constructor for this model!");
+        }
+        constructor.setAccessible(true);
+        T t = constructor.newInstance();
         DBObject dbObject = (DBObject)object;
         for (String key : dbObject.keySet()) {
             Field declaredField;

@@ -173,6 +173,7 @@ public final class ChannelManager {
             setChannel(sender, getDefaultChannel());
             channel = getCurrentChannel(sender);
         }
+        assert channel != null;
         if (channel.isFiltered()) {
             Filter.FilterData filterData = Filter.filter(message, sender);
             if (filterData.isCancelled()) {
@@ -212,6 +213,7 @@ public final class ChannelManager {
         if (this.playerChannels.containsKey(player)) {
             this.playerChannels.get(player).removeMember(player);
         }
+        this.playerChannels.put(player, channel);
         channel.addMember(player);
     }
 

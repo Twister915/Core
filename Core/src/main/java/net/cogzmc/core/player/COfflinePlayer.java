@@ -175,13 +175,13 @@ public interface COfflinePlayer extends CPermissible {
     boolean isDirectlyInGroup(CGroup group);
 
     /**
-     * Gets the display name (with color codes as {@code &} characters).
+     * Gets the display name with translated color codes.
      * @return The display name.
      */
     String getDisplayName();
 
     /**
-     * Sets the display name (represent color codes with {@code &} characters followed by color codes)
+     * Sets the display name (represent color codes with {@code &} characters followed by color codes, they will be parsed on decode from the database)
      * @param string The display name to set.
      */
     void setDisplayName(String string);

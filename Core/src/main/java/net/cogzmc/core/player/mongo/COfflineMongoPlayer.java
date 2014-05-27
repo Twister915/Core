@@ -39,7 +39,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     @Getter @Setter private ChatColor chatColor;
     @Getter @Setter private String chatPrefix;
     @Getter @Setter private String chatSuffix;
-    @Setter private String displayName;
+    private String displayName;
     private Map<String, Boolean> declaredPermissions;
     @Getter private Map<String, Boolean> allPermissions;
     private List<CGroup> groups;
@@ -172,6 +172,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
         this.lastKnownUsername = getValueFrom(player, MongoKey.LAST_USERNAME_KEY, String.class);
         this.uniqueIdentifier = UUID.fromString(getValueFrom(player, MongoKey.UUID_KEY, String.class));
         this.displayName = getValueFrom(player, MongoKey.DISPLAY_NAME, String.class);
+        if (this.displayName != null) this.displayName = ChatColor.translateAlternateColorCodes('&', this.displayName);
         this.firstTimeOnline = getValueFrom(player, MongoKey.FIRST_JOIN_KEY, Date.class);
         this.lastTimeOnline = getValueFrom(player, MongoKey.LAST_SEEN_KEY, Date.class);
         Long time_online = getValueFrom(player, MongoKey.TIME_ONLINE_KEY, Long.class);
@@ -237,7 +238,8 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
 
     //This is overridden in the subclass, and as such we do not want to call this method directly from within our class. That would trigger the subclass in times we do not want to.
     @Override
-    public synchronized void reloadPermissions() {
+    @Synchronized
+    public void reloadPermissions() {
         reloadPermissions0();
     }
 
@@ -277,6 +279,8 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
             }
             if (this.primaryGroup.getPriority() < group.getPriority()) this.primaryGroup = group;
         }
+
+        if (this.primaryGroup == null) this.primaryGroup = defaultGroup;
     }
 
     //Process a group into our allPermissions map, use care when calling as this can mess things up really bad.
@@ -301,5 +305,10 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     @Override
     public String getDisplayName() {
         return displayName == null ? getName() : displayName;
+    }
+
+    @Override
+    public void setDisplayName(String string) {
+        this.displayName = ChatColor.translateAlternateColorCodes('&', string);
     }
 }
