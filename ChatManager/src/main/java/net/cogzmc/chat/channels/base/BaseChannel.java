@@ -68,14 +68,14 @@ public interface BaseChannel {
      *
      * @return whether or not the channel is the default one
      */
-    public boolean isDefault();
+    public boolean isPrimary();
 
     /**
      * Sets whether or not the channel is the default one
      *
-     * @param main whether or not the channel is the default one
+     * @param primary whether or not the channel is the default one
      */
-    public void setDefault(boolean main);
+    public void setPrimary(boolean primary);
 
     /**
      * Returns whether or not the channel sends messages across servers

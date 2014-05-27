@@ -1,8 +1,8 @@
 package net.cogzmc.hub.modules;
 
 import lombok.Getter;
-import net.cogzmc.hub.Hub;
 import net.cogzmc.core.modular.ModularPlugin;
+import net.cogzmc.hub.Hub;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
@@ -13,14 +13,10 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
- * <p>
- * Latest Change: By Joey to make things a bit faster using private booleans.
- * <p>
- *
- * This internal module is intended
- *
- * @author Jake
- * @since 5/22/2014
+ * This Hub Module handles the hiding, or showing of join, quit, and kick messages,
+ * depending on the booleans specified in the config. This module can also handle
+ * welcome messages, which will welcome the {@link org.bukkit.entity.Player} to the
+ * server when they join.
  */
 @Getter
 public final class HideStream implements Listener {
@@ -29,7 +25,7 @@ public final class HideStream implements Listener {
 
     //Initializer so that we always reload the settings from the configuration.
     {
-        reloadSettings(Hub.getInstance() );
+        reloadSettings(Hub.getInstance());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -57,7 +53,7 @@ public final class HideStream implements Listener {
 
     public void reloadSettings(ModularPlugin plugin) {
         FileConfiguration config = plugin.getConfig();
-        this.hideStream = config.getBoolean("hide-stream");
-        this.welcomeMessages = config.getBoolean("welcome-messages");
+        this.hideStream = config.getBoolean("hide-stream", true);
+        this.welcomeMessages = config.getBoolean("welcome-messages", false);
     }
 }

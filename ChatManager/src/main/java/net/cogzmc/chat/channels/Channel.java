@@ -37,7 +37,7 @@ public final class Channel implements BaseChannel {
     @Setter(AccessLevel.NONE) private String name; //Name of the channel
     private String format; //Format of the channel
     private String permission; //Permission required to see chat in this channel
-    private boolean main; //Whether or not this is the default channel
+    private boolean primary; //Whether or not this is the default channel
     private boolean crossServer; //Whether or not messages in this channel are sent across the network
     private boolean filtered; //Whether or not this channel is filtered
     @Setter(AccessLevel.NONE) private List<CPlayer> members; //A list of members in this channel
@@ -52,16 +52,6 @@ public final class Channel implements BaseChannel {
     @Override
     public boolean hasPermission() {
         return permission != null && !permission.equals("");
-    }
-
-    @Override
-    public boolean isDefault() {
-        return this.main;
-    }
-
-    @Override
-    public void setDefault(boolean main) {
-        this.main = main;
     }
 
     @Override
