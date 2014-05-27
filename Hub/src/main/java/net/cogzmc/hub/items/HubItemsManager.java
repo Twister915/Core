@@ -1,5 +1,7 @@
 package net.cogzmc.hub.items;
 
+import net.cogzmc.hub.Hub;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,12 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>
- * Latest Change:
- * <p>
- *
- * @author Jake
- * @since 5/22/2014
+ * This class manages the adding of {@link net.cogzmc.hub.items.HubItem}s to the {@link org.bukkit.entity.Player}'s
+ * inventory during the {@link #onPlayerJoin(org.bukkit.event.player.PlayerJoinEvent)}. Hub items should also be registered
+ * through this class, which are registered in the {@link #hubItems} {@link java.util.List}.
  */
 public final class HubItemsManager implements Listener {
     private final List<HubItem> hubItems;
@@ -26,6 +25,7 @@ public final class HubItemsManager implements Listener {
 
     public final void registerHubItem(HubItem hubItem) {
         this.hubItems.add(hubItem);
+        Hub.getInstance().logMessage(ChatColor.RED + "Registered the HubItem with the key: " + hubItem.getMeta().key());
     }
 
     public final void unregisterHubItem(HubItem hubItem) {
@@ -43,10 +43,8 @@ public final class HubItemsManager implements Listener {
                 player.updateInventory();
                 continue;
             }
-
             player.getInventory().setItem(item.getMeta().slot(), itemStack);
             player.updateInventory();
         }
     }
-
 }

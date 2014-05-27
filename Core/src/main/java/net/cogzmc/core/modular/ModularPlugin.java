@@ -90,6 +90,7 @@ public abstract class ModularPlugin extends JavaPlugin {
         FileConfiguration config = formatsFile.getConfig(); //Get the formats file
         if (!config.contains(key)) return null; //Check if it has this format key, and if not return null
         String unFormattedString = ChatColor.translateAlternateColorCodes('&',config.getString(key)); //Get the un-formatted key
+        if (formatters == null) return unFormattedString;
         for (String[] formatter : formatters) { //Iterate through the formatters
             if (formatter.length < 2) continue; //Validate the length
             unFormattedString = unFormattedString.replace(formatter[0], formatter[1]); //Replace all in the unformatted string
@@ -99,8 +100,8 @@ public abstract class ModularPlugin extends JavaPlugin {
 
     public final String getFormat(String key, boolean prefix, String[]... formatters) {
         String formatRaw = getFormatRaw(key, formatters);
-        String prefix1 = getFormatRaw("prefix");
-        return !prefix || prefix1 == null ? formatRaw : prefix1 + formatRaw;
+        String prefixString = getFormatRaw("prefix");
+        return !prefix || prefixString == null ? formatRaw : prefixString + formatRaw;
     }
 
     public final String getFormat(String key, String[]... formatters) {

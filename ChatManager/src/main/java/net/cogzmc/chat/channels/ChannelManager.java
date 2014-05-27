@@ -79,7 +79,7 @@ public final class ChannelManager {
             boolean crossServer = config.getBoolean("formatting." + chanName + ".cross-server");
             boolean filter = config.getBoolean("formatting." + chanName + ".filter");
             Channel channel = new Channel(chanName, format, permission);
-            channel.setDefault(main);
+            channel.setPrimary(main);
             if (main) {
                 this.defaultChannel = channel;
             }
@@ -138,7 +138,7 @@ public final class ChannelManager {
      * Returns a channel based on the search by name
      *
      * @param name name of the channel to search for
-     * @return channel found based on the name paramater
+     * @return channel found based on the name parameter
      */
     public Channel getChannelByName(String name) {
         Preconditions.checkNotNull(name, "Name can not be null");

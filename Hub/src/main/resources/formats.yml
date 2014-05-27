@@ -1,3 +1,5 @@
 join-message: "&a<player>&6 has joined the game!"
 quit-message: "&a<player>&6 has left the game!"
 welcome-message: "&3Welcome &a<player>&3 to &6TBNR&3!"
+set-spawn: "&2Set the spawn to your current location."
+spawn-tp: "&2You have been teleported to spawn."

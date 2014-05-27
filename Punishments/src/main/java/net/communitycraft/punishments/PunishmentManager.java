@@ -61,7 +61,7 @@ public class PunishmentManager implements CPlayerConnectionListener {
 	/**
 	 * Returns all punishments matching the query criteria
 	 * @param key the model's key
-	 * @param value the value associated with the key
+	 * @param val the value associated with the key
 	 * */
 	public List<AbstractPunishment> findPunishments(String key, Object val) {
 		List<AbstractPunishment> punishments = new ArrayList<>();
@@ -74,7 +74,7 @@ public class PunishmentManager implements CPlayerConnectionListener {
 	/**
 	 * Returns all punishments matching the query criteria and punishment type
 	 * @param key the model's key
-	 * @param value the value associated with the key
+	 * @param val the value associated with the key
 	 * @param cls the punishment model class
 	 * */
 	public <T extends AbstractPunishment> List<T> findPunishments(String key, Object val, Class<T> cls) {
@@ -84,7 +84,7 @@ public class PunishmentManager implements CPlayerConnectionListener {
 	/**
 	 * Returns one punishment matching the query criteria
 	 * @param key the model's key
-	 * @param value the value associated with the key
+	 * @param val the value associated with the key
 	 * */
 	public AbstractPunishment findPunishment(String key, Object val) {
 		AbstractPunishment punishment = null;
@@ -98,7 +98,7 @@ public class PunishmentManager implements CPlayerConnectionListener {
 	/**
 	 * Returns one punishment matching the query criteria and punishment type
 	 * @param key the model's key
-	 * @param value the value associated with the key
+	 * @param val the value associated with the key
 	 * @param cls the punishment model class
 	 * */
 	public <T extends AbstractPunishment> T findPunishment(String key, Object val, Class<T> cls) {

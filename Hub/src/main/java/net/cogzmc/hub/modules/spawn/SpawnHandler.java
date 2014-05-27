@@ -4,7 +4,6 @@ import lombok.Getter;
 import net.cogzmc.core.util.LocationUtils;
 import net.cogzmc.hub.Hub;
 import net.cogzmc.hub.model.Setting;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,7 +20,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
  */
 public final class SpawnHandler implements Listener {
     @Getter private Location spawn;
-    //private static final String CONFIG_KEY = "spawn";
 
     public SpawnHandler() {
         updateSpawn();
@@ -35,7 +33,7 @@ public final class SpawnHandler implements Listener {
 
     public final void sendToSpawn(Player player) {
         player.teleport(spawn == null ? player.getWorld().getSpawnLocation() : spawn);
-        player.sendMessage(ChatColor.GREEN + "You have been teleported to spawn!");
+        player.sendMessage(Hub.getInstance().getFormat("spawn-tp"));
     }
 
     public void updateSpawn() {
