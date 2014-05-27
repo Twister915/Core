@@ -11,6 +11,7 @@ import net.cogzmc.core.model.ModelSerializer;
 import net.cogzmc.core.netfiles.NetElement;
 import net.cogzmc.core.network.NetworkServer;
 import net.cogzmc.core.player.COfflinePlayer;
+import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -64,6 +65,15 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
         if (object instanceof NetElement) return ((NetElement) object).getId();
         //If the value is a Network server of some kind, we'll return the network server's name.
         if (object instanceof NetworkServer) return ((NetworkServer) object).getName();
+        //Handle serialization of bukkit's vectors
+        if (object instanceof org.bukkit.util.Vector) {
+            Vector vector = (Vector) object;
+            DBObject dbVector = new BasicDBObject();
+            dbVector.put("x", vector.getBlockX());
+            dbVector.put("y", vector.getBlockY());
+            dbVector.put("z", vector.getBlockZ());
+            return dbVector;
+        }
         //If the value is a map, let's do some hardcore processing.
         if (object instanceof Map) {
             Map map = (Map) object; //First cast since we use this a lot
@@ -108,6 +118,13 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
         //TODO NetFile
         //If the type we're trying to get is a NetworkServer, and we've got a String in the db, let's grab a known server by that name.
         if (NetworkServer.class.isAssignableFrom(type) && object instanceof String) return Core.getNetworkManager().getServer((String) object);
+        if (Vector.class.isAssignableFrom(type) && object instanceof BasicDBObject) {
+            BasicDBObject dbVector = (BasicDBObject) object;
+            int x = dbVector.getInt("x");
+            int y = dbVector.getInt("y");
+            int z = dbVector.getInt("z");
+            return new Vector(x, y, z);
+        }
         //If we're trying to get to a map and we have a BasicDBObject, let's do some digging
         if (Map.class.isAssignableFrom(type) && object instanceof BasicDBObject) {
             //First, let's cast for ease of use
