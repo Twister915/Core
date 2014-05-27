@@ -2,6 +2,7 @@ package net.cogzmc.hub.items;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.hub.Hub;
 import net.cogzmc.hub.items.annotations.HubItemMeta;
@@ -59,10 +60,11 @@ public abstract class HubItem implements Listener {
      */
     @Getter private HubItemMeta meta;
 
+    @SneakyThrows
     public HubItem(ModularPlugin plugin, boolean requiresEvents) {
         this.instance = plugin;
         this.meta = getClass().getAnnotation(HubItemMeta.class);
-        if (this.meta == null) return;
+        if (this.meta == null) throw new IllegalStateException("The HubItem class must be annotated with the HubItemMeta annotation.");
         if (requiresEvents) {
             Hub.getInstance().registerListener(this);
         }
