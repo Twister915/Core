@@ -1,3 +1,4 @@
 cannot-join-channel: "&e<channel>: &c<error>"
 joined-channel: "&eYou have joined &a<channel>&e."
 leave-announce: "&e<player>&c has left the channel (&e<channel>&c)"
+private-message: "&a[&ePM &c<direction> <person>&a]&e: &a<message>"
