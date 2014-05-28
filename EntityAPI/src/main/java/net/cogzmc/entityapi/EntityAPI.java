@@ -1,5 +1,6 @@
 package net.cogzmc.entityapi;
 
+import com.avaje.ebeaninternal.server.deploy.BeanDescriptor.EntityType;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.modular.ModuleMeta;
 
@@ -12,4 +13,8 @@ public final class EntityAPI extends ModularPlugin {
     protected void onModuleEnable() {
 
     }
+
+	public void spawnFakeEntity(EntityType entityType) {
+
+	}
 }
