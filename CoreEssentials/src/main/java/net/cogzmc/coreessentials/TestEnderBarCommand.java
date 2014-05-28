@@ -1,5 +1,6 @@
 package net.cogzmc.coreessentials;
 
+import com.google.common.base.Joiner;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.modular.command.CommandException;
 import net.cogzmc.core.modular.command.ModuleCommand;
@@ -14,7 +15,8 @@ public final class TestEnderBarCommand extends ModuleCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        Core.getEnderBarManager().setTextFor(player, "Testing 123!");
+        String join = args.length < 0 ? "Testing!" : Joiner.on(" ").join(args);
+        Core.getEnderBarManager().setTextFor(player, join);
         Random random = new Random();
         Core.getEnderBarManager().setHealthPercentageFor(player, random.nextFloat());
     }

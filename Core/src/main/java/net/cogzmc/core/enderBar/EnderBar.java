@@ -95,4 +95,10 @@ final class EnderBar {
         dataWatcher.setObject(6, health*200f); //Set the health (health is a %, 200 is the actual health)
         if (text != null) dataWatcher.setObject(10, text); //Set the display name text now.
     }
+
+    public void respawn() {
+        if (!spawned) return;
+        this.spawned = false;
+        spawn();
+    }
 }
