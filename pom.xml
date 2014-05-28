@@ -12,7 +12,6 @@
         <module>Core</module>
         <module>Punishments</module>
         <module>PermissionManager</module>
-        <module>ChatManager</module>
         <module>Hub</module>
         <module>CoreEssentials</module>
         <module>EntityAPI</module>
