@@ -8,6 +8,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 @Data
 final class EnderBarListener implements Listener {
@@ -24,6 +26,20 @@ final class EnderBarListener implements Listener {
     public void onPlayerChangeWorld(PlayerChangedWorldEvent event) {
         CPlayer player = Core.getOnlinePlayer(event.getPlayer());
         EnderBar enderBarFor = manager.getEnderBarFor(player);
-        enderBarFor.newWorld();
+        if (enderBarFor != null) enderBarFor.newWorld();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        CPlayer player = Core.getOnlinePlayer(event.getPlayer());
+        EnderBar enderBarFor = manager.getEnderBarFor(player);
+        if (enderBarFor != null) enderBarFor.respawn();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        CPlayer player = Core.getOnlinePlayer(event.getPlayer());
+        EnderBar enderBar = manager.getEnderBarFor(player);
+        if (enderBar != null && enderBar.isSpawned()) enderBar.updateLocation();
     }
 }
