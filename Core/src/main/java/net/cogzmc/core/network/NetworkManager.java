@@ -100,4 +100,7 @@ public interface NetworkManager {
      * @param command The {@link net.cogzmc.core.network.NetCommand} with data intended to be sent out.
      */
     void sendMassNetCommand(NetCommand command);
+
+    void registerNetworkServerDiscoverObserver(NetworkServerDiscoverObserver observer);
+    void unregisterNetworkServerDiscoverObserver(NetworkServerDiscoverObserver observer);
 }

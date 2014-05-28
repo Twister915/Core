@@ -1,5 +1,6 @@
 package net.cogzmc.core.modular.command;
 
+import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -72,6 +73,23 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
             subCommand.setSuperCommand(this);
         }
         //Add a provided help command
+        regenerateHelpCommand();
+    }
+
+    public final void unregisterSubCommand(ModuleCommand... subCommands) {
+        for (ModuleCommand subCommand : subCommands) {
+            //if (!subCommand.getSuperCommand().equals(this)) continue;
+            this.subCommands.remove(subCommand.getName());
+            subCommand.setSuperCommand(null);
+        }
+        regenerateHelpCommand();
+    }
+
+    public final ImmutableList<ModuleCommand> getSubCommands() {
+        return ImmutableList.copyOf(this.subCommands.values());
+    }
+
+    private void regenerateHelpCommand() {
         final Map<String, ModuleCommand> subCommandsLV = this.subCommands;
         final ModuleCommand superHelpCommand = this;
         this.subCommands.put("help", new ModuleCommand("help") {
@@ -111,7 +129,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
             //In this case, if we must execute the sub command, this check will always past. In cases where it's an option, this check willa also pass.
             //That way, we can use this feature of sub commands without actually requiring it.
             if (subCommand != null) {
-                String[] choppedArgs = Arrays.copyOfRange(args, Math.min(1, args.length-1), args.length);
+                String[] choppedArgs = args.length < 2 ? new String[0] : Arrays.copyOfRange(args, 1, args.length);
                 preSubCommandDispatch(sender, choppedArgs, subCommand); //Notify the subclass that we are using a sub-command in case any staging needs to take place.
                 subCommand.onCommand(sender, command, s, choppedArgs);
                 return true;

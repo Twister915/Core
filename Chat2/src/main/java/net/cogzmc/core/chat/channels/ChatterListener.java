@@ -64,7 +64,6 @@ public final class ChatterListener implements Listener {
 
     static void handleCrossServer(COfflinePlayer sender, String message, Channel channel) throws ChannelException {
         IChannelManager cManager = CoreChat.getInstance().getChannelManager();
-        String formatMessage = channel.formatMessage(sender, message);
         String s = channel.formatMessage(sender, message);
         for (CPlayer cPlayer : cManager.getListeners(channel)) {
             cPlayer.sendMessage(s);

@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.modular.ModuleMeta;
+import net.cogzmc.coreessentials.server.ServerCommand;
 
 @ModuleMeta(
         name = "Core Essentials",
@@ -18,6 +19,8 @@ public final class CoreEssentials extends ModularPlugin {
     protected void onModuleEnable() {
         registerCommand(new PluginsCommand());
         registerCommand(new NickNameCommand());
+        registerCommand(new LagInfoCommand());
+        if (Core.getNetworkManager() != null) registerCommand(new ServerCommand());
         tabColorManager = new TabColorManager();
         Core.getPermissionsManager().registerObserver(tabColorManager);
         registerListener(tabColorManager);

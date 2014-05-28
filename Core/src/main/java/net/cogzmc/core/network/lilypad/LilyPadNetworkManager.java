@@ -12,7 +12,6 @@ import net.cogzmc.core.Core;
 import net.cogzmc.core.network.*;
 import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
-import net.cogzmc.core.player.CPlayerManagerSaveTask;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 import org.json.simple.JSONArray;
@@ -33,6 +32,7 @@ public final class LilyPadNetworkManager implements NetworkManager {
     static final String NET_COMMAND_CHANNEL = "CC.LILYPAD.NETCOMMAND";
 
     private final List<NetworkServer> servers = new ArrayList<>();
+    private final List<NetworkServerDiscoverObserver> discoverObservers = new ArrayList<>();
     @Getter private final Connect connect;
     private final Map<Class, List<NetCommandHandler>> netCommandHandlers = new HashMap<>();
 
@@ -45,7 +45,7 @@ public final class LilyPadNetworkManager implements NetworkManager {
         LilyPadServer thisServer = new LilyPadServer(connect.getSettings().getUsername(), this);
         servers.add(thisServer);
         updateThisServer();
-
+        scheduleHeartbeat(5l, TimeUnit.SECONDS);
     }
 
     @Override
@@ -91,7 +91,16 @@ public final class LilyPadNetworkManager implements NetworkManager {
         //First let's validate some of our own data here
         long time = new Date().getTime(); //Get the current date
         Iterator<NetworkServer> iterator = servers.iterator(); //Get the iterator for the servers
-        while (iterator.hasNext()) if (time-iterator.next().getLastPing().getTime() > 10000) iterator.remove(); //Remove servers that haven't pinged in 10 seconds
+        while (iterator.hasNext()) {
+            NetworkServer next = iterator.next();
+            if (next.getName().equals(connect.getSettings().getUsername())) continue;
+            if (time - next.getLastPing().getTime() > 10000) {
+                iterator.remove(); //Remove servers that haven't pinged in 10 seconds
+                for (NetworkServerDiscoverObserver discoverObserver : discoverObservers) {
+                    discoverObserver.onNetworkServerRemove(next);
+                }
+            }
+        }
 
         //Now we'll need to send out an encoded heartbeat, and then check if any of the servers have expired.
         JSONObject object = new JSONObject(); //Build the JSON Object
@@ -189,6 +198,16 @@ public final class LilyPadNetworkManager implements NetworkManager {
         connect.request(new MessageRequest(Collections.EMPTY_LIST, NET_COMMAND_CHANNEL, encodeNetCommand(command).toJSONString()));
     }
 
+    @Override
+    public void registerNetworkServerDiscoverObserver(NetworkServerDiscoverObserver observer) {
+        if (!discoverObservers.contains(observer)) discoverObservers.add(observer);
+    }
+
+    @Override
+    public void unregisterNetworkServerDiscoverObserver(NetworkServerDiscoverObserver observer) {
+        if (discoverObservers.contains(observer)) discoverObservers.remove(observer);
+    }
+
     @SuppressWarnings("unchecked")
     @SneakyThrows
     static JSONObject encodeNetCommand(NetCommand command) {
@@ -247,7 +266,13 @@ public final class LilyPadNetworkManager implements NetworkManager {
             if (uuidsWeHave.contains(uuid)) continue; //And see if we have them
             players.add(Core.getOfflinePlayerByUUID(uuid)); //If we don't, we need to add them
         }
-        if (shouldAdd) this.servers.add(s);//And if it is a new server, add it to our servers list
+        if (shouldAdd)  {
+            this.servers.add(s);//And if it is a new server, add it to our servers list
+            Core.logInfo("New server discovered " + s.getName() + "!");
+            for (NetworkServerDiscoverObserver discoverObserver : discoverObservers) {
+                discoverObserver.onNetworkServerDiscover(s);
+            }
+        }
     }
 
     private void updateThisServer() {
@@ -323,7 +348,7 @@ public final class LilyPadNetworkManager implements NetworkManager {
 
     private void scheduleHeartbeat(Long time, TimeUnit unit) {
         long ticks = unit.convert(time, TimeUnit.SECONDS) * 20;
-        this.heartbeatScheduled = Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new CPlayerManagerSaveTask(Core.getPlayerManager()), ticks, ticks);
+        this.heartbeatScheduled = Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new NetworkUpdaterTask(this), ticks, ticks);
     }
 
     //This will cancel any scheduled heartbeat and reschedule it for this time. Useful for doing a heartbeat at the maximum time and sending one out when people join/leave

@@ -45,9 +45,9 @@ public final class PluginsCommand extends ModuleCommand {
             }
         }
         String modules = moduleList.toString();
-        modules = modules.substring(0, modules.length()-2);
+        modules = modules.substring(0, Math.max(0,modules.length()-2));
         String plugins = thirdParty.toString();
-        plugins = plugins.substring(0, plugins.length()-2);
+        plugins = plugins.substring(0, Math.max(0,plugins.length()-2));
         CoreEssentials moduleProvider = Core.getInstance().getModuleProvider(CoreEssentials.class);
         sender.sendMessage(boilerPlate);
         sender.sendMessage(moduleProvider.getFormat("core-info", false, new String[]{"<version>", Core.getInstance().getDescription().getVersion()}));
