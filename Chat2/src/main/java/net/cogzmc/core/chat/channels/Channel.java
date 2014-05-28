@@ -7,8 +7,8 @@ public interface Channel {
     String getName();
     boolean canBecomeListener(CPlayer player);
     boolean canBecomeParticipant(CPlayer player);
-    boolean isDefault();
-    boolean isForceJoin();
+    boolean isAutoParticipate();
+    boolean isAutoListen();
     boolean canRemoveListener(CPlayer player);
     boolean canRemoveParticipant(CPlayer player);
 }

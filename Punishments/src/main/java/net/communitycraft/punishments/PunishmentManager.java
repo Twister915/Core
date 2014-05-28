@@ -34,7 +34,7 @@ public class PunishmentManager implements CPlayerConnectionListener {
 	}
 
 	@Override
-    public void onPlayerJoin(CPlayer player, InetAddress address) throws CPlayerJoinException {
+    public void onPlayerLogin(CPlayer player, InetAddress address) throws CPlayerJoinException {
 		List<Ban> bans = findReceivedPunishments(player, Ban.class);
 		if(!bans.isEmpty()) {
 			Ban ban = bans.get(0);

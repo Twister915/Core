@@ -1,7 +1,6 @@
 package net.cogzmc.core.player.mongo;
 
 import com.mongodb.*;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.Synchronized;
 import net.cogzmc.core.Core;
@@ -159,7 +158,7 @@ public final class CMongoPlayerManager implements CPlayerManager {
             throw new CPlayerJoinException("Error while logging you in in the CPlayerManager " + e.getClass().getSimpleName() + " : " + e.getMessage() + "\nPlease contact a developer!");
         }
         for (CPlayerConnectionListener playerConnectionListener : playerConnectionListeners) {
-            playerConnectionListener.onPlayerJoin(cMongoPlayer, address);
+            playerConnectionListener.onPlayerLogin(cMongoPlayer, address);
         }
         if (Core.getNetworkManager() != null) Core.getNetworkManager().updateHeartbeat(); //Send out a heartbeat.
         //Now, let's place this player in our online player map

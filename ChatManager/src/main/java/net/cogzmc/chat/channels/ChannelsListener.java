@@ -54,7 +54,7 @@ public final class ChannelsListener implements Listener, CPlayerConnectionListen
     }
 
     @Override
-    public void onPlayerJoin(CPlayer player, InetAddress address) throws CPlayerJoinException {
+    public void onPlayerLogin(CPlayer player, InetAddress address) throws CPlayerJoinException {
         channelManager.setChannel(player, channelManager.getDefaultChannel());
     }
 

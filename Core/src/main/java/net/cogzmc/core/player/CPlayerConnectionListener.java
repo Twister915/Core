@@ -17,7 +17,7 @@ public interface CPlayerConnectionListener {
      * @throws CPlayerJoinException Throw this exception during login to cancel it for any reason. This will kick the
      * player and discard the {@link net.cogzmc.core.player.CPlayer} instance for them.
      */
-    void onPlayerJoin(CPlayer player, InetAddress address) throws CPlayerJoinException;
+    void onPlayerLogin(CPlayer player, InetAddress address) throws CPlayerJoinException;
 
     /**
      * Called by the {@link net.cogzmc.core.player.CPlayerManager} when a player disconnects from the server.

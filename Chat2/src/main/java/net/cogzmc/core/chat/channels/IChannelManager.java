@@ -8,8 +8,8 @@ public interface IChannelManager {
     Channel getChannelByName(String name);
     void registerChannel(Channel channel);
     void makePlayerParticipant(CPlayer player, Channel channel) throws ChannelException;
-    void makePlayerListener(CPlayer player, Channel channel);
-    void removePlayerAsListener(CPlayer player, Channel channel);
+    void makePlayerListener(CPlayer player, Channel channel) throws ChannelException;
+    void removePlayerAsListener(CPlayer player, Channel channel) throws ChannelException;
     Channel getChannelPlayerParticipatingIn(CPlayer player);
     ImmutableList<CPlayer> getParticipants(Channel channel);
     ImmutableList<CPlayer> getListeners(Channel channel);
@@ -17,4 +17,16 @@ public interface IChannelManager {
     void reload();
     void save();
     boolean isParticipating(CPlayer player, Channel channel);
+    boolean isListening(CPlayer player, Channel channel);
+
+    ImmutableList<MessageProcessor> getMessageProcessors();
+    ImmutableList<MessageArgumentDelegate> getMessageArgumentDelegates();
+
+    void registerMessageProcessor(MessageProcessor messageProcessor);
+    void registerMessageArgumentDelegate(MessageArgumentDelegate messageArgumentDelegate);
+    void unregisterMessageProcessor(MessageProcessor messageProcessor);
+    void unregisterMessageArgumentDelegate(MessageArgumentDelegate messageArgumentDelegate);
+
+    void registerChannelManagerReloadObserver(ChannelManagerReloadObserver observer);
+    void unregisterChannelManagerReloadObserver(ChannelManagerReloadObserver observer);
 }
