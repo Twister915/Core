@@ -1,8 +1,8 @@
 package net.cogzmc.entityapi;
 
-import com.avaje.ebeaninternal.server.deploy.BeanDescriptor.EntityType;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.modular.ModuleMeta;
+import org.bukkit.entity.EntityType;
 
 @ModuleMeta(
         name = "Entity API",

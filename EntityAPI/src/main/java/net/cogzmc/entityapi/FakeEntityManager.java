@@ -1,5 +1,6 @@
 package net.cogzmc.entityapi;
 
+import net.cogzmc.entityapi.entitites.FakeEntity;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
@@ -13,5 +14,16 @@ import org.bukkit.entity.EntityType;
  */
 public interface FakeEntityManager {
 
+	/**
+	 * Spawn an entity type at a certain location
+	 * @param location the certain location
+	 * @param entityType the entity type
+	 */
 	public void spawnEntity(Location location, EntityType entityType);
+
+	/**
+	 * Destroy a fake entity
+	 * @param fakeEntity the fake entity to destroy
+	 */
+	public void destroyEntity(FakeEntity fakeEntity);
 }
