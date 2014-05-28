@@ -12,11 +12,12 @@ import net.cogzmc.core.netfiles.NetElement;
 import net.cogzmc.core.network.NetworkServer;
 import net.cogzmc.core.player.COfflinePlayer;
 import org.apache.commons.lang.IllegalClassException;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.util.Vector;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
 
 final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T> {
@@ -77,10 +78,21 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
         if (object instanceof org.bukkit.util.Vector) {
             Vector vector = (Vector) object;
             DBObject dbVector = new BasicDBObject();
-            dbVector.put("x", vector.getBlockX());
-            dbVector.put("y", vector.getBlockY());
-            dbVector.put("z", vector.getBlockZ());
+            dbVector.put("x", vector.getX());
+            dbVector.put("y", vector.getY());
+            dbVector.put("z", vector.getZ());
             return dbVector;
+        }
+        if (object instanceof Location) {
+            Location location = (Location) object;
+            DBObject dbLocation = new BasicDBObject();
+            dbLocation.put("x", location.getX());
+            dbLocation.put("y", location.getY());
+            dbLocation.put("z", location.getZ());
+            dbLocation.put("pitch", location.getPitch());
+            dbLocation.put("yaw", location.getYaw());
+            dbLocation.put("world", location.getWorld().getName());
+            return dbLocation;
         }
         //If the value is a map, let's do some hardcore processing.
         if (object instanceof Map) {
@@ -116,10 +128,20 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
         if (NetworkServer.class.isAssignableFrom(type) && object instanceof String) return Core.getNetworkManager().getServer((String) object);
         if (Vector.class.isAssignableFrom(type) && object instanceof BasicDBObject) {
             BasicDBObject dbVector = (BasicDBObject) object;
-            int x = dbVector.getInt("x");
-            int y = dbVector.getInt("y");
-            int z = dbVector.getInt("z");
+            double x = dbVector.getDouble("x");
+            double y = dbVector.getDouble("y");
+            double z = dbVector.getDouble("z");
             return new Vector(x, y, z);
+        }
+        if (Location.class.isAssignableFrom(type) && object instanceof BasicDBObject) {
+            BasicDBObject dbLocation = (BasicDBObject) object;
+            double x = dbLocation.getDouble("x");
+            double y = dbLocation.getDouble("y");
+            double z = dbLocation.getDouble("z");
+            float pitch = (float) dbLocation.get("pitch");
+            float yaw = (float) dbLocation.get("yaw");
+            String world = dbLocation.getString("world");
+            return new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
         }
         //If we're trying to get to a map and we have a BasicDBObject, let's do some digging
         if (Map.class.isAssignableFrom(type) && object instanceof BasicDBObject) {
