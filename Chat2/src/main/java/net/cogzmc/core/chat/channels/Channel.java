@@ -9,6 +9,7 @@ public interface Channel {
     boolean canBecomeParticipant(CPlayer player);
     boolean isAutoParticipate();
     boolean isAutoListen();
+    boolean isMarkedAsDefault();
     boolean canRemoveListener(CPlayer player);
     boolean canRemoveParticipant(CPlayer player);
 }

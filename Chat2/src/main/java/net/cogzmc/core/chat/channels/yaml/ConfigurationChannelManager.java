@@ -1,8 +1,10 @@
-package net.cogzmc.core.chat.channels;
+package net.cogzmc.core.chat.channels.yaml;
 
 import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.NonNull;
+import net.cogzmc.core.chat.CoreChat;
+import net.cogzmc.core.chat.channels.*;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerConnectionListener;
 import net.cogzmc.core.player.CPlayerJoinException;
@@ -13,14 +15,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ConfigurationChannelManager implements IChannelManager, CPlayerConnectionListener {
+public final class ConfigurationChannelManager implements IChannelManager, CPlayerConnectionListener {
+    private final ConfigurationChannelSource configurationChannelSource;
+
+    private final List<ChannelManagerReloadObserver> channelManagerReloadObservers = new ArrayList<>();
+
     private Map<String, Channel> channels;
     @Getter private Channel defaultChannel;
     private Map<Channel, List<CPlayer>> listenerMap;
     private Map<CPlayer, Channel> activeChannels;
     private List<MessageArgumentDelegate> messageArgumentDelegates;
     private List<MessageProcessor> messageProcessors;
-    private final List<ChannelManagerReloadObserver> channelManagerReloadObservers = new ArrayList<>();
+    private List<ChatterObserver> chatterObservers;
+
+    public ConfigurationChannelManager() throws ChannelException {
+        this.configurationChannelSource = new ConfigurationChannelSource(this);
+        reload();
+    }
 
     @Override
     public ImmutableList<Channel> getChannels() {
@@ -74,16 +85,21 @@ public class ConfigurationChannelManager implements IChannelManager, CPlayerConn
     }
 
     @Override
-    public void reload() {
-        this.listenerMap = new HashMap<>();
-        this.channels = new HashMap<>();
-        this.activeChannels = new HashMap<>();
-        this.messageArgumentDelegates = new ArrayList<>();
-        this.messageProcessors = new ArrayList<>();
-        for (ChannelManagerReloadObserver channelManagerReloadObserver : this.channelManagerReloadObservers) {
-            channelManagerReloadObserver.onChannelManagerReload(this);
+    public void reload() throws ChannelException {
+        this.listenerMap = new HashMap<>(); //Setup the listener map
+        this.channels = new HashMap<>(); //Channel map
+        for (Channel channel : this.configurationChannelSource.getNewChannels()) { //Load the channels from config
+            registerChannel(channel); //by registering each one ^
+            if (channel.isMarkedAsDefault()) this.defaultChannel = channel; //And setting the default up
         }
-        //TODO read config files
+        if (defaultChannel == null) throw new IllegalStateException("There is no default channel!"); //And moaning if we can't get a default channel
+        this.activeChannels = new HashMap<>();  //Create an activeChannels map
+        this.messageArgumentDelegates = new ArrayList<>(); //and the delegates/
+        this.messageProcessors = new ArrayList<>();//processors map
+        this.chatterObservers = new ArrayList<>();
+        for (ChannelManagerReloadObserver channelManagerReloadObserver : this.channelManagerReloadObservers) {
+            channelManagerReloadObserver.onChannelManagerReload(this); //Let our observers know
+        }
     }
 
     @Override
@@ -148,17 +164,54 @@ public class ConfigurationChannelManager implements IChannelManager, CPlayerConn
 
     @Override
     public void unregisterChannelManagerReloadObserver(ChannelManagerReloadObserver observer) {
-        if (!this.channelManagerReloadObservers.contains(observer)) this.channelManagerReloadObservers.remove(observer);
+        if (this.channelManagerReloadObservers.contains(observer)) this.channelManagerReloadObservers.remove(observer);
+    }
+
+    @Override
+    public void registerChatterObserver(ChatterObserver listener) {
+        if (!this.chatterObservers.contains(listener)) this.chatterObservers.add(listener);
+    }
+
+    @Override
+    public void unregisterChatterListener(ChatterObserver listener) {
+        if (this.chatterObservers.contains(listener)) this.chatterObservers.remove(listener);
+    }
+
+    @Override
+    public ImmutableList<ChatterObserver> getChatterObservers() {
+        return ImmutableList.copyOf(chatterObservers);
     }
 
     @Override
     public void onPlayerLogin(CPlayer player, InetAddress address) throws CPlayerJoinException {
         for (Channel channel : channels.values()) {
+            /*
+             * this is messy, have a close look
+             * If the channel is auto participate, and the player can be a participant... *runs out of breath*
+             * and the player is not currently participating in any other channel (except the default)
+             * attempt to put them in the channel. Send them a message if they fail to join!
+             */
             if (channel.isAutoParticipate() && channel.canBecomeParticipant(player) &&
-                    getChannelPlayerParticipatingIn(player).equals(defaultChannel)) try {
-                makePlayerParticipant(player, channel);
-            } catch (ChannelException e) {
-                player.sendMessage();
+                    getChannelPlayerParticipatingIn(player).equals(defaultChannel))  {
+                try {
+                    makePlayerParticipant(player, channel);
+                } catch (ChannelException e) {
+                    player.sendMessage(
+                            CoreChat.getInstance().getFormat("cannot-join-channel",
+                                    new String[]{"<channel>", channel.getName()},
+                                    new String[]{"<error>", e.getMessage()})
+                    );
+                }
+            }
+            /*
+             * Repeat the same type of action for channels you can "listen" automatically.
+             */
+            if (channel.isAutoListen() && channel.canBecomeListener(player) && !channel.equals(defaultChannel)) {
+                try {
+                    makePlayerListener(player, channel);
+                } catch (ChannelException e) {
+                    e.printStackTrace();
+                }
             }
 
         }
@@ -166,6 +219,5 @@ public class ConfigurationChannelManager implements IChannelManager, CPlayerConn
 
     @Override
     public void onPlayerDisconnect(CPlayer player) {
-        //TODO probably preserve state
     }
 }

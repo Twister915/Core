@@ -1,7 +1,11 @@
-package net.cogzmc.core.chat.channels;
+package net.cogzmc.core.chat.channels.yaml;
 
 import lombok.Getter;
 import net.cogzmc.core.chat.CoreChat;
+import net.cogzmc.core.chat.channels.Channel;
+import net.cogzmc.core.chat.channels.ChannelException;
+import net.cogzmc.core.chat.channels.MessageArgumentDelegate;
+import net.cogzmc.core.chat.channels.MessageProcessor;
 import net.cogzmc.core.player.CPlayer;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.bukkit.ChatColor;
@@ -10,7 +14,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConfigurationChannel implements Channel {
+public final class ConfigurationChannel implements Channel {
     private static enum ConfigKeys {
         FORMAT("format"),
         NAME("name"),
@@ -89,5 +93,10 @@ public class ConfigurationChannel implements Channel {
             }
         }
         return values;
+    }
+
+    @Override
+    public boolean isMarkedAsDefault() {
+        return defaultChannel;
     }
 }

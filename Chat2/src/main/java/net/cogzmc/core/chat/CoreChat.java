@@ -2,7 +2,8 @@ package net.cogzmc.core.chat;
 
 import lombok.Getter;
 import net.cogzmc.core.chat.channels.Channel;
-import net.cogzmc.core.chat.channels.ConfigurationChannelManager;
+import net.cogzmc.core.chat.channels.ChatterListener;
+import net.cogzmc.core.chat.channels.yaml.ConfigurationChannelManager;
 import net.cogzmc.core.chat.channels.IChannelManager;
 import net.cogzmc.core.modular.ModularPlugin;
 
@@ -30,9 +31,9 @@ public final class CoreChat extends ModularPlugin {
     }
 
     @Override
-    protected void onModuleEnable() {
+    protected void onModuleEnable() throws Exception {
         instance = this;
-        this.channelManager = new ConfigurationChannelManager();
-
+        this.channelManager = new ConfigurationChannelManager(); //THROWS CAUGHT
+        registerListener(new ChatterListener(this.channelManager));
     }
 }

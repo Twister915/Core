@@ -5,6 +5,6 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ChannelException extends Exception {
+public final class ChannelException extends Exception {
     private final String message;
 }

@@ -14,7 +14,7 @@ public interface IChannelManager {
     ImmutableList<CPlayer> getParticipants(Channel channel);
     ImmutableList<CPlayer> getListeners(Channel channel);
     Channel getDefaultChannel();
-    void reload();
+    void reload() throws ChannelException;
     void save();
     boolean isParticipating(CPlayer player, Channel channel);
     boolean isListening(CPlayer player, Channel channel);
@@ -29,4 +29,8 @@ public interface IChannelManager {
 
     void registerChannelManagerReloadObserver(ChannelManagerReloadObserver observer);
     void unregisterChannelManagerReloadObserver(ChannelManagerReloadObserver observer);
+
+    void registerChatterObserver(ChatterObserver listener);
+    void unregisterChatterListener(ChatterObserver listener);
+    ImmutableList<ChatterObserver> getChatterObservers();
 }

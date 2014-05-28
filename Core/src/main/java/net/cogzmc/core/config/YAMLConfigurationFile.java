@@ -20,14 +20,18 @@ public final class YAMLConfigurationFile {
     private FileConfiguration fileConfiguration;
 
     public YAMLConfigurationFile(@NonNull JavaPlugin plugin, @NonNull String fileName) {
+        this(plugin, new File(plugin.getDataFolder(), fileName));
+    }
+
+    public YAMLConfigurationFile(@NonNull JavaPlugin plugin, File file) {
         if (!plugin.isEnabled())
             throw new IllegalArgumentException("plugin must be enabled");
         this.plugin = plugin;
-        this.fileName = fileName;
+        this.fileName = file.getName();
         File dataFolder = plugin.getDataFolder();
         if (dataFolder == null)
             throw new IllegalStateException();
-        this.configFile = new File(plugin.getDataFolder(), fileName);
+        this.configFile = file;
     }
 
     public void reloadConfig() {
