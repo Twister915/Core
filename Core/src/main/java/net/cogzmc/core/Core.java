@@ -2,6 +2,7 @@ package net.cogzmc.core;
 
 import lombok.Getter;
 import net.cogzmc.core.config.YAMLConfigurationFile;
+import net.cogzmc.core.enderBar.EnderBarManager;
 import net.cogzmc.core.model.ModelManager;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.netfiles.NetFileManager;
@@ -39,6 +40,7 @@ public class Core extends JavaPlugin {
     private NetworkManager networkManager;
     private NetFileManager netFileManager;
     private ModelManager modelManager;
+    private EnderBarManager enderBarManager;
 
     @Getter private YAMLConfigurationFile databaseConfiguration;
 
@@ -72,6 +74,9 @@ public class Core extends JavaPlugin {
             this.permissionsManager = provider.getNewPermissionsManager(this, this.playerManager);
             this.netFileManager = provider.getNewNetFileManager(this);
             this.modelManager = provider.getNewModelManager(this);
+
+            //Some extras
+            this.enderBarManager = new EnderBarManager();
         } catch (Throwable t) {
             t.printStackTrace();
             Bukkit.getPluginManager().disablePlugin(this);
@@ -151,4 +156,6 @@ public class Core extends JavaPlugin {
     public static NetFileManager getNetFileManager() {return instance.netFileManager;}
 
     public static ModelManager getModelManager() {return instance.modelManager;}
+
+    public static EnderBarManager getEnderBarManager() {return instance.enderBarManager;}
 }

@@ -213,7 +213,7 @@ public final class LilyPadNetworkManager implements NetworkManager {
     static JSONObject encodeNetCommand(NetCommand command) {
         JSONObject object = new JSONObject(); //Create a holder for this NetCommand
         Class<? extends NetCommand> commandType = command.getClass(); //Command type
-        object.put(LilyPadKeys.NET_COMMAND_CLASS_NAME, commandType.getName()); //Put the class name
+        object.put(LilyPadKeys.NET_COMMAND_CLASS_NAME.getValue(), commandType.getName()); //Put the class name
         //Find the objects and values
         JSONObject arguments = new JSONObject();
         boolean allFields = commandType.isAnnotationPresent(NetCommandField.class); //Denotes if we should assume all fields have NetCommandField
@@ -233,8 +233,8 @@ public final class LilyPadNetworkManager implements NetworkManager {
             //And adds them when they have a NetCommandField annotation.
             arguments.put(field.getName(), field.get(command));
         }
-        object.put(LilyPadKeys.NET_COMMAND_ARGUMENTS, arguments);
-        object.put(LilyPadKeys.NET_COMMAND_TIME, new Date());
+        object.put(LilyPadKeys.NET_COMMAND_ARGUMENTS.getValue(), arguments);
+        object.put(LilyPadKeys.NET_COMMAND_TIME.getValue(), new Date().getTime());
         return object;
     }
 
@@ -322,18 +322,21 @@ public final class LilyPadNetworkManager implements NetworkManager {
         //Get the sender
         NetworkServer sender = getServer(event.getSender());
         if (sender == null) return;
+        Core.logInfo(event.getMessageAsString());
+        if (sender.getName().equals(connect.getSettings().getUsername())) return;
         //Get the command object (JSON) and attempt to read it
         JSONObject netCommand = (JSONObject) JSONValue.parse(event.getMessageAsString());
         //Get the class
-        Class<? extends NetCommand> netCommandType;
+        Class netCommandType;
         try {
-            netCommandType = (Class<? extends NetCommand>) Class.forName((String) netCommand.get(LilyPadKeys.NET_COMMAND_CLASS_NAME));
+            netCommandType = Class.forName((String) netCommand.get(LilyPadKeys.NET_COMMAND_CLASS_NAME.getValue()));
         } catch (ClassNotFoundException ex) {
             return;
         }
         //Create a new instance of the NetCommand class that we found. THIS REQUIRES A NO ARGS CONSTRUCTOR TO BE PRESENT.
-        NetCommand netCommand1 = netCommandType.newInstance();
-        JSONObject arguments = (JSONObject)netCommand.get(LilyPadKeys.NET_COMMAND_ARGUMENTS); //Get the arguments
+        Object netCommand1 = netCommandType.newInstance();
+        if (!(netCommand1 instanceof NetCommand)) return;
+        JSONObject arguments = (JSONObject)netCommand.get(LilyPadKeys.NET_COMMAND_ARGUMENTS.getValue()); //Get the arguments
         boolean allFields = netCommandType.isAnnotationPresent(NetCommandField.class);
         for (Field field : netCommandType.getDeclaredFields()) { //And set the values in the class by
             if (!allFields && !field.isAnnotationPresent(NetCommandField.class)) continue; //Finding fields with this annotation
@@ -341,8 +344,10 @@ public final class LilyPadNetworkManager implements NetworkManager {
             field.set(netCommand1, field.getType().cast(arguments.get(field.getName()))); //and setting their value
         }
         //Now let's call the handlers
-        for (NetCommandHandler netCommandHandler : netCommandHandlers.get(netCommandType)) {
-            netCommandHandler.handleNetCommand(sender, netCommand1); //"Yo dude... we got a NetCommand being sent by sender, check out netCommand1 param."
+        List<NetCommandHandler> netCommandHandlers1 = netCommandHandlers.get(netCommandType);
+        if (netCommandHandlers1 == null) return; //if there are no handlers, we don't need to do anything more.
+        for (NetCommandHandler netCommandHandler : netCommandHandlers1) {
+            netCommandHandler.handleNetCommand(sender, (NetCommand) netCommand1); //"Yo dude... we got a NetCommand being sent by sender, check out netCommand1 param."
         }
     }
 

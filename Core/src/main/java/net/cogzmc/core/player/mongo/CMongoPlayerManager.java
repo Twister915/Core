@@ -116,8 +116,9 @@ public final class CMongoPlayerManager implements CPlayerManager {
     @Override
     public List<CPlayer> getCPlayerByStartOfName(String name) {
         List<CPlayer> cPlayers = new ArrayList<>();
+        String lowerCaseName = name.toLowerCase();
         for (String s : this.onlinePlayerMap.keySet()) {
-            if (s.startsWith(name)) cPlayers.add(onlinePlayerMap.get(s));
+            if (s.toLowerCase().startsWith(lowerCaseName)) cPlayers.add(onlinePlayerMap.get(s));
         }
         return cPlayers;
     }
@@ -160,9 +161,9 @@ public final class CMongoPlayerManager implements CPlayerManager {
         for (CPlayerConnectionListener playerConnectionListener : playerConnectionListeners) {
             playerConnectionListener.onPlayerLogin(cMongoPlayer, address);
         }
-        if (Core.getNetworkManager() != null) Core.getNetworkManager().updateHeartbeat(); //Send out a heartbeat.
         //Now, let's place this player in our online player map
         this.onlinePlayerMap.put(player.getName(), cMongoPlayer);
+        if (Core.getNetworkManager() != null) Core.getNetworkManager().updateHeartbeat(); //Send out a heartbeat.
     }
 
     @Override
@@ -179,8 +180,8 @@ public final class CMongoPlayerManager implements CPlayerManager {
         for (CPlayerConnectionListener playerConnectionListener : playerConnectionListeners) {
             playerConnectionListener.onPlayerDisconnect(cPlayerForPlayer);
         }
-        if (Core.getNetworkManager() != null) Core.getNetworkManager().updateHeartbeat();
         this.onlinePlayerMap.remove(player.getName());
+        if (Core.getNetworkManager() != null) Core.getNetworkManager().updateHeartbeat();
     }
 
     @Override

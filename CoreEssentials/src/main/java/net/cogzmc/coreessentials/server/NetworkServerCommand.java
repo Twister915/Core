@@ -16,4 +16,9 @@ final class NetworkServerCommand extends ModuleCommand {
     protected void handleCommand(CPlayer commandSender, String[] args) throws CommandException {
         networkServer.sendPlayerToServer(commandSender);
     }
+
+    @Override
+    protected boolean shouldGenerateHelpCommand() {
+        return false;
+    }
 }

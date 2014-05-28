@@ -5,20 +5,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 public final class RandomUtils {
-    public static void setDeclaredField(Object value, Object instance, String field) throws NoSuchFieldException, IllegalAccessException {
-        Field declaredField = instance.getClass().getDeclaredField(field);
-        declaredField.setAccessible(true);
-        declaredField.set(instance, value);
-    }
-
-    public static <T> T getDeclaredField(Object o, String field, Class<T> type){
-        try {
-            return safeCast(o.getClass().getDeclaredField(field).get(o), type);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            return null;
-        }
-    }
-
     public static <T> T safeCast(Object o, @SuppressWarnings("UnusedParameters") Class<T> type) {
         try {
             //noinspection unchecked
@@ -48,19 +34,5 @@ public final class RandomUtils {
             if (ts[x].equals(t)) return x;
         }
         return -1;
-    }
-
-    public static <T> String formatList(List<? extends T> list, int max) {
-        StringBuilder builder = new StringBuilder();
-        int current = 0;
-        for (T aValue : list) {
-            if (current == max) break;
-            builder.append(aValue).append(", ");
-            current++;
-        }
-        if (list.size() > 0) {
-            builder.deleteCharAt(builder.length() - 2);
-        }
-        return builder.toString();
     }
 }

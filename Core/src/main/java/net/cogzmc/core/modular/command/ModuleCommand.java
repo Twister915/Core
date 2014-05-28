@@ -90,6 +90,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
     }
 
     private void regenerateHelpCommand() {
+        if (!shouldGenerateHelpCommand()) return;
         final Map<String, ModuleCommand> subCommandsLV = this.subCommands;
         final ModuleCommand superHelpCommand = this;
         this.subCommands.put("help", new ModuleCommand("help") {
@@ -243,11 +244,11 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
     protected void handleCommand(BlockCommandSender commandSender, String[] args) throws CommandException {throw new EmptyHandlerException();}
 
     //Handles for all types in the event that no specific handler is overridden above.
-    @SuppressWarnings("UnusedParameters")
     protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {throw new EmptyHandlerException();}
 
+    protected boolean shouldGenerateHelpCommand() {return true;}
+
     //Default behavior if we delegate the call to the sub-class
-    @SuppressWarnings("UnusedParameters")
     protected List<String> handleTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> ss = new ArrayList<>(); //Create a list to put possible names
         String arg = args.length > 0 ? args[args.length - 1] : ""; //Get the last argument
