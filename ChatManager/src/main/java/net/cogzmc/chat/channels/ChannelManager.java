@@ -196,7 +196,7 @@ public final class ChannelManager {
         String cleanMessage = STRIP_COLOR_PATTERN.matcher(message).replaceAll("");
         String prefix = player.getChatPrefix() != null ? player.getChatPrefix() : playerGroup.getChatPrefix();
         String suffix = player.getChatSuffix() != null ? player.getChatSuffix() : playerGroup.getChatSuffix();
-        String resetColor = ChatColor.RESET + "";
+        String resetColor = ChatColor.RESET.toString();
         ChatColor rawColor = player.getChatColor() != null ? player.getChatColor() : playerGroup.getChatColor();
         String chatColor = rawColor != null ? "\u0026" + rawColor.getChar() : "";
         Object[] args = {senderName, senderDisplay, message, cleanMessage, prefix, suffix, chatColor, resetColor};

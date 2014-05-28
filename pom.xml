@@ -16,6 +16,7 @@
         <module>Hub</module>
         <module>CoreEssentials</module>
         <module>EntityAPI</module>
+        <module>Chat2</module>
     </modules>
 
     <packaging>pom</packaging>
