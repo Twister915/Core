@@ -72,7 +72,7 @@ public final class EnderBarManager implements CPlayerConnectionListener {
         return true;
     }
 
-    public Integer getNextId() {
+    Integer getNextId() {
         lastId++;
         return lastId;
     }

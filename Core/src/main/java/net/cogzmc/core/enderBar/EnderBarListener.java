@@ -17,7 +17,7 @@ final class EnderBarListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         CPlayer onlinePlayer = Core.getOnlinePlayer(event.getPlayer());
         EnderBar enderBarFor = manager.getEnderBarFor(onlinePlayer);
-        if (enderBarFor.isSpawned() && event.getTo().distanceSquared(enderBarFor.getCurrentLocation()) > 25) enderBarFor.updateLocation();
+        if (enderBarFor != null && enderBarFor.isSpawned() && event.getTo().distanceSquared(enderBarFor.getCurrentLocation()) > 25) enderBarFor.updateLocation();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

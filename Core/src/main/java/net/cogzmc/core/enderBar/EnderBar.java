@@ -19,7 +19,7 @@ final class EnderBar {
     private final Integer id;
 
     private String text;
-    private Float health;
+    private Float health = 1f;
     @Setter(AccessLevel.NONE) private boolean spawned;
     @Setter(AccessLevel.NONE) private Location currentLocation;
     private final WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
@@ -30,6 +30,7 @@ final class EnderBar {
         packet.setHeadYaw(0f);
         packet.setHeadPitch(0f);
         packet.setEntityID(id);
+        updateDataWatcher();
         packet.setMetadata(dataWatcher);
         packet.setType(EntityType.ENDER_DRAGON);
         currentLocation = getBestLocation();
@@ -41,6 +42,7 @@ final class EnderBar {
     }
 
     void updateLocation() {
+        if (!spawned) return;
         WrapperPlayServerEntityTeleport entityTeleport = new WrapperPlayServerEntityTeleport();
         entityTeleport.setEntityID(id);
         currentLocation = getBestLocation();
@@ -61,12 +63,12 @@ final class EnderBar {
     }
 
     void update() {
-        dataWatcher.setObject(6, health*200); //Set the health (health is a %, 200 is the actual health)
-        dataWatcher.setObject(11, true); //Set display name to always show
-        dataWatcher.setObject(10, text); //Set the display name text now.
+        if (!spawned) return;
+        updateDataWatcher();
         WrapperPlayServerEntityMetadata metaPacket = new WrapperPlayServerEntityMetadata();
         metaPacket.setEntityId(id);
         metaPacket.setEntityMetadata(dataWatcher.getWatchableObjects());
+        metaPacket.sendPacket(player.getBukkitPlayer());
     }
 
     void newWorld() {
@@ -75,17 +77,22 @@ final class EnderBar {
         spawn();
     }
 
-    public void setText(String text) {
+    void setText(String text) {
         this.text = ChatColor.translateAlternateColorCodes('&',text.substring(0, Math.min(64, text.length())));
         update();
     }
 
-    public void setHealth(Float health) {
-        this.health = Math.max(1f, health);
+    void setHealth(Float health) {
+        this.health = health;
         update();
     }
 
     Location getBestLocation() {
         return player.getBukkitPlayer().getLocation().clone().add(0, -300, 0);
+    }
+
+    private void updateDataWatcher() {
+        dataWatcher.setObject(6, health*200f); //Set the health (health is a %, 200 is the actual health)
+        if (text != null) dataWatcher.setObject(10, text); //Set the display name text now.
     }
 }

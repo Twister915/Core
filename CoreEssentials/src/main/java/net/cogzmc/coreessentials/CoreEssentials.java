@@ -20,6 +20,7 @@ public final class CoreEssentials extends ModularPlugin {
         registerCommand(new PluginsCommand());
         registerCommand(new NickNameCommand());
         registerCommand(new LagInfoCommand());
+        registerCommand(new TestEnderBarCommand());
         if (Core.getNetworkManager() != null) registerCommand(new ServerCommand());
         tabColorManager = new TabColorManager();
         Core.getPermissionsManager().registerObserver(tabColorManager);
