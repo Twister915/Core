@@ -1,0 +1,6 @@
+name: CoreChat
+authors: [Twister915]
+version: 1.0
+main: net.cogzmc.core.chat.CoreChat
+depend: [Core]
+description: Core's chat plugin. Intergrates with Core's permissions system.

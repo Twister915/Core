@@ -309,6 +309,10 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
 
     @Override
     public void setDisplayName(String string) {
+        if (string == null) {
+            this.displayName = null;
+            return;
+        }
         this.displayName = ChatColor.translateAlternateColorCodes('&', string);
     }
 }

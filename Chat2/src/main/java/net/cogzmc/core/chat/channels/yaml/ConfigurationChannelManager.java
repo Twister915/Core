@@ -3,6 +3,7 @@ package net.cogzmc.core.chat.channels.yaml;
 import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.NonNull;
+import net.cogzmc.core.Core;
 import net.cogzmc.core.chat.CoreChat;
 import net.cogzmc.core.chat.channels.*;
 import net.cogzmc.core.player.CPlayer;
@@ -47,6 +48,7 @@ public final class ConfigurationChannelManager implements IChannelManager, CPlay
     public void makePlayerParticipant(@NonNull CPlayer player, @NonNull Channel channel) throws ChannelException {
         if (!channel.canBecomeParticipant(player)) throw new ChannelException("You cannot become a participant of this channel!");
         if (isParticipating(player, channel)) throw new ChannelException("You are already a participant of this channel!");
+        if (!isListening(player, channel)) makePlayerListener(player, channel);
         Channel oldChannel = getChannelPlayerParticipatingIn(player);
         if (!oldChannel.canRemoveParticipant(player)) throw new ChannelException("You cannot leave this channel!");
         if (!channel.equals(defaultChannel)) activeChannels.put(player, channel);
@@ -57,12 +59,15 @@ public final class ConfigurationChannelManager implements IChannelManager, CPlay
     public void makePlayerListener(@NonNull CPlayer player, @NonNull Channel channel) throws ChannelException {
         if (isListening(player, channel)) throw new ChannelException("You are already a listener of this channel!");
         if (channel.equals(defaultChannel)) throw new ChannelException("You are always in this channel by default!");
-
+        this.listenerMap.get(channel).add(player);
     }
 
     @Override
     public void removePlayerAsListener(@NonNull CPlayer player, @NonNull Channel channel) throws ChannelException {
+        if (!isListening(player, channel)) throw new ChannelException("You are not listening to this channel!");
         if (channel.equals(defaultChannel)) throw new ChannelException("You cannot leave the default channel!");
+        if (isParticipating(player, channel)) makePlayerParticipant(player, defaultChannel);
+        this.listenerMap.get(channel).remove(player);
     }
 
     @Override
@@ -81,6 +86,7 @@ public final class ConfigurationChannelManager implements IChannelManager, CPlay
 
     @Override
     public ImmutableList<CPlayer> getListeners(@NonNull Channel channel) {
+        if (channel.equals(defaultChannel)) return ImmutableList.copyOf(Core.getOnlinePlayers());
         return ImmutableList.copyOf(this.listenerMap.get(channel));
     }
 
@@ -111,6 +117,7 @@ public final class ConfigurationChannelManager implements IChannelManager, CPlay
     public void registerChannel(@NonNull Channel channel) {
         if (this.channels.containsValue(channel)) throw new IllegalStateException("You cannot register the same channel twice!");
         this.channels.put(channel.getName(), channel);
+        this.listenerMap.put(channel, new ArrayList<CPlayer>());
     }
 
     @Override
@@ -124,7 +131,7 @@ public final class ConfigurationChannelManager implements IChannelManager, CPlay
 
     @Override
     public boolean isListening(CPlayer player, Channel channel) {
-        return this.listenerMap.get(channel).contains(player);
+        return channel.equals(defaultChannel) || this.listenerMap.get(channel).contains(player);
     }
 
     @Override
@@ -195,25 +202,18 @@ public final class ConfigurationChannelManager implements IChannelManager, CPlay
                     getChannelPlayerParticipatingIn(player).equals(defaultChannel))  {
                 try {
                     makePlayerParticipant(player, channel);
-                } catch (ChannelException e) {
-                    player.sendMessage(
-                            CoreChat.getInstance().getFormat("cannot-join-channel",
-                                    new String[]{"<channel>", channel.getName()},
-                                    new String[]{"<error>", e.getMessage()})
-                    );
+                } catch (ChannelException ignored) {
                 }
             }
             /*
              * Repeat the same type of action for channels you can "listen" automatically.
              */
-            if (channel.isAutoListen() && channel.canBecomeListener(player) && !channel.equals(defaultChannel)) {
+            if (channel.isAutoListen() && channel.canBecomeListener(player) && !channel.equals(defaultChannel) && !isListening(player, channel)) {
                 try {
                     makePlayerListener(player, channel);
-                } catch (ChannelException e) {
-                    e.printStackTrace();
+                } catch (ChannelException ignored) {
                 }
             }
-
         }
     }
 

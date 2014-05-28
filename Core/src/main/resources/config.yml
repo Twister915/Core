@@ -1,1 +1,2 @@
 provider: net.cogzmc.core.DefaultProvider
+kick-message: "&cThe server is reloading!"

@@ -6,6 +6,7 @@ import net.cogzmc.core.chat.channels.Channel;
 import net.cogzmc.core.chat.channels.ChannelException;
 import net.cogzmc.core.chat.channels.MessageArgumentDelegate;
 import net.cogzmc.core.chat.channels.MessageProcessor;
+import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.bukkit.ChatColor;
@@ -37,19 +38,21 @@ public final class ConfigurationChannel implements Channel {
     private final boolean defaultChannel;
     @Getter private final boolean autoParticipate;
     @Getter private final boolean autoListen;
+    @Getter private final boolean crossServer;
     private final ConfigurationChannelManager channelManager;
 
     public ConfigurationChannel(FileConfiguration yamlFile, ConfigurationChannelManager channelManager) throws ChannelException {
         this.name = yamlFile.getString(ConfigKeys.NAME.toString());
         this.defaultChannel = yamlFile.getBoolean(ConfigKeys.DEFAULT.toString(), false);
-        this.formatString = yamlFile.getString(ConfigKeys.FORMAT.toString());
+        this.formatString = ChatColor.translateAlternateColorCodes('&', yamlFile.getString(ConfigKeys.FORMAT.toString()));
         this.autoParticipate = yamlFile.getBoolean(ConfigKeys.AUTO_PARTICIPATE.toString(), false);
         this.autoListen = yamlFile.getBoolean(ConfigKeys.AUTO_LISTEN.toString(), false);
+        this.crossServer = yamlFile.getBoolean(ConfigKeys.CROSS_SERVER.toString(), false);
         this.channelManager = channelManager;
     }
     @Override
-    public String formatMessage(CPlayer sender, String chatMessage) {
-        return StrSubstitutor.replace(formatString, getSirSubstituteMap(sender, chatMessage));
+    public String formatMessage(COfflinePlayer sender, String chatMessage) {
+        return StrSubstitutor.replace(formatString, getSirSubstituteMap(sender, chatMessage), "{$", "}");
     }
 
     @Override
@@ -72,7 +75,7 @@ public final class ConfigurationChannel implements Channel {
         return player.hasPermission(CoreChat.getChannelLeavePermission(this));
     }
 
-    private Map<String, String> getSirSubstituteMap(CPlayer player, String message) {
+    private Map<String, String> getSirSubstituteMap(COfflinePlayer player, String message) {
         HashMap<String, String> values = new HashMap<>();
         for (MessageProcessor messageProcessor : this.channelManager.getMessageProcessors()) {
             message = messageProcessor.processChatMessage(player, message);

@@ -8,6 +8,7 @@ import net.cogzmc.core.netfiles.NetFileManager;
 import net.cogzmc.core.network.NetworkManager;
 import net.cogzmc.core.player.*;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -47,8 +48,9 @@ public class Core extends JavaPlugin {
         try {
             saveDefaultConfig();
             //Kick any online players
+            String kickMessage = ChatColor.translateAlternateColorCodes('&',getConfig().getString("kick-message"));
             for (Player player : Bukkit.getOnlinePlayers()) {
-                player.kickPlayer("CORE KICK");
+                player.kickPlayer(kickMessage);
             }
             //Connect to the cDatabase
             databaseConfiguration = new YAMLConfigurationFile(this, "database.yml");

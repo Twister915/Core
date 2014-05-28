@@ -1,12 +1,18 @@
 package net.cogzmc.core.chat;
 
 import lombok.Getter;
-import net.cogzmc.core.chat.channels.Channel;
-import net.cogzmc.core.chat.channels.ChatterListener;
+import net.cogzmc.core.Core;
+import net.cogzmc.core.chat.channels.*;
 import net.cogzmc.core.chat.channels.yaml.ConfigurationChannelManager;
-import net.cogzmc.core.chat.channels.IChannelManager;
+import net.cogzmc.core.chat.command.ChannelCommand;
 import net.cogzmc.core.modular.ModularPlugin;
+import net.cogzmc.core.modular.ModuleMeta;
+import net.cogzmc.core.player.CPlayerConnectionListener;
 
+@ModuleMeta(
+        name = "Core Chat",
+        description = "Manages chat and channels, along with providing a rich API for hooking into the chat system."
+)
 public final class CoreChat extends ModularPlugin {
     @Getter private static CoreChat instance;
     @Getter private IChannelManager channelManager;
@@ -34,6 +40,9 @@ public final class CoreChat extends ModularPlugin {
     protected void onModuleEnable() throws Exception {
         instance = this;
         this.channelManager = new ConfigurationChannelManager(); //THROWS CAUGHT
+        getPlayerManager().registerCPlayerConnectionListener((CPlayerConnectionListener) this.channelManager);
         registerListener(new ChatterListener(this.channelManager));
+        if (Core.getNetworkManager() != null) Core.getNetworkManager().registerNetCommandHandler(new ChannelNetCommandHandler(), ChatNetCommand.class);
+        registerCommand(new ChannelCommand());
     }
 }

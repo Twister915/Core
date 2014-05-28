@@ -2,6 +2,8 @@ package net.cogzmc.core.chat.channels;
 
 import lombok.Data;
 import net.cogzmc.core.Core;
+import net.cogzmc.core.chat.CoreChat;
+import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,6 +40,36 @@ public final class ChatterListener implements Listener {
             player.sendMessage(message);
         }
         for (ChatterObserver chatterObserver : channelManager.getChatterObservers()) {
+            chatterObserver.onMessageSent(sender, channel, message);
+        }
+        try {
+            attemptCrossServer(sender, message, channel);
+        } catch (ChannelException ignored) {
+        }
+    }
+
+    public static void sendMessageOnChannel(CPlayer sender, String message, Channel channel) throws ChannelException {
+        IChannelManager cManager = CoreChat.getInstance().getChannelManager();
+        if (!cManager.isListening(sender, channel)
+                || !channel.canBecomeParticipant(sender))
+            throw new ChannelException("You cannot chat in this channel");
+        attemptCrossServer(sender, message, channel);
+    }
+
+    private static void attemptCrossServer(CPlayer player, String message, Channel channel) throws ChannelException {
+        if (!channel.isCrossServer() || Core.getNetworkManager() == null) return;
+        ChatNetCommand chatNetCommand = new ChatNetCommand(message, channel.getName(), player.getUniqueIdentifier().toString());
+        Core.getNetworkManager().sendMassNetCommand(chatNetCommand);
+    }
+
+    static void handleCrossServer(COfflinePlayer sender, String message, Channel channel) throws ChannelException {
+        IChannelManager cManager = CoreChat.getInstance().getChannelManager();
+        String formatMessage = channel.formatMessage(sender, message);
+        String s = channel.formatMessage(sender, message);
+        for (CPlayer cPlayer : cManager.getListeners(channel)) {
+            cPlayer.sendMessage(s);
+        }
+        for (ChatterObserver chatterObserver : cManager.getChatterObservers()) {
             chatterObserver.onMessageSent(sender, channel, message);
         }
     }

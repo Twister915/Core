@@ -1,0 +1,3 @@
+name: Default
+default: true
+format: "{$prefix} {$name-color}{$sender-display}&r{$suffix}&3:&f {$message}"

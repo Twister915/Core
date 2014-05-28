@@ -18,26 +18,18 @@ public final class ConfigurationChannelSource implements ChannelSource {
     @Override
     public List<Channel> getNewChannels() throws ChannelException {
         CoreChat coreChat = CoreChat.getInstance();
-        File dataFolder = coreChat.getDataFolder();
-        File channels = new File(dataFolder, "channels");
-        if (!channels.isDirectory() && channels.mkdir()) {
-            YAMLConfigurationFile yamlConfigurationFile = new YAMLConfigurationFile(coreChat, new File(channels, "default.yml"));
-            yamlConfigurationFile.saveDefaultConfig();
-            ConfigurationChannel defaultChannel = new ConfigurationChannel(yamlConfigurationFile.getConfig(), manager);
-            ArrayList<Channel> channelsReturnVal = new ArrayList<>();
-            channelsReturnVal.add(defaultChannel);
-            return channelsReturnVal;
-        }
-        String[] list = channels.list(new FilenameFilter() {
+        YAMLConfigurationFile defaultChannel = new YAMLConfigurationFile(coreChat, "default.yml");
+        defaultChannel.saveDefaultConfig();
+        defaultChannel.saveConfig();
+        String[] list = coreChat.getDataFolder().list(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return name.endsWith(".yml");
+                return !name.startsWith("formats") && !name.startsWith("config") && name.endsWith(".yml");
             }
         });
         List<Channel> configChannels = new ArrayList<>();
         for (String s : list) {
-            File channelFile = new File(channels, s);
-            YAMLConfigurationFile yamlConfigurationFile = new YAMLConfigurationFile(coreChat, channelFile);
+            YAMLConfigurationFile yamlConfigurationFile = new YAMLConfigurationFile(coreChat, s);
             configChannels.add(new ConfigurationChannel(yamlConfigurationFile.getConfig(), manager));
         }
         return configChannels;
