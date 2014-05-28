@@ -9,6 +9,7 @@ import net.cogzmc.core.player.CPlayerJoinException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -88,6 +89,7 @@ public class CPlayerSignificantMoveManager implements CPlayerConnectionListener,
 		return Math.sqrt(squaredDefaultSignificantMoveDistance);
 	}
 
+	@EventHandler
 	void onPlayerMoveEvent(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 		CPlayer cPlayer = Core.getOnlinePlayer(player);
