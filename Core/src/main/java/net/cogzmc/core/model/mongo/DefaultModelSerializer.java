@@ -138,11 +138,13 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
             //First, let's cast for ease of use
             BasicDBObject dbObject = (BasicDBObject) object;
             //Then, check if this is one of those with the EMBEDDED system (which involves some serious logic). If not, let's just process this raw.
-            if (!dbObject.get(MongoModelKeys.EMBEDDED_FLAG_KEY.toString()).equals(MongoModelKeys.EMBEDDED_MAP_FLAG)) return processMapFromDB(dbObject, Object.class);
+            Map<String, Object> stringObjectMap = processMapFromDB(dbObject, Object.class);
+            if (!dbObject.containsField(MongoModelKeys.EMBEDDED_FLAG_KEY.toString())) return stringObjectMap;
+            if (!dbObject.get(MongoModelKeys.EMBEDDED_FLAG_KEY.toString()).equals(MongoModelKeys.EMBEDDED_MAP_FLAG)) return stringObjectMap;
             //Since it's in the Embedded system, we'll get the actual contents of the map using the EMBEDDED_CONTENTS_KEY
             BasicDBObject actualMap = (BasicDBObject) dbObject.get(MongoModelKeys.EMBEDDED_CONTENTS_KEY.toString());
             //And we'll do a quick null check, returning a processed raw map if it fails
-            if (actualMap == null) return processMapFromDB(dbObject, Object.class);
+            if (actualMap == null) return stringObjectMap;
             //Now we can get the type that the values of this map should have so that when we recursively use this method, it can also do conversions.
             Class valueType;
             try {
