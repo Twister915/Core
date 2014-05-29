@@ -7,6 +7,11 @@ import java.net.InetAddress;
 
 /**
  * A class to represent a player on the server.
+ *
+ * @since 1.0
+ * @author Joey
+ * @see net.cogzmc.core.player.COfflinePlayer
+ * @see net.cogzmc.core.player.CPermissible
  */
 public interface CPlayer extends COfflinePlayer {
     /**

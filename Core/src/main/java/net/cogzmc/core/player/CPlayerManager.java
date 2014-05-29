@@ -25,6 +25,7 @@ import java.util.UUID;
  *
  * You should never call {@link #playerLoggedIn(org.bukkit.entity.Player, java.net.InetAddress)} or {@link #playerLoggedOut(org.bukkit.entity.Player)} unless you are a listener for the {@link net.cogzmc.core.player.CPlayerManager}.
  * It is unsafe to call these methods unless you are aware of the effect as it can break the server easily.
+ *
  * @author Joey
  */
 public interface CPlayerManager extends Iterable<CPlayer> {
