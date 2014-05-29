@@ -156,7 +156,9 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
             log.info("Got here");
             if (!dbObject.containsKey(MongoModelKeys.EMBEDDED_FLAG_KEY.toString())) return stringObjectMap;
             log.info("got here too");
-            if (!dbObject.get(MongoModelKeys.EMBEDDED_FLAG_KEY.toString()).equals(MongoModelKeys.EMBEDDED_MAP_FLAG)) return stringObjectMap;
+            log.info("Looking for: " + MongoModelKeys.EMBEDDED_FLAG_KEY.toString());
+            log.info("Found: " + dbObject.get(MongoModelKeys.EMBEDDED_MAP_FLAG.toString()));
+            if (!dbObject.get(MongoModelKeys.EMBEDDED_FLAG_KEY.toString()).equals(MongoModelKeys.EMBEDDED_MAP_FLAG.toString())) return stringObjectMap;
             log.info("And here");
             //Since it's in the Embedded system, we'll get the actual contents of the map using the EMBEDDED_CONTENTS_KEY
             BasicDBObject actualMap = (BasicDBObject) dbObject.get(MongoModelKeys.EMBEDDED_CONTENTS_KEY.toString());
