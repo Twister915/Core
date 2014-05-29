@@ -13,6 +13,11 @@ public final class CooldownManager {
         Date lastFiredDate = cooldownMilliseconds.get(key);
         //And get now
         Date currentDate = new Date();
+        //If we don't have a previous countdown
+        if (lastFiredDate == null) {
+            this.cooldownMilliseconds.put(key, currentDate);
+            return;
+        }
         //See how long ago that was in milliseconds
         long millisecondsPassed = currentDate.getTime() - lastFiredDate.getTime();
         //And see how long we're supposed to wait
