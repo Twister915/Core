@@ -1,5 +1,6 @@
 package net.communitycraft.punishments;
 
+import lombok.Getter;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.model.ModelStorage;
 import net.cogzmc.core.player.COfflinePlayer;
@@ -22,21 +23,23 @@ import java.util.*;
 public class PunishmentManager implements CPlayerConnectionListener {
 
 	// List of all punishment model classes to load into the storageResolver
-	private static final List<Class<? extends AbstractPunishment>> PUNISHMENT_CLASSES = Arrays.asList(Ban.class, Kick.class, Mute.class, Warn.class);
+	public static final List<Class<? extends AbstractPunishment>> PUNISHMENT_CLASSES = Arrays.asList(Ban.class, Kick.class, Mute.class, Warn.class);
 
 	// Any entry placed into the map should have identical types for the Class and ModelStorage
 	private final Map<Class<? extends AbstractPunishment>, ModelStorage<? extends AbstractPunishment>> storageResolver = new HashMap<>();
+	@Getter private final PunishmentDelegate delegate;
 
 	public PunishmentManager() {
-		for(Class<? extends AbstractPunishment> c : PUNISHMENT_CLASSES) {
-			storageResolver.put(c, Core.getModelManager().getModelStorage(c));
+		for (Class<? extends AbstractPunishment> cls : PUNISHMENT_CLASSES) {
+			storageResolver.put(cls, Core.getModelManager().getModelStorage(cls));
 		}
+		delegate = new SimplePunishmentDelegate();
 	}
 
 	@Override
     public void onPlayerLogin(CPlayer player, InetAddress address) throws CPlayerJoinException {
 		List<Ban> bans = findReceivedPunishments(player, Ban.class);
-		if(!bans.isEmpty()) {
+		if (!bans.isEmpty()) {
 			Ban ban = bans.get(0);
 			// TODO: Use formats
 			player.getBukkitPlayer().kickPlayer(ChatColor.RED + "You have been banned for: " + ban.getReason());
@@ -52,10 +55,14 @@ public class PunishmentManager implements CPlayerConnectionListener {
 	 * @param cls the punishment model class
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractPunishment> ModelStorage<T> storageFor(Class<T> cls) {
+		public <T extends AbstractPunishment> ModelStorage<T> storageFor(Class<T> cls) {
 		ModelStorage<? extends AbstractPunishment> storage = storageResolver.get(cls);
-		if(storage == null) throw new IllegalArgumentException("Could not find ModelStorage for punishment class " + cls.getClass().getSimpleName());
+		if (storage == null) throw new IllegalArgumentException("Could not find ModelStorage for punishment class " + cls.getClass().getSimpleName());
 		return (ModelStorage<T>) storage;
+	}
+
+	private <T extends AbstractPunishment> void addPunishmentStorage(Class<T> cls, ModelStorage<T> storage) {
+		storageResolver.put(cls, storage);
 	}
 
 	/**
@@ -65,7 +72,7 @@ public class PunishmentManager implements CPlayerConnectionListener {
 	 * */
 	public List<AbstractPunishment> findPunishments(String key, Object val) {
 		List<AbstractPunishment> punishments = new ArrayList<>();
-		for(Class<? extends AbstractPunishment> cls : storageResolver.keySet()) {
+		for (Class<? extends AbstractPunishment> cls : storageResolver.keySet()) {
 			punishments.addAll(storageFor(cls).findValues(key, val));
 		}
 		return punishments;
@@ -88,9 +95,9 @@ public class PunishmentManager implements CPlayerConnectionListener {
 	 * */
 	public AbstractPunishment findPunishment(String key, Object val) {
 		AbstractPunishment punishment = null;
-		for(Class<? extends AbstractPunishment> cls : storageResolver.keySet()) {
+		for (Class<? extends AbstractPunishment> cls : storageResolver.keySet()) {
 			AbstractPunishment result = storageFor(cls).findValue(key, val);
-			if(result != null) punishment = result;
+			if (result != null) punishment = result;
 		}
 		return punishment;
 	}

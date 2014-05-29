@@ -62,8 +62,8 @@ public abstract class AbstractPunishment extends Model implements PunishmentMode
 	}
 
 	protected COfflinePlayer getOfflinePlayerByUUID(UUID uuid) {
-		if(playerManager != null) return playerManager.getOfflinePlayerByUUID(uuid);
-		if(defaultPlayerManager != null) return defaultPlayerManager.getOfflinePlayerByUUID(uuid);
+		if (playerManager != null) return playerManager.getOfflinePlayerByUUID(uuid);
+		if (defaultPlayerManager != null) return defaultPlayerManager.getOfflinePlayerByUUID(uuid);
 		return null;
 	}
 
