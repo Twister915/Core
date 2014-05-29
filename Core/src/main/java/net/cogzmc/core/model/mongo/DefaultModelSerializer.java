@@ -151,25 +151,16 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
             BasicDBObject dbObject = (BasicDBObject) object;
             //Then, check if this is one of those with the EMBEDDED system (which involves some serious logic). If not, let's just process this raw.
             Map<String, Object> stringObjectMap = processMapFromDB(dbObject, Object.class);
-            log.info("String: " + stringObjectMap.toString());
 
-            log.info("Got here");
             if (!dbObject.containsKey(MongoModelKeys.EMBEDDED_FLAG_KEY.toString())) return stringObjectMap;
-            log.info("got here too");
-            log.info("Looking for: " + MongoModelKeys.EMBEDDED_FLAG_KEY.toString());
-            log.info("Found: " + dbObject.get(MongoModelKeys.EMBEDDED_MAP_FLAG.toString()));
             if (!dbObject.get(MongoModelKeys.EMBEDDED_FLAG_KEY.toString()).equals(MongoModelKeys.EMBEDDED_MAP_FLAG.toString())) return stringObjectMap;
-            log.info("And here");
             //Since it's in the Embedded system, we'll get the actual contents of the map using the EMBEDDED_CONTENTS_KEY
             BasicDBObject actualMap = (BasicDBObject) dbObject.get(MongoModelKeys.EMBEDDED_CONTENTS_KEY.toString());
             //And we'll do a quick null check, returning a processed raw map if it fails
-            log.info("are here");
             if (actualMap == null) return stringObjectMap;
-            log.info("is heree");
             //Otherwise, let's repeat this process over again recursively, and send it off to the map processor
             HashMap<String, Object> actualMapFinal = new HashMap<>();
             for (Map.Entry<String, Object> stringObjectEntry : actualMap.entrySet()) {
-                log.info("looping: " + stringObjectEntry.getKey());
                 actualMapFinal.put(stringObjectEntry.getKey(), stringObjectEntry.getValue());
             }
             return actualMapFinal;
