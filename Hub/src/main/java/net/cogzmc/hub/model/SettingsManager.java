@@ -28,7 +28,7 @@ public final class SettingsManager {
      * Loads current setting entries into the settingsMap and gets values from the database.
      */
     public SettingsManager() {
-        Core.getNetworkManager().registerNetCommandHandler(new SettingReloadHandler(this), SettingReloadNetCommand.class);
+        //Core.getNetworkManager().registerNetCommandHandler(new SettingReloadHandler(this), SettingReloadNetCommand.class);
         reload(); //Reload the values.
     }
 
