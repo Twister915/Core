@@ -1,10 +1,11 @@
-package net.cogzmc.coreessentials;
+package net.cogzmc.coreessentials.commands;
 
 import net.cogzmc.core.Core;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.modular.command.CommandException;
 import net.cogzmc.core.modular.command.CommandMeta;
 import net.cogzmc.core.modular.command.ModuleCommand;
+import net.cogzmc.coreessentials.CoreEssentials;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

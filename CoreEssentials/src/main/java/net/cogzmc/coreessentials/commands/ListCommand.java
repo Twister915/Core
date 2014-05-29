@@ -1,4 +1,4 @@
-package net.cogzmc.coreessentials;
+package net.cogzmc.coreessentials.commands;
 
 import net.cogzmc.core.Core;
 import net.cogzmc.core.modular.command.CommandException;
