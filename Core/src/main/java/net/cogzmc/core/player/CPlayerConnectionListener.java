@@ -6,6 +6,11 @@ import java.net.InetAddress;
  * Implement this to hook into the {@link net.cogzmc.core.player.CPlayerManager}'s join and leave notifications to modify behavior.
  *
  * You must register using the {@link net.cogzmc.core.player.CPlayerManager#registerCPlayerConnectionListener(CPlayerConnectionListener)} method provided.
+ *
+ * @since 1.0
+ * @author Joey
+ * @see net.cogzmc.core.player.CPlayerManager#registerCPlayerConnectionListener(CPlayerConnectionListener)
+ * @see net.cogzmc.core.player.CPlayerManager#unregisterCPlayerConnectionListener(CPlayerConnectionListener)
  */
 public interface CPlayerConnectionListener {
     /**

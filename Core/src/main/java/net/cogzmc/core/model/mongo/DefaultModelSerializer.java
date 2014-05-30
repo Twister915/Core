@@ -4,6 +4,7 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.model.Model;
 import net.cogzmc.core.model.ModelField;
@@ -20,6 +21,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.*;
 
+@Log
 final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T> {
     @Override
     @SneakyThrows
@@ -149,8 +151,9 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
             BasicDBObject dbObject = (BasicDBObject) object;
             //Then, check if this is one of those with the EMBEDDED system (which involves some serious logic). If not, let's just process this raw.
             Map<String, Object> stringObjectMap = processMapFromDB(dbObject, Object.class);
+
             if (!dbObject.containsKey(MongoModelKeys.EMBEDDED_FLAG_KEY.toString())) return stringObjectMap;
-            if (!dbObject.get(MongoModelKeys.EMBEDDED_FLAG_KEY.toString()).equals(MongoModelKeys.EMBEDDED_MAP_FLAG)) return stringObjectMap;
+            if (!dbObject.get(MongoModelKeys.EMBEDDED_FLAG_KEY.toString()).equals(MongoModelKeys.EMBEDDED_MAP_FLAG.toString())) return stringObjectMap;
             //Since it's in the Embedded system, we'll get the actual contents of the map using the EMBEDDED_CONTENTS_KEY
             BasicDBObject actualMap = (BasicDBObject) dbObject.get(MongoModelKeys.EMBEDDED_CONTENTS_KEY.toString());
             //And we'll do a quick null check, returning a processed raw map if it fails

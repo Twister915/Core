@@ -1,0 +1,5 @@
+no-permission: "&cYou don't have permission to do that."
+banned: "&cYou have been banned by <issuer> for: <reason>"
+kicked: "&eYou have been kicked by <issuer> for: <reason>"
+muted: "&cYou have been muted by <issuer> for: <reason>"
+warned: "&eYou have been warned by <issuer> for: <reason>"

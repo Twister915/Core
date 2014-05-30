@@ -1,7 +1,6 @@
 package net.cogzmc.core.util;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.util.List;
 
 public final class RandomUtils {
@@ -34,5 +33,19 @@ public final class RandomUtils {
             if (ts[x].equals(t)) return x;
         }
         return -1;
+    }
+
+    public static <T> String formatList(List<? extends T> list, int max) {
+        StringBuilder builder = new StringBuilder();
+        int current = 0;
+        for (T aValue : list) {
+            if (current == max) break;
+            builder.append(aValue).append(", ");
+            current++;
+        }
+        if (list.size() > 0) {
+            builder.deleteCharAt(builder.length() - 2);
+        }
+        return builder.toString();
     }
 }

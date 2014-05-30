@@ -5,6 +5,9 @@ import java.util.Map;
 
 /**
  * This represents a group that a player can be a member of.
+ *
+ * @author Joey
+ * @since 1.0
  */
 public interface CGroup extends CPermissible {
     /**

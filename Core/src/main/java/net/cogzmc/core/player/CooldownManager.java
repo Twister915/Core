@@ -13,15 +13,20 @@ public final class CooldownManager {
         Date lastFiredDate = cooldownMilliseconds.get(key);
         //And get now
         Date currentDate = new Date();
+        //If we don't have a previous countdown
+        if (lastFiredDate == null) {
+            this.cooldownMilliseconds.put(key, currentDate);
+            return;
+        }
         //See how long ago that was in milliseconds
         long millisecondsPassed = currentDate.getTime() - lastFiredDate.getTime();
         //And see how long we're supposed to wait
-        long milliseconds = unit.convert(time, TimeUnit.MILLISECONDS);
+        long milliseconds = unit.toMillis(time);
         //If we're supposed to wait longer than we have
         if (milliseconds >= millisecondsPassed) {
             //The cooldown has yet to expire
             if (reset) this.cooldownMilliseconds.put(key, currentDate);
-            throw new CooldownUnexpiredException(unit.convert(milliseconds-millisecondsPassed, TimeUnit.MILLISECONDS), unit);
+            throw new CooldownUnexpiredException(unit.toMillis(milliseconds-millisecondsPassed), unit);
         }
         this.cooldownMilliseconds.put(key, currentDate);
     }

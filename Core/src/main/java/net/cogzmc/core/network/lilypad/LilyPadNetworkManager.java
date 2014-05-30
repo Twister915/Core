@@ -101,6 +101,11 @@ public final class LilyPadNetworkManager implements NetworkManager {
                 }
             }
         }
+        //If we're not connected to the cloud, don't attempt to do a heartbeat.
+        if (!connect.isConnected()) {
+            Core.getInstance().getLogger().severe("LILYPAD CONNECT IS NOT CONNECTED TO THE CLOUD. Unable to do a heartbeat.");
+            return;
+        }
 
         //Now we'll need to send out an encoded heartbeat, and then check if any of the servers have expired.
         JSONObject object = new JSONObject(); //Build the JSON Object

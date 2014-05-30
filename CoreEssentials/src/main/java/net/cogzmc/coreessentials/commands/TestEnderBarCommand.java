@@ -1,4 +1,4 @@
-package net.cogzmc.coreessentials;
+package net.cogzmc.coreessentials.commands;
 
 import com.google.common.base.Joiner;
 import net.cogzmc.core.Core;
