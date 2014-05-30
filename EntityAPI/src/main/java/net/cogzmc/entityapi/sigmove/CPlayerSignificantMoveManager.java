@@ -32,7 +32,6 @@ public class CPlayerSignificantMoveManager implements Listener, CPlayerConnectio
 	private List<CPlayerSignificantMoveListener> listenerList = new ArrayList<>();
 
 	public CPlayerSignificantMoveManager() {
-		Core.getInstance().registerListener(this);
 		Core.getPlayerManager().registerCPlayerConnectionListener(this);
 	}
 

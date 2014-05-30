@@ -4,9 +4,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.Setter;
-import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CPlayer;
-import net.cogzmc.core.player.CPlayerConnectionListener;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -24,7 +22,7 @@ import java.util.Map;
  * @since 29/05/2014
  */
 @Data
-public abstract class CPlayerSignificantMoveListener implements CPlayerConnectionListener {
+public abstract class CPlayerSignificantMoveListener {
 
 	private final Double squaredDefaultSignificantMoveDistance;
 	private final Integer timeDelay;
@@ -42,8 +40,6 @@ public abstract class CPlayerSignificantMoveListener implements CPlayerConnectio
 		this.timeDelay = timeDelay;
 		this.world = world;
 		this.players = players;
-
-		Core.getPlayerManager().registerCPlayerConnectionListener(this);
 	}
 
 	public abstract void onSignificantMoveEvent(CPlayerSignificantMoveEvent event);
