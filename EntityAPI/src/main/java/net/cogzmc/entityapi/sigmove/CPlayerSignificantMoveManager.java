@@ -29,7 +29,7 @@ import java.util.Map;
 public class CPlayerSignificantMoveManager implements Listener, CPlayerConnectionListener {
 
 	// A List Of Listeners, listening into CPlayerSignificantMoveEvent
-	private List<CPlayerSignificantMoveListener> listenerList = new ArrayList<>();
+	private static List<CPlayerSignificantMoveListener> listenerList = new ArrayList<>();
 
 	public CPlayerSignificantMoveManager() {
 		Core.getPlayerManager().registerCPlayerConnectionListener(this);
@@ -40,7 +40,7 @@ public class CPlayerSignificantMoveManager implements Listener, CPlayerConnectio
 	 * @param moveListener The move listener
 	 */
 	@SneakyThrows
-	public synchronized void registerListener(@NonNull final CPlayerSignificantMoveListener moveListener) {
+	public static synchronized void registerListener(@NonNull final CPlayerSignificantMoveListener moveListener) {
 		if(listenerList.contains(moveListener)) throw new SignificantMoveException("A CPlayerSignificantMoveListener was registered Twice!");
 
 		moveListener.setBukkitTaskId(
@@ -112,7 +112,7 @@ public class CPlayerSignificantMoveManager implements Listener, CPlayerConnectio
 	 * @param moveListener The move listener
 	 */
 	@SneakyThrows
-	public void unRegisterListener(@NonNull CPlayerSignificantMoveListener moveListener) {
+	public static void unRegisterListener(@NonNull CPlayerSignificantMoveListener moveListener) {
 		if(!listenerList.contains(moveListener)) throw new SignificantMoveException("Someone tried to unregister a CPlayerSignificantMoveListener though it hasn't been registered yet!");
 		listenerList.remove(moveListener);
 		moveListener.getBukkitTaskId().cancel();

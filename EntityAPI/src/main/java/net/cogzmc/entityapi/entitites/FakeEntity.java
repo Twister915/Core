@@ -17,23 +17,52 @@ import com.adamki11s.pathing.PathingResult;
 import com.adamki11s.pathing.Tile;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import net.cogzmc.core.player.CPlayer;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * <p/>
- * Latest Change:
- * <p/>
  *
+ *
+ *
+ * <p>
+ * <h2>Observers:</h2>
+ * There are 3 types of observers:
+ * <table border="1" cellpadding="4">
+ *     <tbody>
+ *         <tr>
+ *             <th>Observer Type</th>
+ *             <th>What Do They Do?</th>
+ *         </tr>
+ *         <tr>
+ *             <td>Observer</td>
+ *             <td>An observer is someone who can see the entity. Someone who is able to see the entity and can currently see the entity</td>
+ *         </tr>
+ *         <tr>
+ *             <td>Possible Observer</td>
+ *             <td>An observer who could see the entity if he was let, though has not been let yet. He is in the render distance of the entity.</td>
+ *         </tr>
+ *         <tr>
+ *             <td>Near Possible Observer</td>
+ *             <td>An observer that is near the render distance to becoming a possible observer. This only exists as a buffer area to make code more efficient. Please refer to the image below.</td>
+ *         </tr>
+ *     </tbody>
+ * </table>
+ * <img src="http://i.imgur.com/gDdyhkq.png" width="350" height="250"/>
+ * <p>
+ * Latest Change:
+ * <p>
  * @author George
  * @since 26/05/2014
+ *
  */
 @Log
 @Data
@@ -45,7 +74,6 @@ public abstract class FakeEntity {
 
 	private Location location;
 	private Vector velocity;
-
 
 	private static EntityType entityType;
 
@@ -97,5 +125,33 @@ public abstract class FakeEntity {
 		}
 	}
 
-	public abstract void showTo(Player player);
+	public final void addObservers(@NonNull List<CPlayer> observers) {
+		for(CPlayer observer : observers) {
+			addObserver(observer);
+		}
+	}
+
+	public final void addPossibleObservers(@NonNull List<CPlayer> observers) {
+		for(CPlayer observer : observers) {
+			addPossibleObserver(observer);
+		}
+	}
+
+	public final void addNearPossibleObservers(@NonNull List<CPlayer> observers) {
+		for(CPlayer observer : observers) {
+			addNearPossibleObserver(observer);
+		}
+	}
+
+	public abstract void addObserver(@NonNull CPlayer observer);
+
+	public abstract List<CPlayer> getObservers();
+
+	public abstract void addPossibleObserver(@NonNull CPlayer observer);
+
+	public abstract List<CPlayer> getPossibleObservers();
+
+	public abstract void addNearPossibleObserver(@NonNull CPlayer observer);
+
+	public abstract List<CPlayer> getNearPossibleObservers();
 }
