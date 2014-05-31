@@ -24,10 +24,12 @@ public final class EntityAPI extends ModularPlugin {
     protected void onModuleEnable() {
 	    instance = this;
 
-	    new CPlayerSignificantMoveManager();
-	    fakeEntityManager = new GFakeEntityManager();
-
 	    debug();
+	    
+	    new CPlayerSignificantMoveManager();
+	    getLogger().info("Debug");
+	    fakeEntityManager = new GFakeEntityManager();
+	    getLogger().info("De");
     }
 
 	public void spawnFakeEntity(EntityType entityType) {
