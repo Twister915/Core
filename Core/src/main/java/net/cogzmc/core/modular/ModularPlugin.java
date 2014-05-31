@@ -34,18 +34,12 @@ public abstract class ModularPlugin extends JavaPlugin {
             this.formatsFile = new YAMLConfigurationFile(this, "formats.yml");
             this.formatsFile.saveDefaultConfig();
             this.commandMap = new ModuleCommandMap(this);
-        } catch (Exception e) {
-            e.printStackTrace();
-            onFailureToEnable();
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-        try {
             onModuleEnable();
         } catch (Exception e) {
             e.printStackTrace();
             onFailureToEnable();
             getServer().getPluginManager().disablePlugin(this);
+            return;
         }
         logMessage("&cModule &6" + meta.name() + " &a&lEnabled");
     }
