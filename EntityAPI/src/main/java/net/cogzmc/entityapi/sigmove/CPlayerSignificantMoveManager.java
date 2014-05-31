@@ -5,17 +5,17 @@ import lombok.SneakyThrows;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerConnectionListener;
-import net.cogzmc.core.player.CPlayerJoinException;
+import net.cogzmc.entityapi.EntityAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import javax.annotation.Nullable;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,31 +27,100 @@ import java.util.Map;
  * @author George
  * @since 28/05/2014
  */
-public class CPlayerSignificantMoveManager implements CPlayerConnectionListener, Listener {
-
-	// The Last Significant locations mapped from player to significant location
-	private volatile Map<CPlayer, Location> lastSignificantLocation = new HashMap<>();
+public class CPlayerSignificantMoveManager implements Listener, CPlayerConnectionListener {
 
 	// A List Of Listeners, listening into CPlayerSignificantMoveEvent
-	private List<CPlayerSignificantMoveListener> listenerList = new ArrayList<>();
-
-	// Significant Move Distance = 2 blocks (2 squared)
-	public static Double squaredDefaultSignificantMoveDistance = 4d;
+	private static volatile List<CPlayerSignificantMoveListener> listenerList = new ArrayList<>();
 
 	public CPlayerSignificantMoveManager() {
-		Core.getInstance().registerListener(this);
 		Core.getPlayerManager().registerCPlayerConnectionListener(this);
 	}
 
 	/**
 	 * Register a move listener
-	 * REMEMBER: You can hook into the bukkit Event ({@link net.cogzmc.entityapi.sigmove.CPlayerSignificantMoveEvent})
 	 * @param moveListener The move listener
 	 */
 	@SneakyThrows
-	public void registerListener(@NonNull CPlayerSignificantMoveListener moveListener) {
+	public static synchronized void registerListener(@NonNull final CPlayerSignificantMoveListener moveListener) {
 		if(listenerList.contains(moveListener)) throw new SignificantMoveException("A CPlayerSignificantMoveListener was registered Twice!");
+
+		moveListener.setBukkitTaskId(
+			new BukkitRunnable() {
+
+				@Override
+				public void run() {
+
+					Player[] players;
+
+					Location centre = moveListener.getLocation();
+					World world = centre == null ? null : centre.getWorld();
+
+					Map<CPlayer, Location> lastSignificantLocation = moveListener.getLastSignificantLocation();
+					Double squaredRadiusFromLocation = moveListener.getSquaredRadiusFromLocation();
+					Player[] presetPlayers = moveListener.getPlayers();
+
+					// If players has not been specified then
+					if(presetPlayers == null) {
+						// If world has not been specified then
+						if (world == null) {
+							// Assign players to all bukkit online players
+							players = Bukkit.getOnlinePlayers();
+							// Else if world has been specified - Then get all the players in that world
+						} else {
+							List<Player> worldPlayers = world.getPlayers();
+							players = worldPlayers.toArray(new Player[worldPlayers.size()]);
+						}
+						// Else if players has been specified -  assign players to presetPlayers
+					} else {
+						players = presetPlayers;
+					}
+
+					// Create variables out of loop so variables aren't initiated on every loop through
+					CPlayer cPlayer;
+					Location lastSigLocation;
+					Location playerLocation;
+					Double locationDifference = 0d;
+
+					// For all the players in the player variable
+					for(Player player : players) {
+
+						playerLocation = player.getLocation();
+
+						if(!locationIsWithinRadiusOfCentre(playerLocation, centre, squaredRadiusFromLocation))
+							continue;
+
+						// Turn the player into a cPlayer
+						cPlayer = Core.getOnlinePlayer(player);
+						// Get the last significant location of that players
+						lastSigLocation = lastSignificantLocation.get(cPlayer);
+
+						// If the player doesn't have a significant location or
+						// The players world is different to his last significant location or
+						// The players last significant location's distance from
+						// his current location is bigger than the default significant move distance then...
+						if (lastSigLocation == null ||
+								!playerLocation.getWorld().equals(lastSigLocation.getWorld()) ||
+								(locationDifference = player.getLocation().distanceSquared(lastSigLocation)) > moveListener.getSquaredDefaultSignificantMoveDistance()) {
+
+							// Turn the player into a cPlayer
+							cPlayer = Core.getOnlinePlayer(player);
+							// Make their new significant location where they stand
+							lastSignificantLocation.put(cPlayer, playerLocation);
+
+							// Run the significant move event for this listener
+							moveListener.onSignificantMoveEvent(new CPlayerSignificantMoveEvent(cPlayer, locationDifference));
+						}
+					}
+				}
+			}.runTaskTimer(EntityAPI.getInstance(), 0, moveListener.getTimeDelay())
+		);
+
 		listenerList.add(moveListener);
+	}
+
+	private static boolean locationIsWithinRadiusOfCentre(@NonNull Location location, @NonNull Location centre, @Nullable Double squaredRadiusFromLocation) {
+		return squaredRadiusFromLocation == null ||
+			location.distanceSquared(centre) <= squaredRadiusFromLocation;
 	}
 
 	/**
@@ -59,78 +128,37 @@ public class CPlayerSignificantMoveManager implements CPlayerConnectionListener,
 	 * @param moveListener The move listener
 	 */
 	@SneakyThrows
-	public void unRegisterListener(@NonNull CPlayerSignificantMoveListener moveListener) {
+	public static void unRegisterListener(@NonNull CPlayerSignificantMoveListener moveListener) {
 		if(!listenerList.contains(moveListener)) throw new SignificantMoveException("Someone tried to unregister a CPlayerSignificantMoveListener though it hasn't been registered yet!");
-		listenerList.add(moveListener);
-	}
-
-	/**
-	 * Set the default distance till it is a, "significant", distance moved
-	 * @param distance the default significant move distance
-	 */
-	public void setDefaultSignificantMoveDistance(Double distance) {
-		squaredDefaultSignificantMoveDistance = Math.pow(distance, 2);
-	}
-
-	/**
-	 * Get the default distance till it is a, "significant", distance moved
-	 * @return the default significant move distance (squared, this is to avoid the hefty square root function in {@link #getDefaultSignificantMoveDistance()}
-	 */
-	public Double getSquaredDefaultSignificantMoveDistance() {
-		return squaredDefaultSignificantMoveDistance;
-	}
-
-	/**
-	 * Get the default distance till it is a, "significant", distance moved
-	 * @return the default significant move distance (not squared)
-	 * WARNING: This uses a hefty square root function, so if possible please use {@link #getSquaredDefaultSignificantMoveDistance()}
-	 */
-	public Double getDefaultSignificantMoveDistance() {
-		return Math.sqrt(squaredDefaultSignificantMoveDistance);
-	}
-
-	@EventHandler
-	void onPlayerMoveEvent(PlayerMoveEvent event) {
-		Player player = event.getPlayer();
-		CPlayer cPlayer = Core.getOnlinePlayer(player);
-		Location lastSigLocation = lastSignificantLocation.get(cPlayer);
-		Double locationDiffrence = 0d;
-
-		// If the player doesn't have a significant location or
-		// The players last significant location's distance from
-		// his current location is bigger than the default significant move distance then...
-		if(lastSigLocation == null ||
-				(locationDiffrence = player.getLocation().distanceSquared(lastSigLocation)) > squaredDefaultSignificantMoveDistance) {
-			// Make their new significant location where they stand
-			lastSignificantLocation.put(cPlayer, player.getLocation());
-			callListenerList(cPlayer, locationDiffrence);
-		}
-	}
-
-	private void callListenerList(CPlayer player, Double difference) {
-		// The event
-		CPlayerSignificantMoveEvent CPlayerSignificantMoveEvent = new CPlayerSignificantMoveEvent(player, difference);
-
-		// Call the event via bukkit
-		Bukkit.getPluginManager().callEvent(CPlayerSignificantMoveEvent);
-
-		for(CPlayerSignificantMoveListener listener : listenerList) {
-			// Call the event via independent listeners
-			listener.onSignificantMoveEvent(CPlayerSignificantMoveEvent);
-		}
+		listenerList.remove(moveListener);
+		moveListener.getBukkitTaskId().cancel();
 	}
 
 	@Override
-	public void onPlayerLogin(CPlayer player, InetAddress address) throws CPlayerJoinException {
-		lastSignificantLocation.put(player, player.getBukkitPlayer().getLocation());
+	public final void onPlayerLogin(final CPlayer player, InetAddress inetAddress) {
+		// Made asynchronous as if there are a lot of listeners it slows down other things
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				for(CPlayerSignificantMoveListener listener : listenerList) {
+					listener.getLastSignificantLocation().put(player, player.getBukkitPlayer().getLocation());
+				}
+			}
+		}.runTaskAsynchronously(EntityAPI.getInstance());
+
 	}
 
 	@Override
-	public void onPlayerDisconnect(CPlayer player) {
-		lastSignificantLocation.remove(player);
+	public final void onPlayerDisconnect(final CPlayer player) {
+		// Made asynchronous as if there are a lot of listeners it slows down other things
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				for(CPlayerSignificantMoveListener listener : listenerList) {
+					listener.getLastSignificantLocation().remove(player);
+				}
+			}
+		}.runTaskAsynchronously(EntityAPI.getInstance());
 	}
 
-	interface CPlayerSignificantMoveListener {
-		public void onSignificantMoveEvent(CPlayerSignificantMoveEvent event);
-	}
 }

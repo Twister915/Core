@@ -4,16 +4,12 @@
 
 package com.adamki11s.pathing;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.material.Gate;
+
+import java.util.*;
 
 public class AStar {
 
@@ -262,7 +258,7 @@ public class AStar {
 			if (b.getRelative(0, 1, 0).getTypeId() == 107) {
 				// fench gate check, if closed continue
 				Gate g = new Gate(b.getRelative(0, 1, 0).getData());
-				return (g.isOpen() ? (b.getRelative(0, 2, 0).getTypeId() == 0) : false);
+				return (g.isOpen() && (b.getRelative(0, 2, 0).getTypeId() == 0));
 			}
 			return (canBlockBeWalkedThrough(b.getRelative(0, 1, 0).getTypeId()) && b.getRelative(0, 2, 0).getTypeId() == 0);
 
@@ -275,12 +271,8 @@ public class AStar {
 		Block b = l.getBlock();
 		int i = b.getTypeId();
 
-		if (i != 10 && i != 11 && i != 51 && i != 59 && i != 65 && i != 0 && !canBlockBeWalkedThrough(i)) {
-			// make sure the blocks above are air or can be walked through
-			return (canBlockBeWalkedThrough(b.getRelative(0, 1, 0).getTypeId()) && b.getRelative(0, 2, 0).getTypeId() == 0);
-		} else {
-			return false;
-		}
+		return i != 10 && i != 11 && i != 51 && i != 59 && i != 65 && i != 0 && !canBlockBeWalkedThrough(i) &&
+				(canBlockBeWalkedThrough(b.getRelative(0, 1, 0).getTypeId()) && b.getRelative(0, 2, 0).getTypeId() == 0);
 	}
 
 	private boolean canBlockBeWalkedThrough(int id) {

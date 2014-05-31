@@ -19,7 +19,7 @@ public interface FakeEntityManager {
 	 * @param location the certain location
 	 * @param entityType the entity type
 	 */
-	public void spawnEntity(Location location, EntityType entityType);
+	public FakeEntity spawnEntity(Location location, EntityType entityType);
 
 	/**
 	 * Destroy a fake entity
