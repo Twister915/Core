@@ -1,18 +1,19 @@
 package net.cogzmc.core.effect.particle;
 
 import com.comphenix.packetwrapper.WrapperPlayServerWorldParticles;
+import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Wither;
+import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-@RequiredArgsConstructor(staticName = "with")
 /**
  * Used to represent a single particle being emitted at a location, and can be sent to many players or a single player
  * using the {@link #emitGlobally(Long)} or {@link #emitToPlayer(org.bukkit.entity.Player)} methods provided by this
  * class.
  */
+@Data
 public final class ParticleEffect {
     /**
      * The type of particle to be sent.
@@ -27,25 +28,25 @@ public final class ParticleEffect {
      * This will be multiplied by a random number between 1.0 and 0.0. This is basically setting a limit for how far
      * around randomly on the X axis we can be with this particle effect.
      */
-    @Wither@NonNull private Float xSpread = 0f;
+    @NonNull private Float xSpread = 0f;
     /**
      * This will be multiplied by a random number between 1.0 and 0.0. This is basically setting a limit for how far
      * around randomly on the Y axis we can be with this particle effect.
      */
-    @Wither@NonNull private Float ySpread = 0f;
+    @NonNull private Float ySpread = 0f;
     /**
      * This will be multiplied by a random number between 1.0 and 0.0. This is basically setting a limit for how far
      * around randomly on the Y axis we can be with this particle effect.
      */
-    @Wither@NonNull private Float zSpread = 0f;
+    @NonNull private Float zSpread = 0f;
     /**
      * Number of particles to be displayed.
      */
-    @Wither@NonNull private Integer amount = 1;
+    @NonNull private Integer amount = 1;
     /**
      * Speed is how quickly they dissipate.
      */
-    @Wither@NonNull private Float speed = 1.0f;
+    @NonNull private Float speed = 1.0f;
 
     /**
      * Allows you to set a custom ID for the particle instead of using the {@link #type} in the constructor.
