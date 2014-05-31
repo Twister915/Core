@@ -1,4 +1,4 @@
-name: EntityAPI
+wname: EntityAPI
 depend: [Core]
 main: net.cogzmc.entityapi.EntityAPI
 version: 1.0

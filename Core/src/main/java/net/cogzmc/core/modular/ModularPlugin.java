@@ -1,6 +1,7 @@
 package net.cogzmc.core.modular;
 
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.config.YAMLConfigurationFile;
 import net.cogzmc.core.model.ModelManager;

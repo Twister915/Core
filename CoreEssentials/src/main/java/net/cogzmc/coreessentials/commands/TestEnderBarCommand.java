@@ -15,7 +15,7 @@ public final class TestEnderBarCommand extends ModuleCommand {
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        String join = args.length < 0 ? "Testing!" : Joiner.on(" ").join(args);
+        String join = args.length < 1 ? "Testing!" : Joiner.on(" ").join(args);
         Core.getEnderBarManager().setTextFor(player, join);
         Random random = new Random();
         Core.getEnderBarManager().setHealthPercentageFor(player, random.nextFloat());

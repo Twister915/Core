@@ -24,7 +24,7 @@ public class MongoModelManager implements ModelManager {
         if (modelStorageMap.containsKey(modelClass)) return (ModelStorage<T>) modelStorageMap.get(modelClass);
         String collectionName = modelClass.getSimpleName().toLowerCase();
         if (collectionName.endsWith("model")) collectionName = collectionName.replaceFirst("model", "");
-        DBCollection collection = database.getCollection(collectionName + "collectionName");
+        DBCollection collection = database.getCollection(collectionName);
         ModelSerializer<T> serializer = (ModelSerializer<T>) modelSerializers.get(modelClass);
         if (serializer == null) serializer = new DefaultModelSerializer();
         MongoModelStorage<T> storage = new MongoModelStorage<>(collection, database, serializer, modelClass);
