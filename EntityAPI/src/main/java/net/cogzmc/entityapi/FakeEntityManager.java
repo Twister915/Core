@@ -1,8 +1,12 @@
 package net.cogzmc.entityapi;
 
+import lombok.NonNull;
 import net.cogzmc.entityapi.entitites.FakeEntity;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
+
+import java.util.List;
+import java.util.UUID;
 
 /**
  * <p/>
@@ -26,4 +30,8 @@ public interface FakeEntityManager {
 	 * @param fakeEntity the fake entity to destroy
 	 */
 	public void destroyEntity(FakeEntity fakeEntity);
+
+	public List<FakeEntity> getNearEntities(Location location, Double squaredDistance);
+
+	public FakeEntity getEntityByUUID(@NonNull UUID uuid);
 }

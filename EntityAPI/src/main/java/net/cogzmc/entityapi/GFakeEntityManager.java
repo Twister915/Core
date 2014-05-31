@@ -96,6 +96,7 @@ public class GFakeEntityManager implements FakeEntityManager, Listener {
 		});
 	}
 
+	@Override
 	public List<FakeEntity> getNearEntities(Location location, Double squaredDistance) {
 		List<FakeEntity> entities = new ArrayList<>();
 
@@ -107,6 +108,7 @@ public class GFakeEntityManager implements FakeEntityManager, Listener {
 		return entities;
 	}
 
+	@Override
 	public synchronized FakeEntity getEntityByUUID(@NonNull UUID uuid) {
 		for(FakeEntity fakeEntity : entities) {
 			if(fakeEntity.getUuid().equals(uuid))
@@ -255,21 +257,6 @@ public class GFakeEntityManager implements FakeEntityManager, Listener {
 
 	}
 
-	/*	CPlayer player = event.getPlayer();
-
-		getEntitiesInWorld(event.getPlayer().getBukkitPlayer().getWorld());
-
-		// For every player in that world
-		for(Player player : location.getWorld().getPlayers()) {
-			// If the players distance from the location (squared) is less or equal than the default render distance (squared) then
-			if(player.getLocation().distanceSquared(location) <= squaredDefaultRenderDistance) {
-				// Turn bukkit player into CPlayer
-				cPlayer = Core.getPlayerManager().getCPlayerForPlayer(player);
-				// Add the CPlayer to the players that can see
-				players.add(cPlayer);
-			}
-		}*/
-
 	/**
 	 * Convenience method to get entities in a world
 	 * @param world the world get the fake entities in
@@ -282,9 +269,5 @@ public class GFakeEntityManager implements FakeEntityManager, Listener {
 				entities.add(fakeEntity);
 		}
 		return entities;
-	}
-
-	public void onSignificantMoveEvent(CPlayerSignificantMoveEvent event) {
-
 	}
 }
