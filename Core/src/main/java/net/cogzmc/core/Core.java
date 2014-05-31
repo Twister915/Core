@@ -2,7 +2,7 @@ package net.cogzmc.core;
 
 import lombok.Getter;
 import net.cogzmc.core.config.YAMLConfigurationFile;
-import net.cogzmc.core.enderBar.EnderBarManager;
+import net.cogzmc.core.effect.enderBar.EnderBarManager;
 import net.cogzmc.core.model.ModelManager;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.netfiles.NetFileManager;

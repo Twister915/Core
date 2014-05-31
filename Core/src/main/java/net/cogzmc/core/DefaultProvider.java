@@ -45,7 +45,7 @@ final class DefaultProvider implements Provider {
 
     @Override
     public CPermissionsManager getNewPermissionsManager(Core core, CPlayerManager playerManager) {
-        return new CMongoPermissionsManager((CMongoDatabase) Core.getInstance().getCDatabase(), playerManager);
+        return new CMongoPermissionsManager((CMongoDatabase) core.getCDatabase(), playerManager);
     }
 
     @Override

@@ -2,6 +2,8 @@ package net.cogzmc.coreessentials;
 
 import lombok.Getter;
 import net.cogzmc.core.Core;
+import net.cogzmc.core.effect.particle.ParticleEffect;
+import net.cogzmc.core.effect.particle.ParticleEffectType;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.modular.ModuleMeta;
 import net.cogzmc.coreessentials.commands.*;

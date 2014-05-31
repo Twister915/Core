@@ -1,4 +1,4 @@
-package net.cogzmc.core.enderBar;
+package net.cogzmc.core.effect.enderBar;
 
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CPlayer;

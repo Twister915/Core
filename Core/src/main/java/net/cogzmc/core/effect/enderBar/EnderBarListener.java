@@ -1,4 +1,4 @@
-package net.cogzmc.core.enderBar;
+package net.cogzmc.core.effect.enderBar;
 
 import lombok.Data;
 import net.cogzmc.core.Core;
