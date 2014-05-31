@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import javax.annotation.Nullable;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.Map;
 public class CPlayerSignificantMoveManager implements Listener, CPlayerConnectionListener {
 
 	// A List Of Listeners, listening into CPlayerSignificantMoveEvent
-	private static List<CPlayerSignificantMoveListener> listenerList = new ArrayList<>();
+	private static volatile List<CPlayerSignificantMoveListener> listenerList = new ArrayList<>();
 
 	public CPlayerSignificantMoveManager() {
 		Core.getPlayerManager().registerCPlayerConnectionListener(this);
@@ -51,8 +52,11 @@ public class CPlayerSignificantMoveManager implements Listener, CPlayerConnectio
 
 					Player[] players;
 
+					Location centre = moveListener.getLocation();
+					World world = centre.getWorld();
+
 					Map<CPlayer, Location> lastSignificantLocation = moveListener.getLastSignificantLocation();
-					World world = moveListener.getWorld();
+					Double squaredRadiusFromLocation = moveListener.getSquaredRadiusFromLocation();
 					Player[] presetPlayers = moveListener.getPlayers();
 
 					// If players has not been specified then
@@ -74,10 +78,17 @@ public class CPlayerSignificantMoveManager implements Listener, CPlayerConnectio
 					// Create variables out of loop so variables aren't initiated on every loop through
 					CPlayer cPlayer;
 					Location lastSigLocation;
+					Location playerLocation;
 					Double locationDifference = 0d;
 
 					// For all the players in the player variable
 					for(Player player : players) {
+
+						playerLocation = player.getLocation();
+
+						if(!locationIsWithinRadiusOfCentre(playerLocation, centre, squaredRadiusFromLocation))
+							continue;
+
 						// Turn the player into a cPlayer
 						cPlayer = Core.getOnlinePlayer(player);
 						// Get the last significant location of that players
@@ -88,23 +99,28 @@ public class CPlayerSignificantMoveManager implements Listener, CPlayerConnectio
 						// The players last significant location's distance from
 						// his current location is bigger than the default significant move distance then...
 						if (lastSigLocation == null ||
-								!player.getLocation().getWorld().equals(lastSigLocation.getWorld()) ||
+								!playerLocation.getWorld().equals(lastSigLocation.getWorld()) ||
 								(locationDifference = player.getLocation().distanceSquared(lastSigLocation)) > moveListener.getSquaredDefaultSignificantMoveDistance()) {
 
 							// Turn the player into a cPlayer
 							cPlayer = Core.getOnlinePlayer(player);
 							// Make their new significant location where they stand
-							lastSignificantLocation.put(cPlayer, player.getLocation());
+							lastSignificantLocation.put(cPlayer, playerLocation);
 
 							// Run the significant move event for this listener
 							moveListener.onSignificantMoveEvent(new CPlayerSignificantMoveEvent(cPlayer, locationDifference));
 						}
 					}
 				}
-			}.runTaskTimerAsynchronously(EntityAPI.getInstance(), 0, moveListener.getTimeDelay())
+			}.runTaskTimer(EntityAPI.getInstance(), 0, moveListener.getTimeDelay())
 		);
 
 		listenerList.add(moveListener);
+	}
+
+	private static boolean locationIsWithinRadiusOfCentre(@NonNull Location location, @NonNull Location centre, @Nullable Double squaredRadiusFromLocation) {
+		return squaredRadiusFromLocation == null ||
+			location.distanceSquared(centre) <= squaredRadiusFromLocation;
 	}
 
 	/**
@@ -144,4 +160,5 @@ public class CPlayerSignificantMoveManager implements Listener, CPlayerConnectio
 			}
 		}.runTaskAsynchronously(EntityAPI.getInstance());
 	}
+
 }

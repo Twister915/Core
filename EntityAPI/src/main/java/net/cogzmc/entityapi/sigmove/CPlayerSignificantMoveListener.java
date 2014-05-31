@@ -6,7 +6,6 @@ import lombok.NonNull;
 import lombok.Setter;
 import net.cogzmc.core.player.CPlayer;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -26,22 +25,34 @@ public abstract class CPlayerSignificantMoveListener {
 
 	private final Double squaredDefaultSignificantMoveDistance;
 	private final Integer timeDelay;
-	private final World world;
+	private final Location location;
+	private final Double squaredRadiusFromLocation;
 	private final Player[] players;
 
 	private BukkitTask bukkitTaskId;
+
+	@Setter(AccessLevel.NONE)
+	private Double squaredDistance;
 
 	// The Last Significant locations mapped from player to significant location
 	@Setter(AccessLevel.NONE)
 	private volatile Map<CPlayer, Location> lastSignificantLocation = new HashMap<>();
 
-	public CPlayerSignificantMoveListener(@NonNull Double squaredDefaultSignificantMoveDistance, @NonNull Integer timeDelay, World world, Player... players) {
-		this.squaredDefaultSignificantMoveDistance = squaredDefaultSignificantMoveDistance;
+	public CPlayerSignificantMoveListener(@NonNull Double distance, @NonNull Integer timeDelay, Player... players) {
+		this(distance, timeDelay, null, null, players);
+	}
+
+	public CPlayerSignificantMoveListener(@NonNull Double distance, @NonNull Integer timeDelay, Location location) {
+		this(distance, timeDelay, location, null);
+	}
+
+	public CPlayerSignificantMoveListener(@NonNull Double significantMoveDistance, @NonNull Integer timeDelay, Location location, Double radiusFromLocation, Player... players) {
+		this.squaredDefaultSignificantMoveDistance = Math.pow(significantMoveDistance, 2);
 		this.timeDelay = timeDelay;
-		this.world = world;
+		this.location = location;
+		this.squaredRadiusFromLocation = Math.pow(radiusFromLocation, 2);
 		this.players = players;
 	}
 
 	public abstract void onSignificantMoveEvent(CPlayerSignificantMoveEvent event);
-
 }

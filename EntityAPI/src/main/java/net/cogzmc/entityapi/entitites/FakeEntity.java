@@ -16,47 +16,23 @@ import com.adamki11s.pathing.AStar.InvalidPathException;
 import com.adamki11s.pathing.PathingResult;
 import com.adamki11s.pathing.Tile;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import net.cogzmc.core.player.CPlayer;
+import net.cogzmc.entityapi.EntityAPI;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
  *
  *
- * <p>
- * <h2>Observers:</h2>
- * There are 3 types of observers:
- * <table border="1" cellpadding="4">
- *     <tbody>
- *         <tr>
- *             <th>Observer Type</th>
- *             <th>What Do They Do?</th>
- *         </tr>
- *         <tr>
- *             <td>Observer</td>
- *             <td>An observer is someone who can see the entity. Someone who is able to see the entity and can currently see the entity</td>
- *         </tr>
- *         <tr>
- *             <td>Possible Observer</td>
- *             <td>An observer who could see the entity if he was let, though has not been let yet. He is in the render distance of the entity.</td>
- *         </tr>
- *         <tr>
- *             <td>Near Possible Observer</td>
- *             <td>An observer that is near the render distance to becoming a possible observer. This only exists as a buffer area to make code more efficient. Please refer to the image below.</td>
- *         </tr>
- *     </tbody>
- * </table>
- * <img src="http://i.imgur.com/gDdyhkq.png" width="350" height="250"/>
  * <p>
  * Latest Change:
  * <p>
@@ -64,35 +40,44 @@ import java.util.List;
  * @since 26/05/2014
  *
  */
-@Log
 @Data
-@RequiredArgsConstructor
 public abstract class FakeEntity {
 
 	// TODO
 	private static final Boolean debug = false;
 
+	private  Integer defaultMaxRangeForPathing = 60;
+
 	private Location location;
+	private UUID uuid;
+	private Integer entityID;
 	private Vector velocity;
 
 	private static EntityType entityType;
 
-	@Getter
 	private Boolean onGround;
 
-	public static void spawn() {
+	private volatile LinkedHashSet<CPlayer> observers = new LinkedHashSet<>();
+
+	private volatile LinkedHashSet<CPlayer> possibleObservers = new LinkedHashSet<>();
+
+	private volatile LinkedHashSet<CPlayer> nearPossibleObservers = new LinkedHashSet<>();
+
+	public FakeEntity(Location location) {
+		this.location = location;
+		init();
+	}
+
+	public void init() {
 		
 	}
 
+	public void pathTo(final Location to, Integer maxRangeForPathing){
 
-	public final FakeEntity getHandle() {
-		return this;
-	}
-
-	public void runPathing(final Location start, final Location end, final int range){
+		Location start = getLocation();
 		try {
 			//create our pathfinder
-			AStar path = new AStar(start, end, range);
+			AStar path = new AStar(start, to, maxRangeForPathing);
 			//get the list of nodes to walk to as a Tile object
 			ArrayList<Tile> route = path.iterate();
 			//get the result of the path trace
@@ -101,7 +86,7 @@ public abstract class FakeEntity {
 			switch(result){
 				case SUCCESS :
 					//Path was successfull. Do something here.
-					changePathBlocksToDiamond(start, route);
+					runPath(start, route);
 					break;
 				case NO_PATH :
 					//No path found, throw error.
@@ -119,10 +104,23 @@ public abstract class FakeEntity {
 		}
 	}
 
-	private void changePathBlocksToDiamond(Location start, ArrayList<Tile> tiles){
-		for(Tile t : tiles){
-			t.getLocation(start).getBlock().setType(Material.DIAMOND_BLOCK);
-		}
+	private void runPath(final Location start, final ArrayList<Tile> tiles){
+		new BukkitRunnable() {
+
+			Integer i = 0;
+
+			@Override
+			public void run() {
+				if(tiles.size()-1 >= i) return;
+				teleportTo(tiles.get(i).getLocation(start));
+				i++;
+			}
+
+		}.runTaskTimer(EntityAPI.getInstance(), 0, 1);
+	}
+
+	private void teleportTo(Location location) {
+		this.setLocation(location);
 	}
 
 	public final void addObservers(@NonNull List<CPlayer> observers) {
@@ -143,15 +141,69 @@ public abstract class FakeEntity {
 		}
 	}
 
-	public abstract void addObserver(@NonNull CPlayer observer);
+	public final void addObserver(@NonNull CPlayer observer) {
+		showTo(observer);
+		observers.add(observer);
+	}
 
-	public abstract List<CPlayer> getObservers();
+	public final void addPossibleObserver(@NonNull CPlayer observer) {
+		possibleObservers.add(observer);
+	}
 
-	public abstract void addPossibleObserver(@NonNull CPlayer observer);
+	public final void addNearPossibleObserver(@NonNull CPlayer observer) {
+		nearPossibleObservers.add(observer);
+	}
 
-	public abstract List<CPlayer> getPossibleObservers();
+	public final void removeObservers(@NonNull List<CPlayer> observers) {
+		for(CPlayer observer : observers) {
+			removeObserver(observer);
+		}
+	}
 
-	public abstract void addNearPossibleObserver(@NonNull CPlayer observer);
+	public final void removePossibleObservers(@NonNull List<CPlayer> observers) {
+		for(CPlayer observer : observers) {
+			removePossibleObserver(observer);
+		}
+	}
 
-	public abstract List<CPlayer> getNearPossibleObservers();
+	public final void removeNearPossibleObservers(@NonNull List<CPlayer> observers) {
+		for(CPlayer observer : observers) {
+			removeNearPossibleObserver(observer);
+		}
+	}
+
+	public final void removeObserver(@NonNull CPlayer observer) {
+		removeFor(observer);
+		observers.remove(observer);
+	}
+
+	public final void removePossibleObserver(@NonNull CPlayer observer){
+		possibleObservers.remove(observer);
+	}
+
+	public final void removeNearPossibleObserver(@NonNull CPlayer observer) {
+		nearPossibleObservers.remove(observer);
+	}
+
+	public final boolean isObserver(@NonNull CPlayer observer) {
+		return observers.contains(observer);
+	}
+
+	public final boolean isPossibleObserver(@NonNull CPlayer observer) {
+		return possibleObservers.contains(observer);
+	}
+
+	public final boolean isNearPossibleObserver(@NonNull CPlayer observer) {
+		return nearPossibleObservers.contains(observer);
+	}
+
+	public final boolean isAnyObserver(CPlayer player) {
+		return isObserver(player) ||
+				isPossibleObserver(player) ||
+				isNearPossibleObserver(player);
+	}
+
+	protected abstract void showTo(CPlayer observer);
+
+	protected abstract void removeFor(CPlayer observer);
 }
