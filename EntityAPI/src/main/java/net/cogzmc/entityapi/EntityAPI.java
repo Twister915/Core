@@ -7,6 +7,7 @@ import net.cogzmc.entityapi.entitites.FakeZombie;
 import net.cogzmc.entityapi.sigmove.CPlayerSignificantMoveManager;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 @ModuleMeta(
         name = "Entity API",
@@ -34,7 +35,16 @@ public final class EntityAPI extends ModularPlugin {
 	}
 
 	public void debug() {
-		FakeZombie fakeZombie = (FakeZombie) fakeEntityManager.spawnEntity(new Location(getServer().getWorlds().get(0), 0, 0, 0), EntityType.ZOMBIE);
+		final FakeZombie fakeZombie = (FakeZombie) fakeEntityManager.spawnEntity(new Location(getServer().getWorlds().get(0), 0, 80, 0), EntityType.ZOMBIE);
 
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+				getLogger().info(fakeZombie.getObservers().toString());
+				getLogger().info(fakeZombie.getPossibleObservers().toString());
+				getLogger().info(fakeZombie.getNearPossibleObservers().toString());
+			}
+		}.runTaskTimer(this, 0, 100);
 	}
 }
