@@ -35,16 +35,19 @@ public final class EntityAPI extends ModularPlugin {
 	}
 
 	public void debug() {
+		getLogger().info("Debug Method called");
 		final FakeZombie fakeZombie = (FakeZombie) fakeEntityManager.spawnEntity(new Location(getServer().getWorlds().get(0), 0, 80, 0), EntityType.ZOMBIE);
 
 		new BukkitRunnable() {
 
 			@Override
 			public void run() {
+				getLogger().info("test");
 				getLogger().info(fakeZombie.getObservers().toString());
 				getLogger().info(fakeZombie.getPossibleObservers().toString());
 				getLogger().info(fakeZombie.getNearPossibleObservers().toString());
 			}
+
 		}.runTaskTimer(this, 0, 100);
 	}
 }
