@@ -34,6 +34,6 @@ public final class EntityAPI extends ModularPlugin {
 	}
 
 	public void debug() {
-		FakeZombie fakeZombie = (FakeZombie) fakeEntityManager.spawnEntity(new Location(getServer().getWorld("world"), 0, 0, 0), EntityType.ZOMBIE);
+		FakeZombie fakeZombie = (FakeZombie) fakeEntityManager.spawnEntity(new Location(getServer().getWorld("hub_build"), 0, 0, 0), EntityType.ZOMBIE);
 	}
 }
