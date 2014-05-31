@@ -50,7 +50,7 @@ public abstract class CPlayerSignificantMoveListener {
 		this.squaredDefaultSignificantMoveDistance = Math.pow(significantMoveDistance, 2);
 		this.timeDelay = timeDelay;
 		this.location = location;
-		this.squaredRadiusFromLocation = Math.pow(radiusFromLocation, 2);
+		this.squaredRadiusFromLocation = radiusFromLocation == null ? null : Math.pow(radiusFromLocation, 2);
 		this.players = players;
 	}
 

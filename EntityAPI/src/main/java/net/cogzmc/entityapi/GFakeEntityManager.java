@@ -82,13 +82,13 @@ public class GFakeEntityManager implements FakeEntityManager, Listener {
 
 		final GFakeEntityManager instance = this;
 
-		CPlayerSignificantMoveManager.registerListener(new CPlayerSignificantMoveListener((double) 8, 10) {
+		CPlayerSignificantMoveManager.registerListener(new CPlayerSignificantMoveListener(8d, 10) {
 			@Override
 			public void onSignificantMoveEvent(CPlayerSignificantMoveEvent event) {
 				instance.onBufferDistanceMove(event);
 			}
 		});
-		CPlayerSignificantMoveManager.registerListener(new CPlayerSignificantMoveListener((double) 2, 5) {
+		CPlayerSignificantMoveManager.registerListener(new CPlayerSignificantMoveListener(2d, 5) {
 			@Override
 			public void onSignificantMoveEvent(CPlayerSignificantMoveEvent event) {
 				instance.onRenderDistanceMove(event);
