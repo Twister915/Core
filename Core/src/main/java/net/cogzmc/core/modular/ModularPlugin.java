@@ -27,7 +27,6 @@ public abstract class ModularPlugin extends JavaPlugin {
                 onFailureToEnable();
                 return;
             }
-            if (!this.isEnabled()) return;
             Core.getInstance().onModulePreEnable(this);
             meta = getClass().getAnnotation(ModuleMeta.class);
             if (meta == null) throw new IllegalStateException("You must annotate your class with the @" + ModuleMeta.class.getName() + " annotation!");
