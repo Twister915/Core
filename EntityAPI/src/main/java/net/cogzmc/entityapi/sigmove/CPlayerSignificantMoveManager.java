@@ -53,7 +53,7 @@ public class CPlayerSignificantMoveManager implements Listener, CPlayerConnectio
 					Player[] players;
 
 					Location centre = moveListener.getLocation();
-					World world = centre.getWorld();
+					World world = centre == null ? null : centre.getWorld();
 
 					Map<CPlayer, Location> lastSignificantLocation = moveListener.getLastSignificantLocation();
 					Double squaredRadiusFromLocation = moveListener.getSquaredRadiusFromLocation();
