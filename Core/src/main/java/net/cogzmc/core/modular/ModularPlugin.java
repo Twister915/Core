@@ -27,6 +27,7 @@ public abstract class ModularPlugin extends JavaPlugin {
                 onFailureToEnable();
                 return;
             }
+            if (!this.isEnabled()) return;
             Core.getInstance().onModulePreEnable(this);
             meta = getClass().getAnnotation(ModuleMeta.class);
             if (meta == null) throw new IllegalStateException("You must annotate your class with the @" + ModuleMeta.class.getName() + " annotation!");
@@ -34,6 +35,13 @@ public abstract class ModularPlugin extends JavaPlugin {
             this.formatsFile = new YAMLConfigurationFile(this, "formats.yml");
             this.formatsFile.saveDefaultConfig();
             this.commandMap = new ModuleCommandMap(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            onFailureToEnable();
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        try {
             onModuleEnable();
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,5 +1,7 @@
 package net.cogzmc.core.effect.particle;
 
+import org.bukkit.Material;
+
 @SuppressWarnings("SpellCheckingInspection")
 public enum ParticleEffectType {
     HUGE_EXPLOSION("hugeexplosion"),
@@ -46,5 +48,17 @@ public enum ParticleEffectType {
     @Override
     public String toString() {
         return name;
+    }
+
+    public static String customBlockCrack(Material block, Short data) {
+        return "blockcrack_" + block.getId() + "_" + data;
+    }
+
+    public static String customBlockDust(Material block, Short data) {
+        return "blockdust_" + block.getId() + " _" + data;
+    }
+
+    public static String customIconCrack(Material item) {
+        return "iconcrack_" + item.getId();
     }
 }

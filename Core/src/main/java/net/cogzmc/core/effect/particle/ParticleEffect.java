@@ -7,9 +7,6 @@ import lombok.experimental.Wither;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @RequiredArgsConstructor(staticName = "with")
 /**
  * Used to represent a single particle being emitted at a location, and can be sent to many players or a single player
@@ -81,15 +78,10 @@ public final class ParticleEffect {
      */
     public void emitGlobally(Long radius) {
         double distanceSquared = Math.pow(radius, 2); //Distance squared is faster than doing sqrt always.
-        List<Player> players = new ArrayList<>(); //List to store our players in
+        WrapperPlayServerWorldParticles packet = getPacket();
         for (Player player : location.getWorld().getPlayers()) {
             //Determines if the distance from where our particle will be is less than our radius, and marks for sending if so
-            if (player.getLocation().distanceSquared(location) <= distanceSquared) players.add(player);
-        }
-        //Now we send the packet
-        WrapperPlayServerWorldParticles packet = getPacket();
-        for (Player player : players) {
-            packet.sendPacket(player);
+            if (player.getLocation().distanceSquared(location) <= distanceSquared) packet.sendPacket(player);
         }
     }
 
