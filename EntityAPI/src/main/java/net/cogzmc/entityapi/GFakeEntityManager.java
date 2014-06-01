@@ -3,6 +3,7 @@ package net.cogzmc.entityapi;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.entityapi.entitites.FakeEntity;
@@ -51,6 +52,7 @@ import java.util.*;
  * @author George
  * @since 26/05/2014
  */
+@Log
 public class GFakeEntityManager implements FakeEntityManager, Listener {
 
 	// Default render distance for entities 30 blocks (squared so 900) - 30*30
@@ -118,6 +120,8 @@ public class GFakeEntityManager implements FakeEntityManager, Listener {
 	}
 
 	private void onBufferDistanceMove(CPlayerSignificantMoveEvent event) {
+
+		log.info("onBufferDistanceMove Called");
 		CPlayer player = event.getPlayer();
 		Location location = player.getBukkitPlayer().getLocation();
 
@@ -129,6 +133,9 @@ public class GFakeEntityManager implements FakeEntityManager, Listener {
 	}
 
 	private void onRenderDistanceMove(CPlayerSignificantMoveEvent event) {
+
+		log.info("OnRenderDistanceMove Called");
+
 		CPlayer player = event.getPlayer();
 		Location location = player.getBukkitPlayer().getLocation();
 
