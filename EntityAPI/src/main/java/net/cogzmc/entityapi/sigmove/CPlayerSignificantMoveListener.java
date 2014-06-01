@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,10 +24,10 @@ import java.util.Map;
 @Data
 public abstract class CPlayerSignificantMoveListener {
 
-	private final Double squaredDefaultSignificantMoveDistance;
-	private final Integer timeDelay;
-	private final Location location;
-	private final Double squaredRadiusFromLocation;
+	@NonNull private final Double squaredDefaultSignificantMoveDistance;
+	@NonNull private final Integer timeDelay;
+	@Nullable private final Location location;
+	@Nullable private final Double squaredRadiusFromLocation;
 	private final Player[] players;
 
 	private BukkitTask bukkitTaskId;
@@ -38,20 +39,20 @@ public abstract class CPlayerSignificantMoveListener {
 	@Setter(AccessLevel.NONE)
 	private volatile Map<CPlayer, Location> lastSignificantLocation = new HashMap<>();
 
-	public CPlayerSignificantMoveListener(@NonNull Double distance, @NonNull Integer timeDelay, Player... players) {
+	public CPlayerSignificantMoveListener(@NonNull Double distance, @NonNull Integer timeDelay, @Nullable Player... players) {
 		this(distance, timeDelay, null, null, players);
 	}
 
-	public CPlayerSignificantMoveListener(@NonNull Double distance, @NonNull Integer timeDelay, Location location) {
+	public CPlayerSignificantMoveListener(@NonNull Double distance, @NonNull Integer timeDelay, @Nullable Location location) {
 		this(distance, timeDelay, location, null);
 	}
 
-	public CPlayerSignificantMoveListener(@NonNull Double significantMoveDistance, @NonNull Integer timeDelay, Location location, Double radiusFromLocation, Player... players) {
+	public CPlayerSignificantMoveListener(@NonNull Double significantMoveDistance, @NonNull Integer timeDelay, @Nullable Location location, @Nullable Double radiusFromLocation, Player... players) {
 		this.squaredDefaultSignificantMoveDistance = Math.pow(significantMoveDistance, 2);
 		this.timeDelay = timeDelay;
 		this.location = location;
 		this.squaredRadiusFromLocation = radiusFromLocation == null ? null : Math.pow(radiusFromLocation, 2);
-		this.players = players;
+		this.players = players.length <= 0 ? null : players;
 	}
 
 	public abstract void onSignificantMoveEvent(CPlayerSignificantMoveEvent event);

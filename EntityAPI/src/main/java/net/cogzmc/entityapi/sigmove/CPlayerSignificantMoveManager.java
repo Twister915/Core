@@ -2,6 +2,7 @@ package net.cogzmc.entityapi.sigmove;
 
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerConnectionListener;
@@ -27,6 +28,7 @@ import java.util.Map;
  * @author George
  * @since 28/05/2014
  */
+@Log
 public class CPlayerSignificantMoveManager implements Listener, CPlayerConnectionListener {
 
 	// A List Of Listeners, listening into CPlayerSignificantMoveEvent
@@ -49,14 +51,13 @@ public class CPlayerSignificantMoveManager implements Listener, CPlayerConnectio
 
 				@Override
 				public void run() {
-
 					Player[] players;
 
-					Location centre = moveListener.getLocation();
-					World world = centre == null ? null : centre.getWorld();
+					@Nullable Location centre = moveListener.getLocation();
+					@Nullable World world = centre == null ? null : centre.getWorld();
 
 					Map<CPlayer, Location> lastSignificantLocation = moveListener.getLastSignificantLocation();
-					Double squaredRadiusFromLocation = moveListener.getSquaredRadiusFromLocation();
+					@Nullable Double squaredRadiusFromLocation = moveListener.getSquaredRadiusFromLocation();
 					Player[] presetPlayers = moveListener.getPlayers();
 
 					// If players has not been specified then
@@ -83,7 +84,6 @@ public class CPlayerSignificantMoveManager implements Listener, CPlayerConnectio
 
 					// For all the players in the player variable
 					for(Player player : players) {
-
 						playerLocation = player.getLocation();
 
 						if(!locationIsWithinRadiusOfCentre(playerLocation, centre, squaredRadiusFromLocation))
@@ -118,9 +118,10 @@ public class CPlayerSignificantMoveManager implements Listener, CPlayerConnectio
 		listenerList.add(moveListener);
 	}
 
-	private static boolean locationIsWithinRadiusOfCentre(@NonNull Location location, @NonNull Location centre, @Nullable Double squaredRadiusFromLocation) {
-		return squaredRadiusFromLocation == null ||
-			location.distanceSquared(centre) <= squaredRadiusFromLocation;
+	private static boolean locationIsWithinRadiusOfCentre(@NonNull Location location, @Nullable Location centre, @Nullable Double squaredRadiusFromLocation) {
+		return centre == null ||
+				squaredRadiusFromLocation == null ||
+				location.distanceSquared(centre) <= squaredRadiusFromLocation;
 	}
 
 	/**

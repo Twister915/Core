@@ -142,15 +142,18 @@ public abstract class FakeEntity {
 	}
 
 	public final void addObserver(@NonNull CPlayer observer) {
+		if(isObserver(observer)) return;
 		showTo(observer);
 		observers.add(observer);
 	}
 
 	public final void addPossibleObserver(@NonNull CPlayer observer) {
+		if(isPossibleObserver(observer)) return;
 		possibleObservers.add(observer);
 	}
 
 	public final void addNearPossibleObserver(@NonNull CPlayer observer) {
+		if(isNearPossibleObserver(observer)) return;
 		nearPossibleObservers.add(observer);
 	}
 

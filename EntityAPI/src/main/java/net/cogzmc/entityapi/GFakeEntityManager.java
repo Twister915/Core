@@ -60,7 +60,7 @@ public class GFakeEntityManager implements FakeEntityManager, Listener {
 
 	// How many blocks out of the render distance is a player still a near observer
 	// (30 blocks + 10 blocks)^2 = (40)^2
-	public Double squaredBufferDistance = 1600d;
+	public Double squaredDefaultBufferDistance = 1600d;
 
 	// Current entities alive
 	@Getter
@@ -84,30 +84,31 @@ public class GFakeEntityManager implements FakeEntityManager, Listener {
 
 		final GFakeEntityManager instance = this;
 
-		CPlayerSignificantMoveManager.registerListener(new CPlayerSignificantMoveListener(8d, 10) {
+		// Every 20 seconds it will remove people from an entities buffer if their not supposed to be there
+		CPlayerSignificantMoveManager.registerListener(new CPlayerSignificantMoveListener(2d, 400) {
 			@Override
 			public void onSignificantMoveEvent(CPlayerSignificantMoveEvent event) {
-				instance.onBufferDistanceMove(event);
+				instance.onSignificantBufferMove(event);
 			}
 		});
 		CPlayerSignificantMoveManager.registerListener(new CPlayerSignificantMoveListener(2d, 5) {
 			@Override
 			public void onSignificantMoveEvent(CPlayerSignificantMoveEvent event) {
-				instance.onRenderDistanceMove(event);
+				instance.onSignificantMove(event);
 			}
 		});
 	}
 
 	@Override
 	public List<FakeEntity> getNearEntities(Location location, Double squaredDistance) {
-		List<FakeEntity> entities = new ArrayList<>();
+		List<FakeEntity> nearEntities = new ArrayList<>();
 
 		for(FakeEntity entity : getEntitiesInWorld(location.getWorld())) {
 			if(entity.getLocation().distanceSquared(location) <= squaredDistance)
-				entities.add(entity);
+				nearEntities.add(entity);
 		}
 
-		return entities;
+		return nearEntities;
 	}
 
 	@Override
@@ -119,31 +120,67 @@ public class GFakeEntityManager implements FakeEntityManager, Listener {
 		return null;
 	}
 
-	private void onBufferDistanceMove(CPlayerSignificantMoveEvent event) {
+	private void checkPlayer(CPlayer player, FakeEntity entity) {
 
-		log.info("onBufferDistanceMove Called");
-		CPlayer player = event.getPlayer();
-		Location location = player.getBukkitPlayer().getLocation();
+		Double distanceSquared = player.getBukkitPlayer().getLocation().distanceSquared(entity.getLocation());
 
-		for(FakeEntity entity : getNearEntities(location, squaredBufferDistance)) {
-			if(!isInBufferDistance(location.distanceSquared(entity.getLocation()))) continue;
+		if(isWithinRenderDistance(distanceSquared))
+			entity.addPossibleObserver(player);
 
+		if(isInBufferDistance(distanceSquared))
 			entity.addNearPossibleObserver(player);
+
+
+		if(!isWithinRenderDistance(distanceSquared)) {
+			if(entity.isObserver(player))
+				entity.removeObserver(player);
+			if(entity.isPossibleObserver(player))
+				entity.removePossibleObserver(player);
+		}
+
+		if(!isWithinBufferDistance(distanceSquared)) {
+			if(entity.isObserver(player))
+				entity.removeObserver(player);
+			if(entity.isPossibleObserver(player))
+				entity.removePossibleObserver(player);
+			if(entity.isNearPossibleObserver(player))
+				entity.removeNearPossibleObserver(player);
+		}
+
+		if(entity.isPossibleObserver(player)) {
+			if(entity.isObserver(player))
+				entity.removePossibleObserver(player);
+			if(entity.isNearPossibleObserver(player))
+				entity.removePossibleObserver(player);
 		}
 	}
 
-	private void onRenderDistanceMove(CPlayerSignificantMoveEvent event) {
-
-		log.info("OnRenderDistanceMove Called");
-
+	private void onSignificantMove(CPlayerSignificantMoveEvent event) {
 		CPlayer player = event.getPlayer();
 		Location location = player.getBukkitPlayer().getLocation();
 
-		for(FakeEntity entity : getNearEntities(location, squaredDefaultRenderDistance)) {
-			if(entity.isNearPossibleObserver(player))
-				entity.removeNearPossibleObserver(player);
+		for(FakeEntity entity : getNearEntities(location, squaredDefaultBufferDistance)) {
+			checkPlayer(player, entity);
+		}
+	}
 
-			entity.addPossibleObserver(player);
+	private void onSignificantBufferMove(CPlayerSignificantMoveEvent event) {
+		removePlayerFromBuffer(event.getPlayer());
+	}
+
+	private void removePlayerFromBuffer(CPlayer player) {
+		Double distanceSquared;
+		for(FakeEntity entity : entities) {
+			distanceSquared = entity.getLocation().distanceSquared(player.getBukkitPlayer().getLocation());
+
+			if (!isWithinBufferDistance(distanceSquared)) {
+				if (entity.isObserver(player))
+					entity.removeObserver(player);
+				if (entity.isPossibleObserver(player))
+					entity.removePossibleObserver(player);
+				if (entity.isNearPossibleObserver(player))
+					entity.removeNearPossibleObserver(player);
+			}
 		}
 	}
 
@@ -164,6 +201,9 @@ public class GFakeEntityManager implements FakeEntityManager, Listener {
 		// The Player's that can see the entity
 		fakeEntity.addPossibleObservers(getPossibleObservers(location));
 
+		// Add fake entity to list
+		entities.add(fakeEntity);
+
 		return fakeEntity;
 	}
 
@@ -173,7 +213,7 @@ public class GFakeEntityManager implements FakeEntityManager, Listener {
 	}
 
 	private boolean isWithinBufferDistance(Double distanceSquared) {
-		return distanceSquared <= squaredBufferDistance;
+		return distanceSquared <= squaredDefaultBufferDistance;
 	}
 
 	private boolean isWithinRenderDistance(Double distanceSquared) {
@@ -256,6 +296,31 @@ public class GFakeEntityManager implements FakeEntityManager, Listener {
 	}
 
 	/**
+	 * Set the default distance till your in the buffer distance of an entity
+	 * @param distance the default buffer distance for entities
+	 */
+	public void setDefaultBufferDistance(Double distance) {
+		squaredDefaultBufferDistance = Math.pow(distance, 2);
+	}
+
+	/**
+	 * Get the default distance till your in the buffer distance of an entity
+	 * @return the default buffer distance for entities (squared, this is to avoid the hefty square root function in {@link #getDefaultRenderDistance()}
+	 */
+	public Double getSquaredDefaultBufferDistance() {
+		return squaredDefaultBufferDistance;
+	}
+
+	/**
+	 * Get the default distance till your in the buffer distance of an entity
+	 * @return the default buffer distance for entities (not squared)
+	 * WARNING: This uses a hefty square root function, so if possible please use {@link #getSquaredDefaultBufferDistance()}
+	 */
+	public Double getDefaultBufferDistance() {
+		return Math.sqrt(squaredDefaultBufferDistance);
+	}
+
+	/**
 	 * Destroy a fakeEntity
 	 * @param fakeEntity the fake entity to destroy
 	 */
@@ -270,11 +335,11 @@ public class GFakeEntityManager implements FakeEntityManager, Listener {
 	 * @return the fake entities in that world
 	 */
 	private synchronized List<FakeEntity> getEntitiesInWorld(World world) {
-		List<FakeEntity> entities = new ArrayList<>();
+		List<FakeEntity> worldEntities = new ArrayList<>();
 		for(FakeEntity fakeEntity : entities) {
 			if(fakeEntity.getLocation().getWorld().equals(world))
-				entities.add(fakeEntity);
+				worldEntities.add(fakeEntity);
 		}
-		return entities;
+		return worldEntities;
 	}
 }
