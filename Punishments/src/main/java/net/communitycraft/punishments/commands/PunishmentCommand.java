@@ -1,6 +1,7 @@
 package net.communitycraft.punishments.commands;
 
 import net.cogzmc.core.Core;
+import net.cogzmc.core.modular.command.ArgumentRequirementException;
 import net.cogzmc.core.modular.command.CommandException;
 import net.cogzmc.core.modular.command.ModuleCommand;
 import net.cogzmc.core.modular.command.PermissionException;
@@ -35,7 +36,7 @@ public class PunishmentCommand extends ModuleCommand {
 	protected void handleCommand(CPlayer player, String[] args) throws CommandException {
 		if (!player.hasPermission(delegate.permissionFor(punishClass)))
 			throw new PermissionException(PunishmentModule.getInstance().getFormat("no-permission"));
-		if (args.length < 1) throw new CommandException("Please supply a username");
+		if (args.length < 1) throw new ArgumentRequirementException("Please supply a username");
 		COfflinePlayer target = Core.getPlayerManager().getOnlineCPlayerForName(args[0]);
 		if (target == null) {
 			List<COfflinePlayer> players = Core.getPlayerManager().getOfflinePlayerByName(args[0]);

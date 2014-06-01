@@ -3,6 +3,7 @@ package net.communitycraft.punishments;
 import lombok.Getter;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.modular.ModuleMeta;
+import net.communitycraft.punishments.commands.LookupCommand;
 import net.communitycraft.punishments.commands.PunishmentCommand;
 import net.communitycraft.punishments.models.AbstractPunishment;
 
@@ -23,5 +24,6 @@ public final class PunishmentModule extends ModularPlugin {
 		for (Class<? extends AbstractPunishment> punishType : PunishmentManager.PUNISHMENT_CLASSES) {
 			registerCommand(new PunishmentCommand(punishType, punishmentManager.getDelegate()));
 		}
+		registerCommand(new LookupCommand(punishmentManager));
 	}
 }
