@@ -5,14 +5,13 @@ import net.cogzmc.core.player.CPlayer;
 import net.communitycraft.punishments.commands.PunishmentException;
 import net.communitycraft.punishments.models.AbstractPunishment;
 
-import java.util.Date;
-
 /**
  * Created by August on 5/26/14.
  * <p/>
  * Purpose Of File:
  * <p/>
  * Latest Change:
+ * @author August
  */
 public interface PunishmentDelegate {
 

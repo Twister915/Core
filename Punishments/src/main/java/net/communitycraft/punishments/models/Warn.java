@@ -22,4 +22,9 @@ public final class Warn extends AbstractPunishment {
 	public String getReason() {
 		return warnMessage;
 	}
+
+	@Override
+	public Date getDate() {
+		return dateIssued;
+	}
 }

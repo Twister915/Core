@@ -12,10 +12,23 @@ import java.util.Date;
 @Data
 @ModelField
 @AllArgsConstructor
-public final class Mute extends AbstractPunishment {
+public final class Mute extends AbstractPunishment implements ExpirablePunishment {
     private String reason;
     private COfflinePlayer issuer;
     private COfflinePlayer target;
     private Date dateMuted;
     private Long length; //In seconds
+
+	@Override
+	public Date getDate() {
+		return dateMuted;
+	}
+
+	public boolean isExpired() {
+		return new Date().after(getExpirationDate());
+	}
+
+	public Date getExpirationDate() {
+		return new Date(dateMuted.getTime() + length);
+	}
 }

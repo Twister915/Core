@@ -17,4 +17,10 @@ public final class Kick extends AbstractPunishment {
     private COfflinePlayer target;
     private COfflinePlayer issuer;
     private Date dateIssued;
+
+	@Override
+	public Date getDate() {
+		return dateIssued;
+	}
+
 }

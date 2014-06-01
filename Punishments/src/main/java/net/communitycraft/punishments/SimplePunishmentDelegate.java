@@ -14,6 +14,7 @@ import java.util.Date;
  * Purpose Of File: Default implementation of PunishmentDelegate
  * <p/>
  * Latest Change:
+ * @author August
  */
 public class SimplePunishmentDelegate implements PunishmentDelegate {
 
@@ -74,6 +75,7 @@ public class SimplePunishmentDelegate implements PunishmentDelegate {
 		} else if (punishment instanceof Mute) {
 			String msg = getFormat("muted", issuer.getName(), punishment.getReason());
 			target.sendMessage(msg);
+			PunishmentModule.getInstance().getPunishmentManager().mutePlayer(target.getUniqueIdentifier(), (Mute) punishment);
 		} else if (punishment instanceof Warn) {
 			String msg = getFormat("warned", issuer.getName(), punishment.getReason());
 			target.sendMessage(msg);

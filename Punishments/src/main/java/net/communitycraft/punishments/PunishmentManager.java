@@ -8,7 +8,6 @@ import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerConnectionListener;
 import net.cogzmc.core.player.CPlayerJoinException;
 import net.communitycraft.punishments.models.*;
-import org.bukkit.ChatColor;
 
 import java.net.InetAddress;
 import java.util.*;
@@ -19,8 +18,9 @@ import java.util.*;
  * Purpose Of File: To provide a way to query for punishments across all model types
  *
  * Latest Change:
+ * @author August
  */
-public class PunishmentManager implements CPlayerConnectionListener {
+public class PunishmentManager implements CPlayerConnectionListener, MuteDelegate {
 
 	// List of all punishment model classes to load into the storageResolver
 	public static final List<Class<? extends AbstractPunishment>> PUNISHMENT_CLASSES = Arrays.asList(Ban.class, Kick.class, Mute.class, Warn.class);
@@ -28,6 +28,7 @@ public class PunishmentManager implements CPlayerConnectionListener {
 	// Any entry placed into the map should have identical types for the Class and ModelStorage
 	private final Map<Class<? extends AbstractPunishment>, ModelStorage<? extends AbstractPunishment>> storageResolver = new HashMap<>();
 	@Getter private final PunishmentDelegate delegate;
+	@Getter private Map<UUID, Mute> mutedPlayers = new HashMap<>();
 
 	public PunishmentManager() {
 		for (Class<? extends AbstractPunishment> cls : PUNISHMENT_CLASSES) {
@@ -39,16 +40,57 @@ public class PunishmentManager implements CPlayerConnectionListener {
 	@Override
     public void onPlayerLogin(CPlayer player, InetAddress address) throws CPlayerJoinException {
 		List<Ban> bans = findReceivedPunishments(player, Ban.class);
-		if (!bans.isEmpty()) {
-			Ban ban = bans.get(0);
-			// TODO: Use formats
-			player.getBukkitPlayer().kickPlayer(ChatColor.RED + "You have been banned for: " + ban.getReason());
+		for(Ban ban : bans) {
+			if(!ban.isExpired()) {
+				String msg = PunishmentModule.getInstance().getFormat("banned", new String[]{"<issuer>", ban.getIssuer().getName()}, new String[]{"<reason>", ban.getReason()});
+				player.getBukkitPlayer().kickPlayer(msg);
+				return;
+			}
+		}
+		List<Mute> mutes = findReceivedPunishments(player, Mute.class);
+		for(Mute mute : mutes) {
+			if(!mute.isExpired()) mutePlayer(player.getUniqueIdentifier(), mute);
 		}
     }
 
     @Override
     public void onPlayerDisconnect(CPlayer player) {
-    }
+    	mutedPlayers.remove(player.getUniqueIdentifier());
+	}
+
+	@Override
+	public boolean canChat(UUID player) {
+		Mute mute = mutedPlayers.get(player);
+		if(mute == null) return true;
+		if(mute.isExpired()) {
+			unmutePlayer(player);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public Mute getMute(UUID player) {
+		return mutedPlayers.get(player);
+	}
+
+	/**
+	 * This method will only replace the previous mute if
+	 * the new mute expires at a later time
+	 *
+	 * */
+	@Override
+	public void mutePlayer(UUID player, Mute mute) {
+		Mute previous = getMute(player);
+		if(previous == null || mute.getExpirationDate().after(previous.getExpirationDate())) {
+			mutedPlayers.put(player, mute);
+		}
+	}
+
+	@Override
+	public void unmutePlayer(UUID player) {
+		mutedPlayers.remove(player);
+	}
 
 	/**
 	 * Gets the ModelStorage for the given model class

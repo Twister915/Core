@@ -8,6 +8,7 @@ import net.cogzmc.core.modular.command.CommandException;
  * Purpose Of File:
  * <p/>
  * Latest Change:
+ * @author August
  */
 public class PunishmentException extends CommandException {
 	public PunishmentException(String message) {
