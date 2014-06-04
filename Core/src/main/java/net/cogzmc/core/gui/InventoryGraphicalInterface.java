@@ -21,6 +21,8 @@ import java.util.*;
  */
 @Data
 public final class InventoryGraphicalInterface implements GraphicalInterface, Listener {
+    private final static Integer INVENTORY_SIZE = 36;
+
     private final List<CPlayer> observers = new LinkedList<>();
     private final String title;
     private Inventory inventory;
@@ -29,7 +31,7 @@ public final class InventoryGraphicalInterface implements GraphicalInterface, Li
 
     public InventoryGraphicalInterface(String title) {
         this.title = title;
-        this.inventory = Bukkit.createInventory(null, 36, title);
+        this.inventory = Bukkit.createInventory(null, INVENTORY_SIZE, title);
         Core.getInstance().registerListener(this);
     }
 
@@ -164,7 +166,7 @@ public final class InventoryGraphicalInterface implements GraphicalInterface, Li
         for (Integer integer : inventoryButtons.keySet()) {
             if (integer.equals(nextSlot)) nextSlot = integer+1;
         }
-        return nextSlot >= 36 ? null : nextSlot;
+        return nextSlot >= inventory.getSize() ? null : nextSlot;
     }
 
     /* Event Handlers */

@@ -32,7 +32,7 @@ public interface GraphicalInterface {
     void close(Iterable<CPlayer> players);
 
     /**
-     * 
+     *
      * @return
      */
     ImmutableList<CPlayer> getCurrentObservers();
