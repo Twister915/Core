@@ -3,8 +3,10 @@ package net.cogzmc.core.gui;
 import com.google.common.collect.ImmutableList;
 import lombok.Data;
 import net.cogzmc.core.Core;
+import net.cogzmc.core.modular.command.EmptyHandlerException;
 import net.cogzmc.core.player.CPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -185,13 +187,18 @@ public final class InventoryGraphicalInterface implements GraphicalInterface, Li
         this.observers.remove(Core.getOnlinePlayer(player));
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) return;
         if (!(event.getInventory().equals(inventory))) return;
         CPlayer player = Core.getOnlinePlayer((Player) event.getWhoClicked());
         InventoryButton inventoryButton = inventoryButtons.get(event.getSlot());
         if (inventoryButton == null || player == null) throw new IllegalStateException("Somehow, someone who was null clicked on a slot that was null or had no button...");
-
+        try {
+            inventoryButton.onPlayerClick(player);
+        } catch (EmptyHandlerException e) {
+            player.playSoundForPlayer(Sound.NOTE_PLING);
+        }
+        event.setCancelled(true);
     }
 }
