@@ -1,5 +1,6 @@
 package net.cogzmc.core.player;
 
+import net.cogzmc.core.player.scoreboard.ScoreboardAttachment;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
@@ -92,4 +93,10 @@ public interface CPlayer extends COfflinePlayer {
      * @return The cooldown manager.
      */
     CooldownManager getCooldownManager();
+
+    /**
+     * Gets the Scoreboard Attachment used for managing prefixes, suffixes, and sidebar attributes.
+     * @return {@link net.cogzmc.core.player.scoreboard.ScoreboardAttachment} for the player.
+     */
+    ScoreboardAttachment getScoreboardAttachment();
 }

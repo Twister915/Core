@@ -5,6 +5,7 @@ import net.cogzmc.core.Core;
 import net.cogzmc.core.chat.CoreChat;
 import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -68,6 +69,7 @@ public final class ChatterListener implements Listener {
         for (CPlayer cPlayer : cManager.getListeners(channel)) {
             cPlayer.sendMessage(s);
         }
+        Bukkit.getServer().getConsoleSender().sendMessage(message);
         for (ChatterObserver chatterObserver : cManager.getChatterObservers()) {
             chatterObserver.onMessageSent(sender, channel, message);
         }

@@ -7,6 +7,9 @@ import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CooldownManager;
 import net.cogzmc.core.player.DatabaseConnectException;
+import net.cogzmc.core.player.scoreboard.ScoreboardAttachment;
+import net.cogzmc.core.player.scoreboard.ScoreboardManager;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
@@ -26,11 +29,13 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Getter private boolean firstJoin = false;
     @Getter private InetAddress address = null;
     @Getter private final CooldownManager cooldownManager = new CooldownManager();
+    @Getter private final ScoreboardAttachment scoreboardAttachment;
 
     public CMongoPlayer(Player player, COfflineMongoPlayer offlinePlayer, CMongoPlayerManager manager) {
         super(offlinePlayer, manager);
         this.username = player.getName();
         this.bukkitPlayer = player;
+        this.scoreboardAttachment = new ScoreboardAttachment(this);
     }
 
     void onJoin(InetAddress address) throws DatabaseConnectException {

@@ -29,7 +29,7 @@ import java.util.*;
  */
 public class Core extends JavaPlugin {
     @Getter private static Core instance;
-    @Getter private static Random random;
+    @Getter private static Random random = new Random();
 
     @Getter private List<ModularPlugin> modules = new ArrayList<>();
     @Getter protected Provider provider;

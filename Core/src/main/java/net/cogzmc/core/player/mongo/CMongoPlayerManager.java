@@ -1,10 +1,12 @@
 package net.cogzmc.core.player.mongo;
 
 import com.mongodb.*;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.Synchronized;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.*;
+import net.cogzmc.core.player.scoreboard.ScoreboardManager;
 import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,6 +23,8 @@ public final class CMongoPlayerManager implements CPlayerManager {
 
     private Map<String, CPlayer> onlinePlayerMap = new HashMap<>();
     private List<CPlayerConnectionListener> playerConnectionListeners = new ArrayList<>();
+
+    @Getter private final ScoreboardManager scoreboardManager = new ScoreboardManager();
 
     public CMongoPlayerManager(CMongoDatabase database) {
         this.database = database;
@@ -40,6 +44,7 @@ public final class CMongoPlayerManager implements CPlayerManager {
                 player.kickPlayer(ChatColor.RED + "Unable to reload player!");
             }
         }
+        registerCPlayerConnectionListener(scoreboardManager);
     }
 
     @Override
