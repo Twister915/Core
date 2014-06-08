@@ -22,18 +22,17 @@ import java.util.*;
  *
  */
 @Data
-public final class InventoryGraphicalInterface implements GraphicalInterface, Listener {
-    private final static Integer INVENTORY_SIZE = 36;
+public class InventoryGraphicalInterface implements GraphicalInterface, Listener {
+    protected final List<CPlayer> observers = new LinkedList<>();
+    protected final String title;
+    protected Inventory inventory;
+    protected final Map<Integer, InventoryButton> inventoryButtons = new HashMap<>();
+    protected Set<Integer> updatedSlots = new HashSet<>();
 
-    private final List<CPlayer> observers = new LinkedList<>();
-    private final String title;
-    private Inventory inventory;
-    private final Map<Integer, InventoryButton> inventoryButtons = new HashMap<>();
-    private Set<Integer> updatedSlots = new HashSet<>();
-
-    public InventoryGraphicalInterface(String title) {
+    public InventoryGraphicalInterface(Integer size, String title) {
+        if (size % 9 != 0) throw new IllegalArgumentException("The size of an inventory must be divisible by 9 evenly.");
         this.title = title;
-        this.inventory = Bukkit.createInventory(null, INVENTORY_SIZE, title);
+        this.inventory = Bukkit.createInventory(null, size, title);
         Core.getInstance().registerListener(this);
     }
 

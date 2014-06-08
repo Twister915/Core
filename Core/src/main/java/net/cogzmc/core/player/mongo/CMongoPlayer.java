@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import net.cogzmc.core.Core;
+import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CooldownManager;
 import net.cogzmc.core.player.DatabaseConnectException;
@@ -43,8 +44,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
         this.setLastTimeOnline(new Date());
         addIfUnique(this.getKnownUsernames(), bukkitPlayer.getName());
         this.address = address;
-        String hostString = address.getHostAddress();
-        addIfUnique(this.getKnownIPAddresses(), hostString);
+        logIP(address);
         if (this.getFirstTimeOnline() == null) {
             this.setFirstTimeOnline(new Date());
             this.firstJoin = true;
@@ -144,6 +144,11 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     }
 
     @Override
+    public COfflinePlayer getOfflinePlayer() {
+        return new COfflineMongoPlayer(this, playerManager);
+    }
+
+    @Override
     public void reloadPermissions() {
         super.reloadPermissions();
         if (permissionAttachment != null) permissionAttachment.remove();
@@ -151,5 +156,10 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
         for (Map.Entry<String, Boolean> stringBooleanEntry : getAllPermissions().entrySet()) {
             permissionAttachment.setPermission(stringBooleanEntry.getKey(), stringBooleanEntry.getValue());
         }
+    }
+
+    @Override
+    public final CPlayer getPlayer() {
+        return this;
     }
 }

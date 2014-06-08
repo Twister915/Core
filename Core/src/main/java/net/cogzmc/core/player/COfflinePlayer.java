@@ -3,6 +3,7 @@ package net.cogzmc.core.player;
 import lombok.NonNull;
 import net.cogzmc.core.asset.Asset;
 
+import java.net.InetAddress;
 import java.util.*;
 
 /**
@@ -185,4 +186,10 @@ public interface COfflinePlayer extends CPermissible {
      * @param string The display name to set.
      */
     void setDisplayName(String string);
+
+    /**
+     * Forces an IP to be logged for the player without auto-detection. Use this if you are using a voting site, want to force a logged IP from a web API, or do anything else relating to this.
+     * @param address The {@link java.net.InetAddress} to log.
+     */
+    void logIP(InetAddress address);
 }

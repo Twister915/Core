@@ -12,6 +12,7 @@ import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetAddress;
 import java.util.*;
 
 import static net.cogzmc.core.player.mongo.MongoUtils.*;
@@ -31,7 +32,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     private Map<String, Object> settings;
 
     /* helpers */
-    private final CMongoPlayerManager playerManager;
+    protected final CMongoPlayerManager playerManager;
     @Getter @Setter private ObjectId objectId;
 
     /* Permissions */
@@ -136,7 +137,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     }
 
     @Override
-    public final CPlayer getPlayer() {
+    public CPlayer getPlayer() {
         if (this instanceof CMongoPlayer) return (CPlayer) this;
         return this.playerManager.getOnlineCPlayerForUUID(this.uniqueIdentifier);
     }
@@ -314,5 +315,11 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
             return;
         }
         this.displayName = ChatColor.translateAlternateColorCodes('&', string);
+    }
+
+    @Override
+    public void logIP(InetAddress address) {
+        String hostAddress = address.getHostAddress();
+        if (!knownIPAddresses.contains(hostAddress)) knownIPAddresses.add(hostAddress);
     }
 }

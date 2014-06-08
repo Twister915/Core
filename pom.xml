@@ -16,6 +16,7 @@
         <module>CoreEssentials</module>
         <module>EntityAPI</module>
         <module>Chat2</module>
+        <module>GameAPI</module>
     </modules>
 
     <packaging>pom</packaging>

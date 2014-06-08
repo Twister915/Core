@@ -99,4 +99,11 @@ public interface CPlayer extends COfflinePlayer {
      * @return {@link net.cogzmc.core.player.scoreboard.ScoreboardAttachment} for the player.
      */
     ScoreboardAttachment getScoreboardAttachment();
+
+    /**
+     * Creates a <b>new</b> {@link net.cogzmc.core.player.COfflinePlayer} to represent this player in the event that
+     * you wish to store this player without keeping a reference to the {@link org.bukkit.entity.Player}.
+     * @return The {@link net.cogzmc.core.player.COfflinePlayer} representation of this player.
+     */
+    COfflinePlayer getOfflinePlayer();
 }
