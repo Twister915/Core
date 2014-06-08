@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by Joe
  */
-public class ItemMetaFactory {
+public final class ItemMetaFactory {
 
     ItemStack k;
     ItemMeta m;
