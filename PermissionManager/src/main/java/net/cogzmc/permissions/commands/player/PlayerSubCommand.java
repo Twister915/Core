@@ -14,7 +14,10 @@ public final class PlayerSubCommand extends ModuleCommand {
                 new UnsetSubCommand<>(PLAYER_RESOLUTION_DELEGATE),
                 new SetSubCommand<>(PLAYER_RESOLUTION_DELEGATE),
                 new ChatColorSubCommand<>(PLAYER_RESOLUTION_DELEGATE),
-                new PrefixSubCommand<>(PLAYER_RESOLUTION_DELEGATE)
+                new TabColorSubCommand<>(PLAYER_RESOLUTION_DELEGATE),
+                new PrefixSubCommand<>(PLAYER_RESOLUTION_DELEGATE),
+                new SuffixSubCommand<>(PLAYER_RESOLUTION_DELEGATE),
+                new ShowSubCommand<>(PLAYER_RESOLUTION_DELEGATE)
         );
     }
 
