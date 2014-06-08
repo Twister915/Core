@@ -97,7 +97,7 @@ public class PunishmentManager implements CPlayerConnectionListener, MuteDelegat
 	 * @param cls the punishment model class
 	 */
 	@SuppressWarnings("unchecked")
-		public <T extends AbstractPunishment> ModelStorage<T> storageFor(Class<T> cls) {
+    public <T extends AbstractPunishment> ModelStorage<T> storageFor(Class<T> cls) {
 		ModelStorage<? extends AbstractPunishment> storage = storageResolver.get(cls);
 		if (storage == null) throw new IllegalArgumentException("Could not find ModelStorage for punishment class " + cls.getClass().getSimpleName());
 		return (ModelStorage<T>) storage;

@@ -5,24 +5,26 @@ import net.cogzmc.core.player.CPlayer;
 
 import java.util.*;
 
-public final class TeamContext {
-    private final Set<Team> teams = new HashSet<>();
+public final class TeamContext<TeamType extends Team> {
+    private final Set<TeamType> teams = new HashSet<>();
     private final Set<TeamRelationship> teamRelationships = new HashSet<>();
-    private final Map<CPlayer, TeamMembership> teamMemberships = new HashMap<>();
-    private final Team defaultTeam;
+    private final Map<CPlayer, TeamMembership<TeamType>> teamMemberships = new HashMap<>();
+    private final TeamType defaultTeam;
 
-    public TeamContext(Team defaultTeam, Team... teams) {
+    @SafeVarargs
+    public TeamContext(TeamType defaultTeam, TeamType... teams) {
         this.defaultTeam = defaultTeam;
         this.teams.add(defaultTeam);
         if (teams.length > 0) Collections.addAll(this.teams, teams);
     }
 
-    public void makePlayerTeamMember(Team team, CPlayer player) {
+    public void makePlayerTeamMember(TeamType team, CPlayer player) {
         if (!teams.contains(team)) throw new IllegalArgumentException("The team passed must be a member team.");
+        if (!team.canJoin(player)) throw new IllegalArgumentException("Player cannot join this team!");
         teamMemberships.get(player).addToTeam(team);
     }
 
-    public TeamDisposition getRelationship(Team team, Team target) {
+    public TeamDisposition getRelationship(TeamType team, TeamType target) {
         if (!(teams.contains(team) && teams.contains(target))) throw new IllegalArgumentException("The teams passed must be members of the teams Set");
         for (TeamRelationship teamRelationship : teamRelationships) {
             if (teamRelationship.getTeam().equals(team) && teamRelationship.getTarget().equals(target)) return teamRelationship.getDisposition();
@@ -30,7 +32,7 @@ public final class TeamContext {
         return TeamDisposition.NETURAL;
     }
 
-    public void setTeamRelationship(Team team, TeamDisposition disposition, Team target) {
+    public void setTeamRelationship(TeamType team, TeamDisposition disposition, TeamType target) {
         if (!(teams.contains(team) && teams.contains(target))) throw new IllegalArgumentException("The teams passed must be members of the teams Set");
         if (disposition == TeamDisposition.NETURAL) {
             Iterator<TeamRelationship> iterator = teamRelationships.iterator();
@@ -43,9 +45,9 @@ public final class TeamContext {
         teamRelationships.add(TeamRelationship.makeRelationship(team, disposition, target));
     }
 
-    public ImmutableSet<Team> getTeamsFor(CPlayer player) {
-        TeamMembership teamMembership = teamMemberships.get(player);
+    public ImmutableSet<TeamType> getTeamsFor(CPlayer player) {
+        TeamMembership<TeamType> teamMembership = teamMemberships.get(player);
         if (teamMembership.getTeams().size() == 0) return ImmutableSet.copyOf(Arrays.asList(defaultTeam));
-        return ImmutableSet.copyOf(teamMembership.getTeams());
+        return teamMembership.getTeams();
     }
 }

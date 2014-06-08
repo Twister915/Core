@@ -7,6 +7,4 @@ import net.cogzmc.core.modular.ModuleMeta;
         name = "GameAPI",
         description = "Provides the basic classes used to build games."
 )
-public final class GameAPI extends ModularPlugin {
-
-}
+public final class GameAPI extends ModularPlugin { }

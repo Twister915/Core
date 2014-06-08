@@ -8,7 +8,7 @@ import lombok.Value;
 @Value
 @EqualsAndHashCode(of = {"team", "target"})
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TeamRelationship {
+final class TeamRelationship {
     private final Team team;
     private final Team target;
     private final TeamDisposition disposition;

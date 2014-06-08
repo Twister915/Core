@@ -1,9 +1,8 @@
-package net.cogzmc.gameapi.model.game.countdown;
+package net.cogzmc.gameapi.model.game;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Value;
-import net.cogzmc.gameapi.model.game.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -18,6 +17,7 @@ public final class GameCountdown implements Runnable {
 
     public void start() {
         taskTimer = Bukkit.getScheduler().runTaskTimer(game.getOwner(), this, 1L, 1L);
+        game.gameCountdownStarted(this);
         delegate.countdownStarted(this, seconds);
     }
 
@@ -27,6 +27,8 @@ public final class GameCountdown implements Runnable {
 
     public void stopAndReset() {
         pause();
+        delegate.countdownEnded(this, seconds);
+        game.gameCountdownEnded(this);
         timeElapsed = 0;
     }
 
@@ -35,8 +37,7 @@ public final class GameCountdown implements Runnable {
         timeElapsed++;
         delegate.countdownChanged(this, seconds-timeElapsed, seconds);
         if (timeElapsed.equals(seconds)) {
-            delegate.countdownEnded(this, seconds);
-            taskTimer.cancel();
+            stopAndReset();
         }
     }
 }

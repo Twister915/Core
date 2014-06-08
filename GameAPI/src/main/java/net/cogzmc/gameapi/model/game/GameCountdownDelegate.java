@@ -1,4 +1,4 @@
-package net.cogzmc.gameapi.model.game.countdown;
+package net.cogzmc.gameapi.model.game;
 
 public interface GameCountdownDelegate {
     void countdownStarted(GameCountdown countdown, Integer secondsRemaining);

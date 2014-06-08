@@ -10,15 +10,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Value
-public final class TeamMembership {
+final class TeamMembership<TeamType extends Team> {
     private final CPlayer player;
-    @Getter(AccessLevel.NONE) private final Set<Team> teams = new HashSet<>();
+    @Getter(AccessLevel.NONE) private final Set<TeamType> teams = new HashSet<>();
 
-    public ImmutableSet<Team> getTeams() {
+    public ImmutableSet<TeamType> getTeams() {
         return ImmutableSet.copyOf(teams);
     }
 
-    public void addToTeam(Team team) {
+    public void addToTeam(TeamType team) {
         teams.add(team);
     }
 }

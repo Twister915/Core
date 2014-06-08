@@ -138,7 +138,6 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
 
     @Override
     public CPlayer getPlayer() {
-        if (this instanceof CMongoPlayer) return (CPlayer) this;
         return this.playerManager.getOnlineCPlayerForUUID(this.uniqueIdentifier);
     }
 

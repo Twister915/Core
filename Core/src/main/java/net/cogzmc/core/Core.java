@@ -107,10 +107,9 @@ public class Core extends JavaPlugin {
     }
 
     public <T extends ModularPlugin> T getModuleProvider(Class<T> modularClass) {
-        for (ModularPlugin module : modules) {
+        for (ModularPlugin module : modules)
             if (modularClass.equals(module.getClass())) //noinspection unchecked
                 return (T) module;
-        }
         return null;
     }
 
