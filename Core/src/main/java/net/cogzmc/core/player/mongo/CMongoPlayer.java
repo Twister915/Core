@@ -159,7 +159,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     }
 
     @Override
-    public final CPlayer getPlayer() {
+    public CPlayer getPlayer() {
         return this;
     }
 }
