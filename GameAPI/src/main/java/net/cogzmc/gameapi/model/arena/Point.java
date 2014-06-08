@@ -9,7 +9,7 @@ import org.bukkit.block.Block;
 
 @Data
 @RequiredArgsConstructor(staticName = "of")
-public class Point {
+public final class Point {
     @NonNull private final Double x;
     @NonNull private final Double y;
     @NonNull private final Double z;
