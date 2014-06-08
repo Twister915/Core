@@ -17,7 +17,7 @@ import java.util.List;
 
 @Data
 public abstract class InventoryButton {
-    private static final Integer lineLength = 30;
+    private static final Integer LORE_LINE_LENGTH = 30;
 
     @Setter(AccessLevel.PACKAGE) @NonNull private ItemStack stack;
 
@@ -38,12 +38,12 @@ public abstract class InventoryButton {
 
     public static List<String> wrapLoreText(String string) {
         String workingString = ChatColor.translateAlternateColorCodes('&', string).trim();
-        if (workingString.length() <= lineLength) return Arrays.asList(workingString); //Because this is faster!
-        double numberOfLines = Math.ceil(workingString.length() / lineLength); //Always round up
+        if (workingString.length() <= LORE_LINE_LENGTH) return Arrays.asList(workingString); //Because this is faster!
+        double numberOfLines = Math.ceil(workingString.length() / LORE_LINE_LENGTH); //Always round up
         List<String> lines = new ArrayList<>(); //Get a list to put the lines in and fill it up
         String lastColor = null; //MUST start next line with last color of former line.
         for (int lineIndex = 0; lineIndex < numberOfLines; lineIndex++) {
-            String line = workingString.substring(lineIndex * lineLength, Math.min((lineIndex + 1) * lineLength, workingString.length()));
+            String line = workingString.substring(lineIndex * LORE_LINE_LENGTH, Math.min((lineIndex + 1) * LORE_LINE_LENGTH, workingString.length()));
             if (lastColor != null) line = lastColor + line;
             lastColor = ChatColor.getLastColors(line);
             lines.add(line);

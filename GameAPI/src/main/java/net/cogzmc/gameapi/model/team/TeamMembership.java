@@ -3,7 +3,6 @@ package net.cogzmc.gameapi.model.team;
 import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Value;
 import net.cogzmc.core.player.CPlayer;
 

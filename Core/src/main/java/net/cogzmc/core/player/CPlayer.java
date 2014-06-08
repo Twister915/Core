@@ -1,10 +1,15 @@
 package net.cogzmc.core.player;
 
 import net.cogzmc.core.player.scoreboard.ScoreboardAttachment;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 import java.net.InetAddress;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A class to represent a player on the server.
@@ -81,6 +86,114 @@ public interface CPlayer extends COfflinePlayer {
      * @param s The sound to play.
      */
     void playSoundForPlayer(Sound s);
+
+    /**
+     * Gives a new item to specification to this player.
+     * @param material The {@link org.bukkit.Material} that the item will be.
+     * @param quantity The amount of the item to give to the player.
+     * @param title The title of the item as shown in the inventory (display name).
+     * @param lore The lore of the item, will be wrapped automatically.
+     * @param enchantments The enchantments to put onto this item, this will be done unsafely and as such can be <b>any</b> enchantments.
+     * @param slot The slot to put the item into. Pass {@code null} for any slot.
+     */
+    void giveItem(Material material, Integer quantity, String title, String lore, Map<Enchantment, Integer> enchantments, Integer slot);
+
+    /**
+     * Gives a new item to specification to this player.
+     *
+     * Defaults {@code slot} to {@code null} from the overloaded {@link #giveItem(org.bukkit.Material, Integer, String, String, java.util.Map, Integer)}
+     * @param material The {@link org.bukkit.Material} that the item will be.
+     * @param quantity The amount of the item to give to the player.
+     * @param title The title of the item as shown in the inventory (display name).
+     * @param lore The lore of the item, will be wrapped automatically.
+     * @param enchantments The enchantments to put onto this item, this will be done unsafely and as such can be <b>any</b> enchantments.
+     */
+    void giveItem(Material material, Integer quantity, String title, String lore, Map<Enchantment, Integer> enchantments);
+
+    /**
+     * Gives a new item to specification to this player.
+     *
+     * Defaults {@code enchantments} to {@code null} from the overloaded {@link #giveItem(org.bukkit.Material, Integer, String, String, java.util.Map)}
+     * @param material The {@link org.bukkit.Material} that the item will be.
+     * @param quantity The amount of the item to give to the player.
+     * @param title The title of the item as shown in the inventory (display name).
+     * @param lore The lore of the item, will be wrapped automatically.
+     */
+    void giveItem(Material material, Integer quantity, String title, String lore);
+
+    /**
+     * Gives a new item to specification to this player.
+     *
+     * Defaults {@code lore} to {@code null} from the overloaded {@link #giveItem(org.bukkit.Material, Integer, String, String)}
+     * @param material The {@link org.bukkit.Material} that the item will be.
+     * @param quantity The amount of the item to give to the player.
+     * @param title The title of the item as shown in the inventory (display name).
+     */
+    void giveItem(Material material, Integer quantity, String title);
+
+    /**
+     * Gives a new item to specification to this player.
+     *
+     * Defaults {@code quantity} to {@code 1} from the overloaded {@link #giveItem(org.bukkit.Material, Integer, String)}
+     * @param material The {@link org.bukkit.Material} that the item will be.
+     * @param title The title of the item as shown in the inventory (display name).
+     */
+    void giveItem(Material material, String title);
+
+    /**
+     * Gives a new item to specification to this player.
+     *
+     * Defaults {@code title} to {@code null} from the overloaded {@link #giveItem(org.bukkit.Material, Integer, String)}
+     * @param material The {@link org.bukkit.Material} that the item will be.
+     * @param quantity The amount of the item to give to the player.
+     */
+    void giveItem(Material material, Integer quantity);
+
+    /**
+     * Gives a new item to specification to this player.
+     *
+     * Defaults {@code quantity} to {@code 1} from the overloaded {@link #giveItem(org.bukkit.Material, Integer)}
+     * @param material The {@link org.bukkit.Material} that the item will be.
+     */
+    void giveItem(Material material);
+
+    /**
+     * Adds a status effect to this player with the given parameters.
+     * @param type The type of {@link org.bukkit.potion.PotionEffectType} to give to the player.
+     * @param level The level of potion effect to give to the player (1 = I, 2 = II, etc)
+     * @param ticks The number of ticks to give the potion effect for.
+     * @param ambient If the potion effect is "ambient" or not.
+     *
+     * @see org.bukkit.potion.PotionEffect
+     */
+    void addStatusEffect(PotionEffectType type, Integer level, Integer ticks, Boolean ambient);
+
+    /**
+     * Adds a status effect to this player with the given parameters.
+     *
+     * Defaults {@code ambient} to {@code false} from the overloaded {@link #addStatusEffect(org.bukkit.potion.PotionEffectType, Integer, Integer, Boolean)}
+     * @param type The type of {@link org.bukkit.potion.PotionEffectType} to give to the player.
+     * @param level The level of potion effect to give to the player (1 = I, 2 = II, etc)
+     * @param ticks The number of ticks to give the potion effect for.
+     */
+    void addStatusEffect(PotionEffectType type, Integer level, Integer ticks);
+
+    /**
+     * Adds a status effect to this player with the given parameters.
+     *
+     * Defaults {@code ticks} to {@code MAX_VALUE} or infinite status effect length from the overloaded {@link #addStatusEffect(org.bukkit.potion.PotionEffectType, Integer, Integer)}
+     * @param type The type of {@link org.bukkit.potion.PotionEffectType} to give to the player.
+     * @param level The level of potion effect to give to the player (1 = I, 2 = II, etc)
+     */
+    void addStatusEffect(PotionEffectType type, Integer level);
+
+    /**
+     * Adds a status effect to this player with the given parameters.
+     *
+     * Defaults {@code level} to {@code 1} from the overloaded {@link #addStatusEffect(org.bukkit.potion.PotionEffectType, Integer)}
+     * @param type The type of {@link org.bukkit.potion.PotionEffectType} to give to the player.
+     */
+    void addStatusEffect(PotionEffectType type);
 
     /**
      * Gives you the representation of the player from Bukkit using the {@link org.bukkit.entity.Player} object.

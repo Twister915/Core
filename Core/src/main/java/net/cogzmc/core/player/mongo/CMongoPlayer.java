@@ -4,18 +4,24 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import net.cogzmc.core.Core;
+import net.cogzmc.core.gui.InventoryButton;
 import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CooldownManager;
 import net.cogzmc.core.player.DatabaseConnectException;
 import net.cogzmc.core.player.scoreboard.ScoreboardAttachment;
-import net.cogzmc.core.player.scoreboard.ScoreboardManager;
-import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -141,6 +147,67 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Override
     public void playSoundForPlayer(Sound s) {
         playSoundForPlayer(s, 10f);
+    }
+
+    @Override
+    public void giveItem(Material material, Integer quantity, String title, String lore, Map<Enchantment, Integer> enchantments, Integer slot) {
+        ItemStack stack = new ItemStack(material, quantity);
+        ItemMeta itemMeta = stack.getItemMeta();
+        if (title != null) itemMeta.setDisplayName(title);
+        if (lore != null) itemMeta.setLore(InventoryButton.wrapLoreText(lore));
+        if (enchantments != null) stack.addUnsafeEnchantments(enchantments);
+        if (slot != null) bukkitPlayer.getInventory().setItem(slot, stack);
+        else bukkitPlayer.getInventory().addItem(stack);
+    }
+
+    @Override
+    public void giveItem(Material material, Integer quantity, String title, String lore, Map<Enchantment, Integer> enchantments) {
+        giveItem(material, quantity, title, lore, enchantments, null);
+    }
+
+    @Override
+    public void giveItem(Material material, Integer quantity, String title, String lore) {
+        giveItem(material, quantity, title, lore, null);
+    }
+
+    @Override
+    public void giveItem(Material material, Integer quantity, String title) {
+        giveItem(material, quantity, title, null);
+    }
+
+    @Override
+    public void giveItem(Material material, String title) {
+        giveItem(material, 1, title);
+    }
+
+    @Override
+    public void giveItem(Material material, Integer quantity) {
+        giveItem(material, quantity, null);
+    }
+
+    @Override
+    public void giveItem(Material material) {
+        giveItem(material, 1);
+    }
+
+    @Override
+    public void addStatusEffect(PotionEffectType type, Integer level, Integer ticks, Boolean ambient) {
+        bukkitPlayer.addPotionEffect(new PotionEffect(type, ticks, Math.max(0, level-1), ambient));
+    }
+
+    @Override
+    public void addStatusEffect(PotionEffectType type, Integer level, Integer ticks) {
+        addStatusEffect(type, level, ticks, false);
+    }
+
+    @Override
+    public void addStatusEffect(PotionEffectType type, Integer level) {
+        addStatusEffect(type, level, Integer.MAX_VALUE);
+    }
+
+    @Override
+    public void addStatusEffect(PotionEffectType type) {
+        addStatusEffect(type, 1);
     }
 
     @Override
