@@ -44,10 +44,8 @@ public final class ShowSubCommand<T extends CPermissible> extends PermissibleSub
     @Override
     protected void doAction(T permissible, CommandSender sender) throws CommandException {
         sender.sendMessage("Name: " + permissible.getName());
-        ChatColor prefixColor = ChatColor.getByChar(permissible.getChatPrefix());
-        sender.sendMessage("Prefix: " + prefixColor + prefixColor.toString() + ChatColor.RESET);
-        ChatColor suffixColor = ChatColor.getByChar(permissible.getChatSuffix());
-        sender.sendMessage("Suffix: " + suffixColor + suffixColor.toString() + ChatColor.RESET);
+        sender.sendMessage("Prefix: " + ChatColor.translateAlternateColorCodes('&', permissible.getChatPrefix()) + ChatColor.RESET);
+        sender.sendMessage("Suffix: " + ChatColor.translateAlternateColorCodes('&', permissible.getChatSuffix()) + ChatColor.RESET);
 
         if (permissible instanceof CGroup) {
             CGroup cGroupPermissible = (CGroup) permissible;
