@@ -11,7 +11,10 @@ public final class GroupSubCommand extends ModuleCommand {
                 new SetSubCommand<>(GROUP_RESOLUTION_DELEGATE),
                 new UnsetSubCommand<>(GROUP_RESOLUTION_DELEGATE),
                 new ChatColorSubCommand<>(GROUP_RESOLUTION_DELEGATE),
+                new TabColorSubCommand<>(GROUP_RESOLUTION_DELEGATE),
                 new PrefixSubCommand<>(GROUP_RESOLUTION_DELEGATE),
+                new SuffixSubCommand<>(GROUP_RESOLUTION_DELEGATE),
+                new ShowSubCommand<>(GROUP_RESOLUTION_DELEGATE),
                 new CreateSubCommand(),
                 new DeleteSubCommand(),
                 new ListSubCommand());

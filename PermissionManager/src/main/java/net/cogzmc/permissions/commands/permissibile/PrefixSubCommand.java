@@ -14,7 +14,6 @@ public final class PrefixSubCommand<T extends CPermissible> extends PermissibleS
         this.delegate = delegate;
     }
 
-
     @Override
     protected T getPermissible(String name) {
         return this.delegate.getFor(name);
