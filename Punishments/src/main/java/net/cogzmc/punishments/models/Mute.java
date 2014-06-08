@@ -1,4 +1,4 @@
-package net.communitycraft.punishments.models;
+package net.cogzmc.punishments.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

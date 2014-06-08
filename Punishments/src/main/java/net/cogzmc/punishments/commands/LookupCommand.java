@@ -1,4 +1,4 @@
-package net.communitycraft.punishments.commands;
+package net.cogzmc.punishments.commands;
 
 import net.cogzmc.core.Core;
 import net.cogzmc.core.modular.command.ArgumentRequirementException;
@@ -6,9 +6,9 @@ import net.cogzmc.core.modular.command.CommandException;
 import net.cogzmc.core.modular.command.ModuleCommand;
 import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
-import net.communitycraft.punishments.PunishmentManager;
-import net.communitycraft.punishments.PunishmentModule;
-import net.communitycraft.punishments.models.AbstractPunishment;
+import net.cogzmc.punishments.PunishmentManager;
+import net.cogzmc.punishments.PunishmentModule;
+import net.cogzmc.punishments.models.AbstractPunishment;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

@@ -1,11 +1,11 @@
-package net.communitycraft.punishments;
+package net.cogzmc.punishments;
 
 import lombok.Getter;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.modular.ModuleMeta;
-import net.communitycraft.punishments.commands.LookupCommand;
-import net.communitycraft.punishments.commands.PunishmentCommand;
-import net.communitycraft.punishments.models.AbstractPunishment;
+import net.cogzmc.punishments.commands.LookupCommand;
+import net.cogzmc.punishments.commands.PunishmentCommand;
+import net.cogzmc.punishments.models.AbstractPunishment;
 
 @ModuleMeta(
         name = "Punishments",

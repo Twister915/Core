@@ -1,9 +1,9 @@
-package net.communitycraft.punishments;
+package net.cogzmc.punishments;
 
 import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
-import net.communitycraft.punishments.commands.PunishmentException;
-import net.communitycraft.punishments.models.AbstractPunishment;
+import net.cogzmc.punishments.commands.PunishmentException;
+import net.cogzmc.punishments.models.AbstractPunishment;
 
 /**
  * Created by August on 5/26/14.

@@ -1,4 +1,4 @@
-package net.communitycraft.punishments.models;
+package net.cogzmc.punishments.models;
 
 import net.cogzmc.core.model.Model;
 import net.cogzmc.core.player.COfflinePlayer;

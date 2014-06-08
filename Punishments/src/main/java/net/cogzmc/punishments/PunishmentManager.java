@@ -1,4 +1,4 @@
-package net.communitycraft.punishments;
+package net.cogzmc.punishments;
 
 import lombok.Getter;
 import net.cogzmc.core.Core;
@@ -7,7 +7,7 @@ import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerConnectionListener;
 import net.cogzmc.core.player.CPlayerJoinException;
-import net.communitycraft.punishments.models.*;
+import net.cogzmc.punishments.models.*;
 
 import java.net.InetAddress;
 import java.util.*;

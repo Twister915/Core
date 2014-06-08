@@ -1,6 +1,6 @@
-package net.communitycraft.punishments;
+package net.cogzmc.punishments;
 
-import net.communitycraft.punishments.models.Mute;
+import net.cogzmc.punishments.models.Mute;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

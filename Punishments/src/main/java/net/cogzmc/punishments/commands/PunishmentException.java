@@ -1,4 +1,4 @@
-package net.communitycraft.punishments.commands;
+package net.cogzmc.punishments.commands;
 
 import net.cogzmc.core.modular.command.CommandException;
 

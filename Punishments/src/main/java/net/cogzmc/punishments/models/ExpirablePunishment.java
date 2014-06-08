@@ -1,4 +1,4 @@
-package net.communitycraft.punishments.models;
+package net.cogzmc.punishments.models;
 
 /**
  * Created by August on 6/1/14.
