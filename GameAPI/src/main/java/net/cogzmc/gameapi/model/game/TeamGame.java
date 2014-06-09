@@ -9,7 +9,7 @@ import net.cogzmc.gameapi.model.team.TeamContext;
 
 import java.util.Set;
 
-public final class TeamGame<ArenaType extends Arena, TeamType extends Team> extends Game<ArenaType> {
+public class TeamGame<ArenaType extends Arena, TeamType extends Team> extends Game<ArenaType> {
     @Getter private final TeamContext<TeamType> teamContext;
 
     public TeamGame(ModularPlugin owner, ArenaType arena, Set<CPlayer> players,

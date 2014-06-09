@@ -2,8 +2,9 @@ package net.cogzmc.gameapi.model.game;
 
 import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
+import lombok.Data;
 import lombok.Getter;
-import lombok.Value;
+import lombok.Setter;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.player.COfflinePlayer;
@@ -17,10 +18,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-@Value
 /**
  * This class serves to represent a game that can be played. The rules of a game are modified through the delegated calls in the two
  */
+@Data
+@Setter(AccessLevel.NONE)
 public class Game<ArenaType extends Arena> implements Listener {
     private final ArenaType arena; //Arena this is being played in
     private final GameActionDelegate<ArenaType> actionDelegate; //Action delegate; we tell this once something happens
@@ -45,7 +47,7 @@ public class Game<ArenaType extends Arena> implements Listener {
     /**
      * Holds the current running countdowns.
      */
-     @Getter(AccessLevel.NONE) private final Set<GameCountdown> runningCountdowns = new HashSet<>();
+    @Getter(AccessLevel.NONE) private final Set<GameCountdown> runningCountdowns = new HashSet<>();
 
     private boolean running;
     private Date timeStarted;

@@ -1,12 +1,11 @@
 package net.cogzmc.gameapi.model.game;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Value;
+import lombok.*;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
-@Value
+@Data
+@Setter(AccessLevel.NONE)
 public final class GameCountdown implements Runnable {
     private final Integer seconds;
     private final Game<?> game;
