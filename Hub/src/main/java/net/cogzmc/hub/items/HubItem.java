@@ -24,6 +24,18 @@ import java.util.List;
  * The {@link net.cogzmc.hub.items.HubItem} class is an effort to make the creation of hub items
  * simpler using the API. The abstract methods are called in the sub class, which also handles
  * any custom actions that are the item does.
+ *
+ * @version 1.0
+ * @author Jake
+ *
+ * NOTE: I intend to depricate this class for the following reasons:
+ * <ol>
+ *     <li>The {@link java.util.List} of {@link org.bukkit.inventory.ItemStack}s is not used properly.</li>
+ *     <li>There is one listener per item which should never be the case.</li>
+ *     <li>The structure need a major overhall because of the above items.</li>
+ * </ol>
+ *
+ * Once we have a suitable replacement, we'll be good to depricate this.
  */
 public abstract class HubItem implements Listener {
     /**
