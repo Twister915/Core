@@ -1,16 +1,20 @@
 package net.cogzmc.hub;
 
+import com.google.common.collect.ImmutableSet;
 import lombok.Getter;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.modular.ModuleMeta;
 import net.cogzmc.hub.items.HubItemsManager;
+import net.cogzmc.hub.limitations.Limitation;
+import net.cogzmc.hub.limitations.LimitationNotRequiredException;
+import net.cogzmc.hub.limitations.impl.*;
 import net.cogzmc.hub.model.SettingsManager;
-import net.cogzmc.hub.modules.HideStream;
-import net.cogzmc.hub.modules.NoBuild;
-import net.cogzmc.hub.modules.NoWeather;
-import net.cogzmc.hub.modules.spawn.SetSpawn;
-import net.cogzmc.hub.modules.spawn.Spawn;
-import net.cogzmc.hub.modules.spawn.SpawnHandler;
+import net.cogzmc.hub.spawn.SetSpawn;
+import net.cogzmc.hub.spawn.Spawn;
+import net.cogzmc.hub.spawn.SpawnHandler;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * <p>
@@ -29,6 +33,8 @@ public final class Hub extends ModularPlugin {
     @Getter private SpawnHandler spawnHandler;
     @Getter private HubItemsManager itemsManager;
     @Getter private SettingsManager settingsManager;
+    private final Set<Limitation> limitations = new HashSet<>();
+    private Integer attemptedModuleEnables = 0;
 
     @Override
     protected void onModuleEnable() {
@@ -45,10 +51,29 @@ public final class Hub extends ModularPlugin {
         registerCommand(new Spawn());
         registerListener(this.spawnHandler);
 
-        /* listeners */
-        registerListener(new NoWeather());
-        registerListener(new HideStream());
-        registerListener(new NoBuild());
+        /* limitations */
+        registerLimitation(new BuildLimitation());
+        registerLimitation(new InventoryLimitation());
+        registerLimitation(new StreamLimitation());
+        registerLimitation(new WeatherLimitation());
+        registerLimitation(new PickupLimitation());
+        logMessage("Enabled " + limitations.size() + "/" + attemptedModuleEnables + " limitations.");
+    }
+
+    private boolean registerLimitation(Limitation limitation) {
+        attemptedModuleEnables++;
+        try {
+            limitation.enable();
+        } catch (LimitationNotRequiredException e) {
+            logMessage("Did not enable limitation " + limitation.getClass().getSimpleName() + "! must set value " + limitation.getConfigKey() + " to true in your config.yml to enable this!");
+            return false;
+        }
+        this.limitations.add(limitation);
+        return true;
+    }
+
+    public ImmutableSet<Limitation> getEnabledLimitations() {
+        return ImmutableSet.copyOf(limitations);
     }
 
     @Override

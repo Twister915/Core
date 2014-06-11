@@ -1,4 +1,4 @@
-package net.cogzmc.hub.modules.spawn;
+package net.cogzmc.hub.spawn;
 
 import net.cogzmc.core.modular.command.CommandException;
 import net.cogzmc.core.modular.command.CommandPermission;
@@ -15,16 +15,15 @@ import net.cogzmc.hub.Hub;
  * @since 5/22/2014
  */
 @CommandPermission(
-        value = "hub.setspawn"
+        value = "hub.spawn"
 )
-public final class SetSpawn extends ModuleCommand {
-    public SetSpawn() {
-        super("setspawn");
+public final class Spawn extends ModuleCommand {
+    public Spawn() {
+        super("spawn");
     }
 
     @Override
     protected void handleCommand(CPlayer player, String[] args) throws CommandException {
-        Hub.getInstance().getSpawnHandler().setSpawn(player.getBukkitPlayer().getLocation());
-        player.sendMessage(Hub.getInstance().getFormat("set-spawn"));
+        Hub.getInstance().getSpawnHandler().sendToSpawn(player.getBukkitPlayer());
     }
 }

@@ -1,4 +1,4 @@
-package net.cogzmc.hub.modules.spawn;
+package net.cogzmc.hub.spawn;
 
 import lombok.Getter;
 import net.cogzmc.core.util.LocationUtils;

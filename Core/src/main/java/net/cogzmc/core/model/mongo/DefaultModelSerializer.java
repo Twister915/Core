@@ -44,6 +44,7 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
     @Override
     @SneakyThrows
     public T deserialize(Object object, Class<T> modelClass) {
+        if (!(object instanceof DBObject)) throw new IllegalArgumentException("You must pass a DBObject as the item to deserialize.");
         Constructor<T> constructor;
         try {
             constructor = modelClass.getConstructor();

@@ -32,7 +32,7 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
     public InventoryGraphicalInterface(Integer size, String title) {
         if (size % 9 != 0) throw new IllegalArgumentException("The size of an inventory must be divisible by 9 evenly.");
         this.title = title;
-        this.inventory = Bukkit.createInventory(null, size, title);
+        inventory = Bukkit.createInventory(null, size, title);
         Core.getInstance().registerListener(this);
     }
 
