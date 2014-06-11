@@ -56,11 +56,16 @@ public final class Hub extends ModularPlugin {
         registerLimitation(new InventoryLimitation());
         registerLimitation(new StreamLimitation());
         registerLimitation(new WeatherLimitation());
-        registerLimitation(new PickupLimitation());
+        registerLimitation(new DropLimitation());
+        registerLimitation(new PvPLimitation());
+        registerLimitation(new DamageLimitation());
+        registerLimitation(new HungerLimitation());
+        registerLimitation(new VoidLimitation());
+
         logMessage("Enabled " + limitations.size() + "/" + attemptedModuleEnables + " limitations.");
     }
 
-    private boolean registerLimitation(Limitation limitation) {
+    public boolean registerLimitation(Limitation limitation) {
         attemptedModuleEnables++;
         try {
             limitation.enable();

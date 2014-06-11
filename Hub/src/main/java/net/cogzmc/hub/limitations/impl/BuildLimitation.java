@@ -13,13 +13,13 @@ public final class BuildLimitation extends Limitation {
         super("no-build");
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerBreakBlock(BlockBreakEvent event) {
         if (shouldIgnoreLimitation(event.getPlayer())) return;
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerInteractBlock(PlayerInteractEvent event) {
         if (shouldIgnoreLimitation(event)) return;
         switch (event.getAction()) {

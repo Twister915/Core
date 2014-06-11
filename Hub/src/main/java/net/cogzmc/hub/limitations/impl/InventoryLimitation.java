@@ -10,10 +10,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 @EqualsAndHashCode(callSuper = true)
 public final class InventoryLimitation extends Limitation {
     public InventoryLimitation() {
-        super("limit-inventory");
+        super("no-inventory-interact");
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerInventoryInteract(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) return;
         if (shouldIgnoreLimitation((Player) event.getWhoClicked())) return;

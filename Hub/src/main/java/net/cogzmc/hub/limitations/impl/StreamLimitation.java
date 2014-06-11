@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 @EqualsAndHashCode(callSuper = true)
 public final class StreamLimitation extends Limitation {
     public StreamLimitation() {
-        super("hide-stream");
+        super("no-stream");
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -24,7 +24,7 @@ public final class StreamLimitation extends Limitation {
         event.setQuitMessage(null);
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerKick(PlayerKickEvent event) {
         event.setLeaveMessage(null);
     }

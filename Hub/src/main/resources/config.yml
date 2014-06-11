@@ -1,4 +1,11 @@
-hide-stream: true
-no-weather: true
-no-build: true
-welcome-messages: false
+limitations: #Most limitations can be bypassed if you are OP or have the permission "hub.ignorelimits"
+  no-build: true #Will prevent players from building or interacting with the build world.
+                 #This will also disable interactions with items such as chests and crafting tables (no-build)
+  no-drop: true #Will prevent players from dropping items or picking up dropped EXP and items
+  no-inventory-interact: true #Will prevent players from modifying their own inventory
+  no-pvp: true #This will prevent players from PvPing one another.
+  no-stream: true #This will hide the stream (join, kick, quit messages)
+  no-weather: true #This will prevent the weather from becoming a storm
+  no-damage: true #This will prevent damage to the player from all causes except for suicide, custom, and falling through the void
+  no-hunger: true #This will prevent hunger from changing on the player and constantly refill it whenever needed.
+  no-fall-void: true #This will prevent players from being able to go below Y of 0 and teleport them to spawn in the case that they do.
