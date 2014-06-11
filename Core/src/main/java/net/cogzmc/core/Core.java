@@ -119,11 +119,8 @@ public class Core extends JavaPlugin {
      * @return  Whether the specified module exists
      */
     public boolean doesModuleExist(String moduleTitle){
-        for(ModularPlugin module : modules){
-            if(moduleTitle.equals(module.getName())){
-                return true;
-            }
-        }
+        for(ModularPlugin module : modules)
+            if (moduleTitle.equals(module.getName())) return true;
         return false;
     }
 
