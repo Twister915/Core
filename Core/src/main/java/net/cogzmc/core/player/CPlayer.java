@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
 import java.net.InetAddress;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -194,6 +193,8 @@ public interface CPlayer extends COfflinePlayer {
      * @param type The type of {@link org.bukkit.potion.PotionEffectType} to give to the player.
      */
     void addStatusEffect(PotionEffectType type);
+
+    void resetPlayer();
 
     /**
      * Gives you the representation of the player from Bukkit using the {@link org.bukkit.entity.Player} object.

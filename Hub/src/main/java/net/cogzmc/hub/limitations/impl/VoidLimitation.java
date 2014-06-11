@@ -9,7 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class VoidLimitation extends Limitation {
+public final class VoidLimitation extends Limitation {
     public VoidLimitation() {
         super("no-fall-void");
     }

@@ -76,8 +76,8 @@ public final class SettingsManager {
     }
 
     /**
-     *
-     * @param databaseReload
+     * Reloads the values for the settings based on the storage class.
+     * @param databaseReload If the storage should grab new values from the database.
      */
     @SneakyThrows
     public void reload(boolean databaseReload) {

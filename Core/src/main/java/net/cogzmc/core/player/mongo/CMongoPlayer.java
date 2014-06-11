@@ -19,9 +19,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.net.InetAddress;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -208,6 +208,27 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Override
     public void addStatusEffect(PotionEffectType type) {
         addStatusEffect(type, 1);
+    }
+
+    @Override
+    public void resetPlayer() {
+        bukkitPlayer.getInventory().clear();
+        bukkitPlayer.setAllowFlight(false);
+        bukkitPlayer.setFlying(false);
+        bukkitPlayer.setFallDistance(0f);
+        bukkitPlayer.setVelocity(new Vector());
+        bukkitPlayer.resetMaxHealth();
+        bukkitPlayer.setHealth(bukkitPlayer.getMaxHealth());
+        bukkitPlayer.setRemainingAir(bukkitPlayer.getMaximumAir());
+        bukkitPlayer.setFireTicks(0);
+        bukkitPlayer.setFoodLevel(20);
+        bukkitPlayer.setTotalExperience(0);
+        bukkitPlayer.setExhaustion(0f);
+        bukkitPlayer.resetPlayerTime();
+        bukkitPlayer.resetPlayerWeather();
+        for (PotionEffect potionEffect : bukkitPlayer.getActivePotionEffects()) {
+            bukkitPlayer.removePotionEffect(potionEffect.getType());
+        }
     }
 
     @Override

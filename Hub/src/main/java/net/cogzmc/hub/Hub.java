@@ -1,5 +1,6 @@
 package net.cogzmc.hub;
 
+import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableSet;
 import lombok.Getter;
 import net.cogzmc.core.modular.ModularPlugin;
@@ -70,7 +71,8 @@ public final class Hub extends ModularPlugin {
         try {
             limitation.enable();
         } catch (LimitationNotRequiredException e) {
-            logMessage("Did not enable limitation " + limitation.getClass().getSimpleName() + "! must set value " + limitation.getConfigKey() + " to true in your config.yml to enable this!");
+            //TODO figure out if LOWER_CAMEL vs UPPER_CAMEL makes a difference. :D
+            logMessage("Did not enable " + CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, limitation.getClass().getSimpleName()) + "! must set value " + limitation.getConfigKey() + " to true in your config.yml to enable this!");
             return false;
         }
         this.limitations.add(limitation);

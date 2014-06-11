@@ -23,7 +23,6 @@ public final class HungerLimitation extends Limitation {
     public void onPlayerHungerChange(FoodLevelChangeEvent event) {
         Player entity = (Player) event.getEntity();
         if (!(entity instanceof Player)) return;
-        if (shouldIgnoreLimitation(entity)) return;
         if (entity.getFoodLevel() != 20) entity.setFoodLevel(20);
         event.setCancelled(true);
     }
