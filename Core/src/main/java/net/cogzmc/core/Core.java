@@ -113,6 +113,17 @@ public class Core extends JavaPlugin {
         return null;
     }
 
+    /**
+     * Returns whether a module by the passed name exists / has been loaded
+     * @param moduleTitle  Name of module to search for
+     * @return  Whether the specified module exists
+     */
+    public boolean doesModuleExist(String moduleTitle){
+        for(ModularPlugin module : modules)
+            if (moduleTitle.equals(module.getName())) return true;
+        return false;
+    }
+
     /* Public singleton methods!*/
 
 
