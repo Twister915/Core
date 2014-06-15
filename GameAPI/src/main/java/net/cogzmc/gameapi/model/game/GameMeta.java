@@ -11,5 +11,4 @@ public interface GameMeta {
     ChatColor getPrimaryColor();
     ChatColor getSecondaryColor();
     ImmutableList<String> getAuthors();
-
 }

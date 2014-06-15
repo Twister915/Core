@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerEvent;
 @EqualsAndHashCode(of = {"configKey"})
 public abstract class Limitation implements Listener {
     @NonNull private final String configKey;
-    @Setter(AccessLevel.NONE) private boolean enabled;
+    @Setter(AccessLevel.NONE) private boolean enabled = false;
 
     public void enable() throws LimitationNotRequiredException {
         if (!Hub.getInstance().getConfig().getBoolean("limitations." + configKey, false)) throw new LimitationNotRequiredException();

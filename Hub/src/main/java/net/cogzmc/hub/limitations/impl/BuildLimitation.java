@@ -62,9 +62,4 @@ public final class BuildLimitation extends Limitation {
         }
         event.setCancelled(true);
     }
-
-    @Override
-    protected void onRegister() {
-
-    }
 }

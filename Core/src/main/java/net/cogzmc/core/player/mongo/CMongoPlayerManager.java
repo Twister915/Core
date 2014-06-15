@@ -173,6 +173,14 @@ public final class CMongoPlayerManager implements CPlayerManager {
 
     @Override
     @Synchronized
+    public void deletePlayerRecords(COfflinePlayer player) throws IllegalArgumentException {
+        if (player instanceof CMongoPlayer || !(player instanceof COfflineMongoPlayer))
+            throw new IllegalArgumentException("The argument you passed is not an instance of the correct object!");
+        database.getCollection(MongoKey.USERS_COLLETION.toString()).remove(new BasicDBObject(MongoKey.ID_KEY.toString(), ((COfflineMongoPlayer) player).getObjectId()));
+    }
+
+    @Override
+    @Synchronized
     public void playerLoggedOut(Player player) {
         CMongoPlayer cPlayerForPlayer = getCPlayerForPlayer(player);
         if (cPlayerForPlayer == null) return;

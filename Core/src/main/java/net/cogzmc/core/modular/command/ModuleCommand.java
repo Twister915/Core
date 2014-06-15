@@ -127,7 +127,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
             }
             if (subCommand == null && args.length > 0) subCommand = getSubCommandFor(args[0]); //If we're not requiring sub-commands but we can have them, let's try that
             //By now we have validated that the sub command can be executed if it MUST, now lets see if we can execute it
-            //In this case, if we must execute the sub command, this check will always past. In cases where it's an option, this check willa also pass.
+            //In this case, if we must execute the sub command, this check will always past. In cases where it's an option, this check will also pass.
             //That way, we can use this feature of sub commands without actually requiring it.
             if (subCommand != null) {
                 String[] choppedArgs = args.length < 2 ? new String[0] : Arrays.copyOfRange(args, 1, args.length);

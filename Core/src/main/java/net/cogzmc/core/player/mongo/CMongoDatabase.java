@@ -37,6 +37,8 @@ public final class CMongoDatabase implements CDatabase {
             this.client = new MongoClient(uri); //Connect using it
         } catch (UnknownHostException e) {
             throw new DatabaseConnectException("Could not resolve mongo hostname!", e, this); //Could not connect!
+        } catch (Exception e) {
+            throw new DatabaseConnectException(e.getMessage(), e, this);
         }
         this.mongoDatabase = this.client.getDB(database); //Grab the database
     }

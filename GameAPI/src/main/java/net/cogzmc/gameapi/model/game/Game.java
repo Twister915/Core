@@ -11,8 +11,11 @@ import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.gameapi.GameAPI;
 import net.cogzmc.gameapi.model.arena.Arena;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.event.Listener;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -23,13 +26,15 @@ import java.util.Set;
  */
 @Data
 @Setter(AccessLevel.NONE)
-public class Game<ArenaType extends Arena> implements Listener {
+public class Game<ArenaType extends Arena> {
     private final ArenaType arena; //Arena this is being played in
     private final GameActionDelegate<ArenaType> actionDelegate; //Action delegate; we tell this once something happens
     private final GameRuleDelegate<ArenaType> ruleDelegate; //Rule delegate; we tell this before something happens
     private final ModularPlugin owner;
+    private final GameMeta meta;
     private final String prefix;
     private final GameAPI gameAPI;
+    private final GameListener<ArenaType> listener;
     /**
      * For the initial players of the game (meaning, anyone who started the game playing) or anyone that joined the game to hold a "player" status.
      *
@@ -61,20 +66,23 @@ public class Game<ArenaType extends Arena> implements Listener {
      * @param ruleDelegate The rule delegate for this game.
      */
     public Game(ModularPlugin owner, ArenaType arena, Set<CPlayer> players, GameActionDelegate<ArenaType> actionDelegate,
-                GameRuleDelegate<ArenaType> ruleDelegate) {
+                GameRuleDelegate<ArenaType> ruleDelegate, GameMeta meta) {
         this.owner = owner;
         this.arena = arena;
         this.actionDelegate = actionDelegate;
         this.ruleDelegate = ruleDelegate;
+        this.meta = meta;
         this.players = new HashSet<>(players);
         spectators = new HashSet<>();
         participants = new HashSet<>();
         gameAPI = Core.getInstance().getModuleProvider(GameAPI.class);
         assert gameAPI != null;
-        prefix = getInternalFormat("prefix", false);
+        prefix = getAPIFormat("prefix", false);
         for (CPlayer player : this.players) {
             this.participants.add(player.getOfflinePlayer());
         }
+        listener = new GameListener<>(this);
+        Bukkit.getPluginManager().registerEvents(listener, owner);
     }
 
     /**
@@ -101,6 +109,30 @@ public class Game<ArenaType extends Arena> implements Listener {
         return ImmutableSet.copyOf(participants);
     }
 
+    public final boolean isPlaying(CPlayer player) {
+        return players.contains(player);
+    }
+
+    public final boolean isSpectating(CPlayer player) {
+        return spectators.contains(player);
+    }
+
+    public final boolean isInvolvedInGame(CPlayer player) {
+        return participants.contains(player) || spectators.contains(player) || players.contains(player);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public final ImmutableSet<Player> getBukkitPlayers() {
+        HashSet<Player> players1 = new HashSet<>();
+        for (CPlayer player : players) {
+            players1.add(player.getBukkitPlayer());
+        }
+        return ImmutableSet.copyOf(players1);
+    }
+
     /**
      * Call this to start the game.
      */
@@ -117,6 +149,20 @@ public class Game<ArenaType extends Arena> implements Listener {
         runningCountdowns.remove(countdown);
     }
 
+    private String formatUsingMeta(String original) {
+        return original;
+    }
+
+    private String getModularFormat(ModularPlugin plugin, String key, Boolean prefix, String[]... formatters) {
+        String format = plugin.getFormat(key, formatters);
+        for (String[] formatter : formatters) {
+            if (formatter.length != 2) continue;
+            format = format.replaceAll(formatter[0], formatter[1]);
+        }
+        if (prefix) format = this.prefix + formatUsingMeta(format);
+        return ChatColor.translateAlternateColorCodes('&', format);
+    }
+
     /**
      * This is used to get a format that is shared by the GameAPI games.
      * @param key The formatter key
@@ -124,12 +170,32 @@ public class Game<ArenaType extends Arena> implements Listener {
      * @param formatters The formatters
      * @return A formatted string from the key.
      */
-    protected final String getInternalFormat(String key, Boolean prefix, String[]... formatters) {
-        String format = gameAPI.getFormat(key, formatters);
-        for (String[] formatter : formatters) {
-            if (formatter.length != 2) continue;
-            format = format.replaceAll(formatter[0], formatter[1]);
-        }
-        return ChatColor.translateAlternateColorCodes('&', format);
+    protected final String getAPIFormat(String key, Boolean prefix, String[]... formatters) {
+        return getModularFormat(gameAPI, key, prefix, formatters);
+    }
+
+    protected final String getAPIFormat(String key, String[]... formatters) {
+        return getAPIFormat(key, true, formatters);
+    }
+
+    protected final String getPluginFormat(String key, Boolean prefix, String[]... formatters) {
+        return getModularFormat(owner, key, prefix, formatters);
+    }
+
+    protected final String getPluginFormat(String key, String[]... formatters) {
+        return getPluginFormat(key, true, formatters);
+    }
+
+    public final void addSpectator(CPlayer player) {
+        if (players.contains(player)) throw new IllegalArgumentException("Call makePlayerSpectator instead!");
+        spectators.add(player);
+        GameUtils.hidePlayerFromPlayers(player.getBukkitPlayer(), getBukkitPlayers());
+        player.resetPlayer();
+        player.addStatusEffect(PotionEffectType.INVISIBILITY, 2);
+        player.giveItem(Material.BOOK, getAPIFormat(""));
+    }
+
+    public final void finishGame() {
+
     }
 }

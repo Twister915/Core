@@ -10,6 +10,7 @@ import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CooldownManager;
 import net.cogzmc.core.player.DatabaseConnectException;
 import net.cogzmc.core.player.scoreboard.ScoreboardAttachment;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
@@ -153,7 +154,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     public void giveItem(Material material, Integer quantity, String title, String lore, Map<Enchantment, Integer> enchantments, Integer slot) {
         ItemStack stack = new ItemStack(material, quantity);
         ItemMeta itemMeta = stack.getItemMeta();
-        if (title != null) itemMeta.setDisplayName(title);
+        if (title != null) itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&',title));
         if (lore != null) itemMeta.setLore(InventoryButton.wrapLoreText(lore));
         if (enchantments != null) stack.addUnsafeEnchantments(enchantments);
         if (slot != null) bukkitPlayer.getInventory().setItem(slot, stack);

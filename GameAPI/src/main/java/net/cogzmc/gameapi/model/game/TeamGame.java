@@ -14,8 +14,8 @@ public class TeamGame<ArenaType extends Arena, TeamType extends Team> extends Ga
 
     public TeamGame(ModularPlugin owner, ArenaType arena, Set<CPlayer> players,
                     GameActionDelegate<ArenaType> actionDelegate, GameRuleDelegate<ArenaType> ruleDelegate,
-                    TeamContext<TeamType> teamContext) {
-        super(owner, arena, players, actionDelegate, ruleDelegate);
+                    TeamContext<TeamType> teamContext, GameMeta meta) {
+        super(owner, arena, players, actionDelegate, ruleDelegate, meta);
         this.teamContext = teamContext;
     }
 }

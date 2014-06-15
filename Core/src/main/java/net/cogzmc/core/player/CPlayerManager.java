@@ -107,6 +107,15 @@ public interface CPlayerManager extends Iterable<CPlayer> {
     void playerLoggedIn(Player player, InetAddress address) throws CPlayerJoinException;
 
     /**
+     * <b>THIS METHOD IS POTENTIALLY DESTRUCTIVE. USE AT YOUR OWN RISK</b>
+     *
+     * This will delete all records of the player from the database.
+     * @param player The {@link net.cogzmc.core.player.COfflinePlayer} to delete from the database.
+     * @throws java.lang.IllegalArgumentException When you pass an instance of {@link net.cogzmc.core.player.CPlayer} (an online player)
+     */
+    void deletePlayerRecords(COfflinePlayer player) throws IllegalArgumentException;
+
+    /**
      * Called strictly by a listener, internal method that you should <b>NEVER</b> call under normal circumstances.
      * @param player The {@link org.bukkit.entity.Player} object that represents the player who is logging out.
      */
