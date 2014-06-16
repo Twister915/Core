@@ -54,6 +54,7 @@ public class Game<ArenaType extends Arena> {
      */
     @Getter(AccessLevel.NONE) private final Set<GameCountdown> runningCountdowns = new HashSet<>();
 
+    private boolean loaded = false;
     private boolean running;
     private Date timeStarted;
 
@@ -118,7 +119,7 @@ public class Game<ArenaType extends Arena> {
     }
 
     public final boolean isInvolvedInGame(CPlayer player) {
-        return participants.contains(player) || spectators.contains(player) || players.contains(player);
+        return spectators.contains(player) || players.contains(player);
     }
 
     /**
@@ -131,6 +132,11 @@ public class Game<ArenaType extends Arena> {
             players1.add(player.getBukkitPlayer());
         }
         return ImmutableSet.copyOf(players1);
+    }
+
+    public void load() {
+        if (loaded) throw new IllegalStateException("The game has already been loaded!");
+        arena.load();
     }
 
     /**
@@ -148,6 +154,9 @@ public class Game<ArenaType extends Arena> {
     final void gameCountdownEnded(GameCountdown countdown) {
         runningCountdowns.remove(countdown);
     }
+
+    void playerLeft(CPlayer player) {}
+    void playerJoined(CPlayer player) {}
 
     private String formatUsingMeta(String original) {
         return original;

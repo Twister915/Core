@@ -21,7 +21,29 @@ public final class TeamContext<TeamType extends Team> {
     public void makePlayerTeamMember(TeamType team, CPlayer player) {
         if (!teams.contains(team)) throw new IllegalArgumentException("The team passed must be a member team.");
         if (!team.canJoin(player)) throw new IllegalArgumentException("Player cannot join this team!");
+        ensurePlayerMembershipData(player);
         teamMemberships.get(player).addToTeam(team);
+    }
+
+    public void removePlayerTeamMember(TeamType team, CPlayer player) {
+        if (!teams.contains(team)) throw new IllegalArgumentException("The team passed must be a member team.");
+        if (!teamMemberships.containsKey(player)) throw new IllegalArgumentException("The player you have passed does not have any teams");
+        TeamMembership<TeamType> playerMembership = teamMemberships.get(player);
+        if (!playerMembership.isMemberOfTeam(team)) throw new IllegalArgumentException("The player is not a member of this team!");
+        playerMembership.removeFromTeam(team);
+        if (playerMembership.getTeams().size() == 0) ensurePlayerMembershipDispose(player);
+    }
+
+    public void playerLeftContext(CPlayer player) {
+        ensurePlayerMembershipDispose(player);
+    }
+
+    private void ensurePlayerMembershipData(CPlayer player) {
+        if (!teamMemberships.containsKey(player)) teamMemberships.put(player, new TeamMembership<TeamType>(player));
+    }
+
+    private void ensurePlayerMembershipDispose(CPlayer player) {
+        if (teamMemberships.containsKey(player)) teamMemberships.remove(player);
     }
 
     public TeamDisposition getRelationship(TeamType team, TeamType target) {

@@ -21,4 +21,12 @@ final class TeamMembership<TeamType extends Team> {
     public void addToTeam(TeamType team) {
         teams.add(team);
     }
+
+    public boolean isMemberOfTeam(TeamType team) {
+        return teams.contains(team);
+    }
+
+    public void removeFromTeam(TeamType team) {
+        teams.remove(team);
+    }
 }
