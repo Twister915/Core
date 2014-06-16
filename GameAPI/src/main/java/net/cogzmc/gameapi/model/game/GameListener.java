@@ -6,20 +6,23 @@ import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.gameapi.model.arena.Arena;
 import net.cogzmc.gameapi.model.arena.Point;
 import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
-import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
-import sun.net.www.content.text.plain;
 
 @Data
 public final class GameListener<ArenaType extends Arena> implements Listener {
@@ -39,7 +42,7 @@ public final class GameListener<ArenaType extends Arena> implements Listener {
         return Point.of(location);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent event) {
         if (!validateEvent(event)) return;
         Location from = event.getFrom();
@@ -54,7 +57,7 @@ public final class GameListener<ArenaType extends Arena> implements Listener {
         game.getActionDelegate().onPlayerMove(cPlayer, fromPoint, toPoint);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (!validateEvent(event)) return;
         CPlayer cPlayer = resolvePlayer(event.getPlayer());
@@ -123,18 +126,145 @@ public final class GameListener<ArenaType extends Arena> implements Listener {
         game.getActionDelegate().onPlayerInteract(cPlayer, point, action);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerPickup(PlayerPickupItemEvent event) {
         if (!validateEvent(event)) return;
         CPlayer cPlayer = resolvePlayer(event.getPlayer());
-        if (game.isSpectating(cPlayer)) {
-            event.setCancelled(true);
-            return;
-        }
-        if (!game.getRuleDelegate().canPickup(cPlayer, event.getItem())){
+        if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canPickup(cPlayer, event.getItem())) {
             event.setCancelled(true);
             return;
         }
         game.getActionDelegate().onPlayerPickup(cPlayer, event.getItem());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerDrop(PlayerDropItemEvent event) {
+        if (!validateEvent(event)) return;
+        CPlayer cPlayer = resolvePlayer(event.getPlayer());
+        if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canDrop(cPlayer, event.getItemDrop().getItemStack())) {
+            event.setCancelled(true);
+            return;
+        }
+        game.getActionDelegate().onPlayerDrop(cPlayer, event.getItemDrop().getItemStack());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerEat(PlayerItemConsumeEvent event) {
+        if (!validateEvent(event)) return;
+        CPlayer cPlayer = resolvePlayer(event.getPlayer());
+        if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canEat(cPlayer, event.getItem())) {
+            event.setCancelled(true);
+            return;
+        }
+        game.getActionDelegate().onPlayerEat(cPlayer, event.getItem());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+        if (!validateEvent(event)) return;
+        CPlayer cPlayer = resolvePlayer(event.getPlayer());
+        // Spectator stuff will be done later on
+        if (!game.getRuleDelegate().canChat(cPlayer, event.getMessage())) {
+            event.setCancelled(true);
+            return;
+        }
+        game.getActionDelegate().onPlayerChat(cPlayer, event.getMessage());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (!validateEvent(event)) return;
+        CPlayer cPlayer = resolvePlayer(event.getPlayer());
+        if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canPlaceBlock(cPlayer, event.getBlock(), Point.of(event.getBlock()))) {
+            event.setCancelled(true);
+            return;
+        }
+        game.getActionDelegate().onBlockPlace(cPlayer, event.getBlock(), Point.of(event.getBlock()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (!validateEvent(event)) return;
+        CPlayer cPlayer = resolvePlayer(event.getPlayer());
+        if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canBreakBlock(cPlayer, event.getBlock(), Point.of(event.getBlock()))) {
+            event.setCancelled(true);
+            return;
+        }
+        game.getActionDelegate().onBlockBreak(cPlayer, event.getBlock(), Point.of(event.getBlock()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onEnterVehicle(VehicleEnterEvent event) {
+        if (!validateEvent(event)) return;
+        CPlayer cPlayer = resolvePlayer((Player) event.getEntered());
+        if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canEnterVehicle(cPlayer, event.getVehicle())) {
+            event.setCancelled(true);
+            return;
+        }
+        game.getActionDelegate().onEnterVehicle(cPlayer, event.getVehicle());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerRegainHealth(EntityRegainHealthEvent event) {
+        if (!validateEvent(event)) return;
+        if (!(event.getEntity() instanceof Player)) return;
+        CPlayer cPlayer = resolvePlayer((Player) event.getEntity());
+        if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canRegainHealth(cPlayer, event.getAmount())) {
+            event.setCancelled(true);
+            return;
+        }
+        game.getActionDelegate().onRegainHealth(cPlayer, event.getAmount());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerShootBowEvent(EntityShootBowEvent event) {
+        if (!validateEvent(event)) return;
+        if (!(event.getEntity() instanceof Player)) return;
+        CPlayer cPlayer = resolvePlayer((Player) event.getEntity());
+        if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canShootBow(cPlayer)) {
+            event.setCancelled(true);
+            return;
+        }
+        game.getActionDelegate().onShootBow(cPlayer);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onFillBucketEvent(PlayerBucketFillEvent event) {
+        if (!validateEvent(event)) return;
+        CPlayer cPlayer = resolvePlayer(event.getPlayer());
+        if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canFillBucket(cPlayer, event.getBucket())) {
+            event.setCancelled(true);
+            return;
+        }
+        game.getActionDelegate().onFillBucket(cPlayer, event.getBucket());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onEmptyBucketEvent(PlayerBucketFillEvent event) {
+        if (!validateEvent(event)) return;
+        CPlayer cPlayer = resolvePlayer(event.getPlayer());
+        if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canEmptyBucket(cPlayer, event.getBucket())) {
+            event.setCancelled(true);
+            return;
+        }
+        game.getActionDelegate().onEmptyBucket(cPlayer, event.getBucket());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onEntityTarget(EntityTargetEvent event) {
+        if (!validateEvent(event)) return;
+        if (!(event.getEntity() instanceof ExperienceOrb)) return;
+        CPlayer cPlayer = resolvePlayer((Player) event.getEntity());
+        if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canPickupEXP(cPlayer)) {
+            event.setCancelled(true);
+            event.setTarget(null);
+            return;
+        }
+        game.getActionDelegate().onExpPickup(cPlayer);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onInventoryClick(InventoryClickEvent event) {
+        //TODO canTakeFromInventory, canRemoveArmor, canAddArmor
     }
 }

@@ -3,6 +3,7 @@ package net.cogzmc.gameapi.model.game;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.gameapi.model.arena.Arena;
 import net.cogzmc.gameapi.model.arena.Point;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -21,9 +22,9 @@ public abstract class GameRuleDelegate<ArenaType extends Arena> extends GameDele
     protected boolean canPlayerInteract(CPlayer player, Point pointClicked, Action action) {return  true;}
     protected boolean canPickup(CPlayer player, Item item) {return true;}
     protected boolean canDrop(CPlayer player, ItemStack drop) {return true;}
-    protected boolean canTakeFromInventory(CPlayer player, Inventory inventory, ItemStack stack) {return true;}
     protected boolean canAttackEntity(CPlayer player, LivingEntity entity) {return true;}
     protected boolean canAttackPlayer(CPlayer player, CPlayer target) {return true;}
+    protected boolean canTakeFromInventory(CPlayer player, Inventory inventory, ItemStack stack) {return true;}
     protected boolean canTakeDamage(CPlayer player, EntityDamageEvent.DamageCause cause) {return true;}
     protected boolean canRemoveArmor(CPlayer player, ItemStack armorPart) {return true;}
     protected boolean canAddArmor(CPlayer player, ItemStack armorPart) {return true;}
@@ -36,5 +37,6 @@ public abstract class GameRuleDelegate<ArenaType extends Arena> extends GameDele
     protected boolean canShootBow(CPlayer player) {return true;}
     protected boolean canDrinkPotion(CPlayer player) {return true;}
     protected boolean canPickupEXP(CPlayer player) {return true;}
-    protected boolean canFillBucket(CPlayer player, ItemStack bucket) {return true;}
+    protected boolean canFillBucket(CPlayer player, Material bucket) {return true;}
+    protected boolean canEmptyBucket(CPlayer player, Material bucket) {return true;}
 }
