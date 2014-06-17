@@ -18,13 +18,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public final class CPlayerManagerListener implements Listener {
     private final CPlayerManager playerManager;
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
-        playerManager.getOfflinePlayerByUUID(event.getUniqueId()).logIP(event.getAddress());
-    }
-
     //no docs
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerJoin(PlayerLoginEvent event) {
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) return; //Prevent whitelist from causing memory leaks.
         Player player = event.getPlayer();
