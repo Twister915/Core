@@ -18,4 +18,3 @@ public class Colors {
         return input.replaceAll("[&" + ChatColor.COLOR_CHAR + "].", "");
     }
 }
-
