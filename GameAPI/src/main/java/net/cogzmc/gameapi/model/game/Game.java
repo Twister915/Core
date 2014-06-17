@@ -15,7 +15,6 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
-import sun.management.resources.agent_sv;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -50,6 +49,7 @@ public class Game<ArenaType extends Arena> {
      * Current spectators of the game.
      */
     @Getter(AccessLevel.NONE) private final Set<CPlayer> spectators;
+    private ImmutableSet<GameObserver> observers = ImmutableSet.of();
     /**
      * Holds the current running countdowns.
      */
@@ -84,6 +84,19 @@ public class Game<ArenaType extends Arena> {
             this.participants.add(player.getOfflinePlayer());
         }
         listener = new GameListener(this);
+        observers = getNewObservers();
+    }
+
+    private ImmutableSet<GameObserver> getNewObservers(GameObserver... add) {
+        ImmutableSet.Builder<GameObserver> builder = ImmutableSet.builder();
+        builder.add(actionDelegate);
+        builder.addAll(observers);
+        builder.add(add);
+        return builder.build();
+    }
+
+    public final void registerObserver(GameObserver observer) {
+        observers = getNewObservers(observer);
     }
 
     /**

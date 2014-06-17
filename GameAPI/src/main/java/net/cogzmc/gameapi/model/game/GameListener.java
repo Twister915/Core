@@ -6,6 +6,7 @@ import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.gameapi.model.arena.Arena;
 import net.cogzmc.gameapi.model.arena.Point;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -58,7 +59,9 @@ public final class GameListener implements Listener {
             event.setTo(new Location(from.getWorld(), from.getX(), from.getY(), from.getZ(), to.getPitch(), to.getYaw()));
             return;
         }
-        game.getActionDelegate().onPlayerMove(cPlayer, fromPoint, toPoint);
+        for (GameObserver gameObserver : game.getObservers()) {
+            try {gameObserver.onPlayerMove(cPlayer, fromPoint, toPoint);} catch (Exception e) {e.printStackTrace();}
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -127,7 +130,9 @@ public final class GameListener implements Listener {
                     break;
             }
         }
-        game.getActionDelegate().onPlayerInteract(cPlayer, point, action);
+        for (GameObserver gameObserver : game.getObservers()) {
+            try {gameObserver.onPlayerInteract(cPlayer, point, action);} catch (Exception e) {e.printStackTrace();}
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -138,7 +143,9 @@ public final class GameListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        game.getActionDelegate().onPlayerPickup(cPlayer, event.getItem());
+        for (GameObserver gameObserver : game.getObservers()) {
+            try {gameObserver.onPlayerPickup(cPlayer, event.getItem());} catch (Exception e) {e.printStackTrace();}
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -149,7 +156,9 @@ public final class GameListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        game.getActionDelegate().onPlayerDrop(cPlayer, event.getItemDrop().getItemStack());
+        for (GameObserver gameObserver : game.getObservers()) {
+            try {gameObserver.onPlayerDrop(cPlayer, event.getItemDrop().getItemStack());} catch (Exception e) {e.printStackTrace();}
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -160,7 +169,9 @@ public final class GameListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        game.getActionDelegate().onPlayerEat(cPlayer, event.getItem());
+        for (GameObserver gameObserver : game.getObservers()) {
+            try {gameObserver.onPlayerEat(cPlayer, event.getItem());} catch (Exception e) {e.printStackTrace();}
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -172,29 +183,39 @@ public final class GameListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        game.getActionDelegate().onPlayerChat(cPlayer, event.getMessage());
+        for (GameObserver gameObserver : game.getObservers()) {
+            try {gameObserver.onPlayerChat(cPlayer, event.getMessage());} catch (Exception e) {e.printStackTrace();}
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (!validateEvent(event)) return;
         CPlayer cPlayer = resolvePlayer(event.getPlayer());
-        if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canPlaceBlock(cPlayer, event.getBlock(), Point.of(event.getBlock()))) {
+        Block block = event.getBlockPlaced();
+        Point of = Point.of(block);
+        if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canPlaceBlock(cPlayer, block, of)) {
             event.setCancelled(true);
             return;
         }
-        game.getActionDelegate().onBlockPlace(cPlayer, event.getBlock(), Point.of(event.getBlock()));
+        for (GameObserver gameObserver : game.getObservers()) {
+            try {gameObserver.onBlockPlace(cPlayer, block, of);} catch (Exception e) {e.printStackTrace();}
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         if (!validateEvent(event)) return;
         CPlayer cPlayer = resolvePlayer(event.getPlayer());
-        if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canBreakBlock(cPlayer, event.getBlock(), Point.of(event.getBlock()))) {
+        Block block = event.getBlock();
+        Point of = Point.of(block);
+        if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canBreakBlock(cPlayer, block, of)) {
             event.setCancelled(true);
             return;
         }
-        game.getActionDelegate().onBlockBreak(cPlayer, event.getBlock(), Point.of(event.getBlock()));
+        for (GameObserver gameObserver : game.getObservers()) {
+            try {gameObserver.onBlockBreak(cPlayer, block, of);} catch (Exception e) {e.printStackTrace();}
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -205,7 +226,9 @@ public final class GameListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        game.getActionDelegate().onEnterVehicle(cPlayer, event.getVehicle());
+        for (GameObserver gameObserver : game.getObservers()) {
+            try {gameObserver.onEnterVehicle(cPlayer, event.getVehicle());} catch (Exception e) {e.printStackTrace();}
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -216,7 +239,9 @@ public final class GameListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        game.getActionDelegate().onRegainHealth(cPlayer, event.getAmount());
+        for (GameObserver gameObserver : game.getObservers()) {
+            try {gameObserver.onRegainHealth(cPlayer, event.getAmount());} catch (Exception e) {e.printStackTrace();}
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -227,7 +252,9 @@ public final class GameListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        game.getActionDelegate().onShootBow(cPlayer);
+        for (GameObserver gameObserver : game.getObservers()) {
+            try {gameObserver.onShootBow(cPlayer);} catch (Exception e) {e.printStackTrace();}
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -238,7 +265,9 @@ public final class GameListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        game.getActionDelegate().onFillBucket(cPlayer, event.getBucket());
+        for (GameObserver gameObserver : game.getObservers()) {
+            try {gameObserver.onFillBucket(cPlayer, event.getBucket());} catch (Exception e) {e.printStackTrace();}
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -249,7 +278,9 @@ public final class GameListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        game.getActionDelegate().onEmptyBucket(cPlayer, event.getBucket());
+        for (GameObserver gameObserver : game.getObservers()) {
+            try {gameObserver.onEmptyBucket(cPlayer, event.getBucket());} catch (Exception e) {e.printStackTrace();}
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -262,7 +293,9 @@ public final class GameListener implements Listener {
             event.setTarget(null);
             return;
         }
-        game.getActionDelegate().onExpPickup(cPlayer);
+        for (GameObserver gameObserver : game.getObservers()) {
+            try {gameObserver.onExpPickup(cPlayer);} catch (Exception e) {e.printStackTrace();}
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
