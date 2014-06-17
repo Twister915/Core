@@ -20,7 +20,7 @@ public final class CPlayerManagerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
-        Core.getOfflinePlayerByUUID(event.getUniqueId()).logIP(event.getAddress());
+        playerManager.getOfflinePlayerByUUID(event.getUniqueId()).logIP(event.getAddress());
     }
 
     //no docs
