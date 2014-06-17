@@ -43,8 +43,7 @@ public class PunishmentManager implements CPlayerConnectionListener, MuteDelegat
 		for(Ban ban : bans) {
 			if(!ban.isExpired()) {
 				String msg = PunishmentModule.getInstance().getFormat("banned", new String[]{"<issuer>", ban.getIssuer().getName()}, new String[]{"<reason>", ban.getReason()});
-				player.getBukkitPlayer().kickPlayer(msg);
-				return;
+				throw new CPlayerJoinException(msg);
 			}
 		}
 		List<Mute> mutes = findReceivedPunishments(player, Mute.class);

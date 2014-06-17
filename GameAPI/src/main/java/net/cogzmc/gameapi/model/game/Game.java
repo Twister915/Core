@@ -1,10 +1,7 @@
 package net.cogzmc.gameapi.model.game;
 
 import com.google.common.collect.ImmutableSet;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.effect.enderBar.EnderBarManager;
 import net.cogzmc.core.modular.ModularPlugin;
@@ -32,8 +29,8 @@ import java.util.Set;
 @Setter(AccessLevel.NONE)
 public class Game<ArenaType extends Arena> {
     private final ArenaType arena; //Arena this is being played in
-    private final GameActionDelegate<ArenaType> actionDelegate; //Action delegate; we tell this once something happens
-    private final GameRuleDelegate<ArenaType> ruleDelegate; //Rule delegate; we tell this before something happens
+    @Setter @NonNull private GameActionDelegate<ArenaType> actionDelegate; //Action delegate; we tell this once something happens
+    @Setter @NonNull private GameRuleDelegate<ArenaType> ruleDelegate; //Rule delegate; we tell this before something happens
     private final ModularPlugin owner;
     private final GameMeta meta;
     private final String prefix;
