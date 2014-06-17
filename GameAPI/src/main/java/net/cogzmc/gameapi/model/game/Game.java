@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import net.cogzmc.core.Core;
+import net.cogzmc.core.effect.enderBar.EnderBarManager;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
@@ -14,8 +15,10 @@ import net.cogzmc.gameapi.model.arena.Arena;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
+import sun.management.resources.agent_sv;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -24,6 +27,7 @@ import java.util.Set;
 /**
  * This class serves to represent a game that can be played. The rules of a game are modified through the delegated calls in the two
  */
+@SuppressWarnings("UnusedDeclaration")
 @Data
 @Setter(AccessLevel.NONE)
 public class Game<ArenaType extends Arena> {
@@ -34,7 +38,7 @@ public class Game<ArenaType extends Arena> {
     private final GameMeta meta;
     private final String prefix;
     private final GameAPI gameAPI;
-    private final GameListener<ArenaType> listener;
+    private final GameListener listener;
     /**
      * For the initial players of the game (meaning, anyone who started the game playing) or anyone that joined the game to hold a "player" status.
      *
@@ -82,8 +86,7 @@ public class Game<ArenaType extends Arena> {
         for (CPlayer player : this.players) {
             this.participants.add(player.getOfflinePlayer());
         }
-        listener = new GameListener<>(this);
-        Bukkit.getPluginManager().registerEvents(listener, owner);
+        listener = new GameListener(this);
     }
 
     /**
@@ -123,8 +126,8 @@ public class Game<ArenaType extends Arena> {
     }
 
     /**
-     *
-     * @return
+     * Gets the Bukkit players involved in this game.
+     * @return An {@link com.google.common.collect.ImmutableSet} of Bukkit's {@link org.bukkit.entity.Player} objects.
      */
     public final ImmutableSet<Player> getBukkitPlayers() {
         HashSet<Player> players1 = new HashSet<>();
@@ -134,6 +137,9 @@ public class Game<ArenaType extends Arena> {
         return ImmutableSet.copyOf(players1);
     }
 
+    /**
+     * Loads the game
+     */
     public void load() {
         if (loaded) throw new IllegalStateException("The game has already been loaded!");
         arena.load();
@@ -145,18 +151,23 @@ public class Game<ArenaType extends Arena> {
     public void start() {
         this.timeStarted = new Date();
         this.running = true;
+        Bukkit.getPluginManager().registerEvents(listener, owner);
+        actionDelegate.onGameStart();
     }
 
     final void gameCountdownStarted(GameCountdown countdown) {
-        runningCountdowns.remove(countdown);
+        runningCountdowns.add(countdown);
     }
 
     final void gameCountdownEnded(GameCountdown countdown) {
         runningCountdowns.remove(countdown);
     }
 
-    void playerLeft(CPlayer player) {}
-    void playerJoined(CPlayer player) {}
+    void playerLeft(CPlayer player) {
+        players.remove(player);
+        spectators.remove(player);
+        actionDelegate.onPlayerLeaveGame(player);
+    }
 
     private String formatUsingMeta(String original) {
         return original;
@@ -198,13 +209,61 @@ public class Game<ArenaType extends Arena> {
     public final void addSpectator(CPlayer player) {
         if (players.contains(player)) throw new IllegalArgumentException("Call makePlayerSpectator instead!");
         spectators.add(player);
-        GameUtils.hidePlayerFromPlayers(player.getBukkitPlayer(), getBukkitPlayers());
+        transformSpectator(player);
+        actionDelegate.onSpectatorJoinGame(player);
+    }
+
+    public final void makePlayerSpectator(CPlayer player) {
+        if (!players.contains(player)) throw new IllegalArgumentException("Call addSpectator instead.");
+        players.remove(player);
+        spectators.add(player);
+        transformSpectator(player);
+        actionDelegate.onPlayerBecomeSpectator(player);
+    }
+
+    private void transformSpectator(CPlayer player) {
+        Player bukkitPlayer = player.getBukkitPlayer();
+        GameUtils.hidePlayerFromPlayers(bukkitPlayer, getBukkitPlayers());
         player.resetPlayer();
         player.addStatusEffect(PotionEffectType.INVISIBILITY, 2);
+        player.playSoundForPlayer(Sound.ORB_PICKUP, 10f, 3f);
+        bukkitPlayer.setAllowFlight(true);
+        bukkitPlayer.setFlying(true);
         player.giveItem(Material.BOOK, getAPIFormat(""));
     }
 
     public final void finishGame() {
+
+    }
+
+    protected final void broadcastSound(Sound sound) {
+        broadcastSound(sound, 0f);
+    }
+
+    protected final void broadcastSound(Sound sound, Float pitch) {
+        for (CPlayer cPlayer : getPlayers()) {
+            cPlayer.playSoundForPlayer(sound, 10f, pitch);
+        }
+    }
+
+    protected final void broadcast(String... messages) {
+        for (CPlayer cPlayer : getPlayers()) {
+            cPlayer.sendMessage(messages);
+        }
+    }
+
+    protected final void broadcastEnderBarText(String message) {
+        EnderBarManager enderBarManager = Core.getEnderBarManager();
+        for (CPlayer cPlayer : getPlayers()) {
+            enderBarManager.setTextFor(cPlayer, message);
+        }
+    }
+
+    protected final void broadcastEnderBarHealth(Float percentage) {
+        EnderBarManager enderBarManager = Core.getEnderBarManager();
+        for (CPlayer cPlayer : getPlayers()) {
+            enderBarManager.setHealthPercentageFor(cPlayer, percentage);
+        }
 
     }
 }

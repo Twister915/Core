@@ -1,10 +1,12 @@
 package net.cogzmc.core.player;
 
 import lombok.Data;
+import net.cogzmc.core.Core;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -15,6 +17,11 @@ import org.bukkit.event.player.PlayerQuitEvent;
 @Data
 public final class CPlayerManagerListener implements Listener {
     private final CPlayerManager playerManager;
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+        Core.getOfflinePlayerByUUID(event.getUniqueId()).logIP(event.getAddress());
+    }
 
     //no docs
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)

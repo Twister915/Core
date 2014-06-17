@@ -21,6 +21,7 @@ public final class TeamGame<ArenaType extends Arena, TeamType extends Team> exte
 
     @Override
     void playerLeft(CPlayer player) {
+        super.playerLeft(player);
         teamContext.playerLeftContext(player);
     }
 }

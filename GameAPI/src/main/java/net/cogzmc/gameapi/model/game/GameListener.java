@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -25,12 +26,15 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
 
 @Data
-public final class GameListener<ArenaType extends Arena> implements Listener {
-    private final Game<ArenaType> game;
+public final class GameListener implements Listener {
+    private final Game<?> game;
 
+    @SuppressWarnings("RedundantIfStatement")
     private boolean validateEvent(Event event) {
         if (event instanceof PlayerEvent && (!game.isInvolvedInGame(resolvePlayer(((PlayerEvent) event).getPlayer())))) return false;
         if (event instanceof InventoryInteractEvent && !game.isInvolvedInGame(resolvePlayer((Player) ((InventoryInteractEvent) event).getWhoClicked()))) return false;
+        //If it's an entityEvent, they're not a player, or the player who they are is not involved in the game.
+        if (event instanceof EntityEvent && (!(((EntityEvent) event).getEntity() instanceof Player) || (!game.isInvolvedInGame(resolvePlayer((Player) ((EntityEvent) event).getEntity()))))) return false;
         return true;
     }
 
@@ -207,9 +211,8 @@ public final class GameListener<ArenaType extends Arena> implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerRegainHealth(EntityRegainHealthEvent event) {
         if (!validateEvent(event)) return;
-        if (!(event.getEntity() instanceof Player)) return;
         CPlayer cPlayer = resolvePlayer((Player) event.getEntity());
-        if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canRegainHealth(cPlayer, event.getAmount())) {
+        if (!game.getRuleDelegate().canRegainHealth(cPlayer, event.getAmount())) {
             event.setCancelled(true);
             return;
         }
@@ -219,7 +222,6 @@ public final class GameListener<ArenaType extends Arena> implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerShootBowEvent(EntityShootBowEvent event) {
         if (!validateEvent(event)) return;
-        if (!(event.getEntity() instanceof Player)) return;
         CPlayer cPlayer = resolvePlayer((Player) event.getEntity());
         if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canShootBow(cPlayer)) {
             event.setCancelled(true);
@@ -240,7 +242,7 @@ public final class GameListener<ArenaType extends Arena> implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onEmptyBucketEvent(PlayerBucketFillEvent event) {
+    public void onEmptyBucketEvent(PlayerBucketEmptyEvent event) {
         if (!validateEvent(event)) return;
         CPlayer cPlayer = resolvePlayer(event.getPlayer());
         if (game.isSpectating(cPlayer) || !game.getRuleDelegate().canEmptyBucket(cPlayer, event.getBucket())) {

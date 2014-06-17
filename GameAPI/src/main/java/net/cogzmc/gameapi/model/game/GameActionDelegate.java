@@ -22,7 +22,6 @@ public abstract class GameActionDelegate<ArenaType extends Arena> extends GameDe
     }
 
     protected void onGameStart() {}
-    protected void onPlayerJoinGame(CPlayer player) {}
     protected void onPlayerLeaveGame(CPlayer player) {}
     protected void onSpectatorJoinGame(CPlayer player) {}
     protected void onPlayerBecomeSpectator(CPlayer player) {}

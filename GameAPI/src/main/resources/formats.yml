@@ -1,1 +1,2 @@
-no-move-default: "<s>You can't move there!"
+default:
+   no-move: "<s>You can't move there!"

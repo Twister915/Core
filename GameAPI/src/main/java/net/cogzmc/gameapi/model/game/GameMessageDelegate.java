@@ -9,5 +9,5 @@ public class GameMessageDelegate<ArenaType extends Arena> extends GameDelegate<A
         super(game);
     }
 
-    protected String getMoveMessage(CPlayer player, Point to, Point from) {return getGame().getAPIFormat("no-move-default");}
+    protected String getMoveMessage(CPlayer player, Point to, Point from) {return getGame().getAPIFormat("default.no-move");}
 }

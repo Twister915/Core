@@ -8,11 +8,6 @@ import java.util.Arrays;
 
 public final class NaturalArena extends BaseArena {
     @Override
-    public Iterable<Point> getSpawnPoints() {
-        return Arrays.asList(Point.of(getWorld().getSpawnLocation()));
-    }
-
-    @Override
     World createOrLoadWorld() {
         return WorldCreator.
                 name(ArenaUtils.createRandomWorldName()).
