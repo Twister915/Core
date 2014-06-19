@@ -10,7 +10,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public abstract class GameRuleDelegate<ArenaType extends Arena> extends GameDelegate<ArenaType> {
@@ -24,10 +23,8 @@ public abstract class GameRuleDelegate<ArenaType extends Arena> extends GameDele
     protected boolean canDrop(CPlayer player, ItemStack drop) {return true;}
     protected boolean canAttackEntity(CPlayer player, LivingEntity entity) {return true;}
     protected boolean canAttackPlayer(CPlayer player, CPlayer target) {return true;}
-    protected boolean canTakeFromInventory(CPlayer player, Inventory inventory, ItemStack stack) {return true;}
+    protected boolean canAttackPlayer(CPlayer player, LivingEntity target) {return true;}
     protected boolean canTakeDamage(CPlayer player, EntityDamageEvent.DamageCause cause) {return true;}
-    protected boolean canRemoveArmor(CPlayer player, ItemStack armorPart) {return true;}
-    protected boolean canAddArmor(CPlayer player, ItemStack armorPart) {return true;}
     protected boolean canEat(CPlayer player, ItemStack eating) {return true;}
     protected boolean canChat(CPlayer player, String message) {return true;}
     protected boolean canPlaceBlock(CPlayer player, Block placed, Point placedAt) {return true;}

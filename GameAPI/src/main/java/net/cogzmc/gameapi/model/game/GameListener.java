@@ -8,6 +8,7 @@ import net.cogzmc.gameapi.model.arena.Point;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ExperienceOrb;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -16,12 +17,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
@@ -299,7 +298,23 @@ public final class GameListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onInventoryClick(InventoryClickEvent event) {
-        //TODO canTakeFromInventory, canRemoveArmor, canAddArmor
+    public void onPlayerDamage(EntityDamageByEntityEvent event) {//xby = attacked by
+       if (event.getEntity() instanceof Player) {
+           //dealing with player xby x
+           //canAttackPlayer
+           CPlayer playerAttacked = resolvePlayer((Player) event.getEntity());
+           if (event.getDamager() instanceof Player) {
+               CPlayer damager = resolvePlayer((Player) event.getDamager());
+               if (!game.getRuleDelegate().canAttackPlayer(damager, playerAttacked)) {
+                   event.setCancelled(true);
+                   return;
+               }
+           }
+       } else if (event.getEntity() instanceof LivingEntity) {
+           //dealing with !player & LivingEntity xby x
+       }
+        for (GameObserver gameObserver : game.getObservers()) {
+
+        }
     }
 }

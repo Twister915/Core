@@ -35,6 +35,7 @@ public class Game<ArenaType extends Arena> {
     private final String prefix;
     private final GameAPI gameAPI;
     private final GameListener listener;
+    private final DamageTracker<ArenaType> damageTracker;
     /**
      * For the initial players of the game (meaning, anyone who started the game playing) or anyone that joined the game to hold a "player" status.
      *
@@ -84,6 +85,7 @@ public class Game<ArenaType extends Arena> {
             this.participants.add(player.getOfflinePlayer());
         }
         listener = new GameListener(this);
+        damageTracker = new DamageTracker<>(this);
         observers = getNewObservers();
     }
 
@@ -92,6 +94,7 @@ public class Game<ArenaType extends Arena> {
         builder.add(actionDelegate);
         builder.addAll(observers);
         builder.add(add);
+        builder.add(damageTracker);
         return builder.build();
     }
 
@@ -162,7 +165,13 @@ public class Game<ArenaType extends Arena> {
         this.timeStarted = new Date();
         this.running = true;
         Bukkit.getPluginManager().registerEvents(listener, owner);
-        actionDelegate.onGameStart();
+        ImmutableSet<CPlayer> players1 = getPlayers();
+        for (GameObserver gameObserver : getObservers()) {
+            try {gameObserver.onGameStart();} catch (Exception e) {e.printStackTrace();}
+            for (CPlayer player : players1) {
+                try {gameObserver.onPlayerJoinGame(player);} catch (Exception e) {e.printStackTrace();}
+            }
+        }
     }
 
     final void gameCountdownStarted(GameCountdown countdown) {
@@ -176,7 +185,15 @@ public class Game<ArenaType extends Arena> {
     void playerLeft(CPlayer player) {
         players.remove(player);
         spectators.remove(player);
-        actionDelegate.onPlayerLeaveGame(player);
+        for (GameObserver gameObserver : getObservers()) {
+            try {gameObserver.onPlayerLeaveGame(player);} catch (Exception e) {e.printStackTrace();}
+        }
+        ensureGameCapacity();
+    }
+
+    private void ensureGameCapacity() {
+        if (getPlayers().size() > 1) return;
+        finishGame();
     }
 
     private String formatUsingMeta(String original) {
@@ -200,19 +217,19 @@ public class Game<ArenaType extends Arena> {
      * @param formatters The formatters
      * @return A formatted string from the key.
      */
-    protected final String getAPIFormat(String key, Boolean prefix, String[]... formatters) {
+    public final String getAPIFormat(String key, Boolean prefix, String[]... formatters) {
         return getModularFormat(gameAPI, key, prefix, formatters);
     }
 
-    protected final String getAPIFormat(String key, String[]... formatters) {
+    public final String getAPIFormat(String key, String[]... formatters) {
         return getAPIFormat(key, true, formatters);
     }
 
-    protected final String getPluginFormat(String key, Boolean prefix, String[]... formatters) {
+    public final String getPluginFormat(String key, Boolean prefix, String[]... formatters) {
         return getModularFormat(owner, key, prefix, formatters);
     }
 
-    protected final String getPluginFormat(String key, String[]... formatters) {
+    public final String getPluginFormat(String key, String[]... formatters) {
         return getPluginFormat(key, true, formatters);
     }
 
@@ -220,7 +237,10 @@ public class Game<ArenaType extends Arena> {
         if (players.contains(player)) throw new IllegalArgumentException("Call makePlayerSpectator instead!");
         spectators.add(player);
         transformSpectator(player);
-        actionDelegate.onSpectatorJoinGame(player);
+        for (GameObserver gameObserver : getObservers()) {
+            try {gameObserver.onSpectatorJoinGame(player);} catch (Exception e) {e.printStackTrace();}
+        }
+
     }
 
     public final void makePlayerSpectator(CPlayer player) {
@@ -228,7 +248,10 @@ public class Game<ArenaType extends Arena> {
         players.remove(player);
         spectators.add(player);
         transformSpectator(player);
-        actionDelegate.onPlayerBecomeSpectator(player);
+        for (GameObserver gameObserver : getObservers()) {
+            try {gameObserver.onPlayerBecomeSpectator(player);} catch (Exception e) {e.printStackTrace();}
+        }
+
     }
 
     private void transformSpectator(CPlayer player) {
@@ -243,20 +266,26 @@ public class Game<ArenaType extends Arena> {
     }
 
     public final void finishGame() {
-
+        stopGame(GameCompleteCause.COMPLETION);
     }
 
-    protected final void broadcastSound(Sound sound) {
+    public void stopGame(GameCompleteCause cause) {
+        for (GameObserver gameObserver : getObservers()) {
+            try {gameObserver.onGameEnd();} catch (Exception e) {e.printStackTrace();}
+        }
+    }
+
+    public final void broadcastSound(Sound sound) {
         broadcastSound(sound, 0f);
     }
 
-    protected final void broadcastSound(Sound sound, Float pitch) {
+    public final void broadcastSound(Sound sound, Float pitch) {
         for (CPlayer cPlayer : getPlayers()) {
             cPlayer.playSoundForPlayer(sound, 10f, pitch);
         }
     }
 
-    protected final void broadcast(String... messages) {
+    public final void broadcast(String... messages) {
         for (CPlayer cPlayer : getPlayers()) {
             cPlayer.sendMessage(messages);
         }
@@ -269,7 +298,7 @@ public class Game<ArenaType extends Arena> {
         }
     }
 
-    protected final void broadcastEnderBarHealth(Float percentage) {
+    public final void broadcastEnderBarHealth(Float percentage) {
         EnderBarManager enderBarManager = Core.getEnderBarManager();
         for (CPlayer cPlayer : getPlayers()) {
             enderBarManager.setHealthPercentageFor(cPlayer, percentage);
