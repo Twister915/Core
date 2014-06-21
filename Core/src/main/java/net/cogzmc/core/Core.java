@@ -94,6 +94,7 @@ public class Core extends JavaPlugin {
     @Override
     public final void onDisable() {
         try {
+            if (this.cDatabase != null) cDatabase.disconnect();
             if (this.playerManager != null) this.playerManager.onDisable();
         } catch (Throwable t) {
             t.printStackTrace();

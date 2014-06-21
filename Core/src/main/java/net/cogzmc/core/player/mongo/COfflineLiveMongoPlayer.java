@@ -30,7 +30,12 @@ public class COfflineLiveMongoPlayer extends COfflineMongoPlayer implements Grou
 
     @Override
     public void onReloadPermissions(CMongoPermissionsManager manager) {
+        reloadPermissions();
+    }
 
+    @Override
+    public void reloadPermissions() {
+        reloadPermissions0();
     }
 
     //Reloads the allPermissions map based on declaredPermissions and inheritance
