@@ -25,6 +25,7 @@ public class CMongoGroupRepository implements CGroupRepository {
     public CMongoGroupRepository(CMongoDatabase database, CMongoPlayerRepository playerRepository) {
         this.database = database;
         this.playerRepository = playerRepository;
+        reloadGroups();
     }
 
     @Override
@@ -102,6 +103,7 @@ public class CMongoGroupRepository implements CGroupRepository {
             saveGroup(cMongoGroup);
         }
     }
+
     @Override
     public List<CGroup> getGroups() {
         return new ArrayList<CGroup>(groups.values());

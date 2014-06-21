@@ -15,7 +15,6 @@ public final class CMongoPermissionsManager extends CMongoGroupRepository implem
     public CMongoPermissionsManager(CMongoDatabase database, CMongoPlayerManager playerManager) {
         super(database, playerManager);
         this.playerManager = playerManager;
-        reloadPermissions();
     }
 
     @Override
