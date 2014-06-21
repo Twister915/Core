@@ -2,10 +2,10 @@ package net.cogzmc.core.asset;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import net.cogzmc.core.Core;
 import net.cogzmc.core.player.COfflinePlayer;
 
 import java.util.Map;
+import java.util.Random;
 
 /**
  * This represents something a player can "have". An asset has metadata that you can modify through the exposed method {@link #getMetaVariables()}.
@@ -17,7 +17,8 @@ import java.util.Map;
 public abstract class Asset {
     private final COfflinePlayer player;
     private final Map<String, ?> metaVariables;
-    private final Integer randomUID = Core.getRandom().nextInt();
+    private static final Random RANDOM = new Random();
+    private final Integer randomUID = RANDOM.nextInt();
 
     /**
      * This method will return any metadata associated with the asset.

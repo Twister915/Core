@@ -7,7 +7,6 @@ import com.mongodb.MongoClientURI;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
-import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CDatabase;
 import net.cogzmc.core.player.DatabaseConnectException;
 
@@ -31,7 +30,6 @@ public final class CMongoDatabase implements CDatabase {
             MongoClientURI uri; //Create the URI
             if (this.password != null && this.username != null) {
                 uri = new MongoClientURI("mongodb://" + username + ":" + password + "@" + host + ":"  + port + "/" + database);
-                Core.getInstance().getLogger().info(uri.toString());
             }
             else uri = new MongoClientURI("mongodb://" + host + ":" + port + "/" + database);
             this.client = new MongoClient(uri); //Connect using it

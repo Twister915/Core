@@ -84,10 +84,10 @@ public final class ConfigurationChannel implements Channel {
         values.put("sender-display", player.getDisplayName());
         String prefix = player.getChatPrefix() == null ? player.getPrimaryGroup().getChatPrefix() : player.getChatPrefix();
         String suffix = player.getChatSuffix() == null ? player.getPrimaryGroup().getChatSuffix() : player.getChatSuffix();
-        ChatColor nameColor = player.getChatColor() == null ? player.getPrimaryGroup().getChatColor() : player.getChatColor();
+        String nameColor = player.getChatColor() == null ? player.getPrimaryGroup().getChatColor() : player.getChatColor();
         values.put("prefix", prefix);
         values.put("suffix", suffix);
-        values.put("name-color", nameColor.toString());
+        values.put("name-color", nameColor);
         values.put("message", player.hasPermission(CoreChat.COLOR_CHAT_PERMISSION) ? ChatColor.translateAlternateColorCodes('&', message) : message);
         values.put("channel-name", name);
         for (MessageArgumentDelegate messageArgumentDelegate : this.channelManager.getMessageArgumentDelegates()) {

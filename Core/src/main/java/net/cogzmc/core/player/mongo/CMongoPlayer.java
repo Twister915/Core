@@ -234,7 +234,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
     @Override
     public COfflinePlayer getOfflinePlayer() {
-        return new COfflineMongoPlayer(this, playerManager);
+        return new COfflineMongoPlayer(this, playerRepository);
     }
 
     @Override
@@ -247,8 +247,4 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
         }
     }
 
-    @Override
-    public CPlayer getPlayer() {
-        return this;
-    }
 }

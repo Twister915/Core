@@ -9,11 +9,12 @@
     <version>1.0-SNAPSHOT</version>
 
     <modules>
+        <module>CoreBase</module>
         <module>Core</module>
+        <module>CoreEssentials</module>
         <module>Punishments</module>
         <module>PermissionManager</module>
         <module>Hub</module>
-        <module>CoreEssentials</module>
         <module>EntityAPI</module>
         <module>Chat2</module>
         <module>GameAPI</module>

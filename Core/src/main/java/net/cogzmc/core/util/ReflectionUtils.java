@@ -1,5 +1,6 @@
 package net.cogzmc.core.util;
 
+import net.cogzmc.util.RandomUtils;
 import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;

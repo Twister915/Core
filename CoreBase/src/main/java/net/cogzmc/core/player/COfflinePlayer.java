@@ -59,6 +59,11 @@ public interface COfflinePlayer extends CPermissible {
      */
     Long getMillisecondsOnline();
 
+    /**
+     * Gets all setting keys.
+     * @return A {@link java.util.Set) of setting keys as {@link java.lang.String}s.
+     */
+    Set<String> getSettingKeys();
 
     /**
      * Gets the value of a setting by key with a default value and type.
@@ -116,12 +121,6 @@ public interface COfflinePlayer extends CPermissible {
      * @return All the assets owned by a player
      */
     Collection<Asset> getAssets();
-
-    /**
-     * If the player is online, this will return the instance of {@link net.cogzmc.core.player.CPlayer}, whereas if they are not online this will return a {@code null}.
-     * @return A {@link net.cogzmc.core.player.CPlayer} object or {@code null}.
-     */
-    CPlayer getPlayer();
 
     /**
      * Updates data about a player with the current values from the database.

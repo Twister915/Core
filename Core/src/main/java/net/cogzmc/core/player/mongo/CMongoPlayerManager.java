@@ -18,7 +18,7 @@ import java.util.*;
 
 import static net.cogzmc.core.player.mongo.MongoUtils.getValueFrom;
 
-public final class CMongoPlayerManager implements CPlayerManager {
+public final class CMongoPlayerManager extends CMongoLivePlayerRepository implements CPlayerManager {
     private CMongoDatabase database;
 
     private Map<String, CPlayer> onlinePlayerMap = new HashMap<>();
@@ -27,6 +27,7 @@ public final class CMongoPlayerManager implements CPlayerManager {
     @Getter private final ScoreboardManager scoreboardManager = new ScoreboardManager();
 
     public CMongoPlayerManager(CMongoDatabase database) {
+        super(database);
         this.database = database;
         Core.getInstance().registerListener(new CPlayerManagerListener(this));
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new CPlayerManagerSaveTask(this), 1200, 1200);
@@ -56,51 +57,7 @@ public final class CMongoPlayerManager implements CPlayerManager {
             cOfflinePlayers.add(onlinePlayer);
             return cOfflinePlayers;
         }
-        DBCollection collection = database.getCollection(MongoKey.USERS_COLLETION.toString());
-        DBObject one = collection.findOne(new BasicDBObject(MongoKey.LAST_USERNAME_KEY.toString(), username));
-        if (one != null) return Arrays.asList(playerFrom(one));
-        DBCursor dbObjects = collection.find(new BasicDBObject(MongoKey.USERNAMES_KEY.toString(), username));
-        List<COfflinePlayer> offlinePlayers = new ArrayList<>();
-        for (DBObject dbObject : dbObjects) {
-            offlinePlayers.add(playerFrom(dbObject));
-        }
-        return offlinePlayers;
-    }
-
-    COfflinePlayer playerFrom(DBObject dbObject) {
-        return new COfflineMongoPlayer(UUID.fromString(getValueFrom(dbObject, MongoKey.UUID_KEY.toString(), String.class)), dbObject, this);
-    }
-
-    @Override
-    public COfflineMongoPlayer getOfflinePlayerByUUID(UUID uuid) {
-        DBObject playerDocumentFor = getPlayerDocumentFor(uuid);
-        //We perform no null check here on purpose. The playerDocumentFor variable, when null, is checked in the constructor and used as a marker for a new player
-        return new COfflineMongoPlayer(uuid, playerDocumentFor, this);
-    }
-
-    @Override
-    public List<COfflinePlayer> getOfflinePlayersByUUIDS(List<UUID> uuids) {
-        List<COfflinePlayer> offlinePlayers = new ArrayList<>();
-        for (UUID uuid : uuids) {
-            DBObject playerDocumentFor = getPlayerDocumentFor(uuid);
-            if (playerDocumentFor == null) continue; //If this UUID is invalid, this method will not return the player.
-            //TODO actually, this is just here to mark this as a point of interest. Should we create new players we can't find a match for or should we ignore them?
-            offlinePlayers.add(new COfflineMongoPlayer(uuid, playerDocumentFor, this));
-        }
-        return offlinePlayers;
-    }
-
-    public COfflinePlayer getOfflinePlayerByObjectId(ObjectId id) {
-        //Find the player doc by the ID from the users collection
-        DBObject one = database.getCollection(MongoKey.USERS_COLLETION.toString()).findOne(new BasicDBObject(MongoKey.ID_KEY.toString(), id));
-        if (one == null) return null;
-        UUID uuid = UUID.fromString(getValueFrom(one, MongoKey.UUID_KEY, String.class)); //Get the UUID from that doc, and
-        return new COfflineMongoPlayer(uuid, one, this); //Create a new COfflineMongoPlayer with that.
-    }
-
-    DBObject getPlayerDocumentFor(UUID uuid) {
-        //gets the users collection                                        finds something matching  UUID                     =    the param represented as a string
-        return database.getCollection(MongoKey.USERS_COLLETION.toString()).findOne(new BasicDBObject(MongoKey.UUID_KEY.toString(), uuid.toString()));
+        return super.getOfflinePlayerByName(username);
     }
 
     @Override
@@ -139,19 +96,6 @@ public final class CMongoPlayerManager implements CPlayerManager {
     }
 
     @Override
-    public void savePlayerData(COfflinePlayer player) throws DatabaseConnectException {
-        //Gets the COfflineMongoPlayer
-        COfflineMongoPlayer player1 = (COfflineMongoPlayer) player;
-        //Attempts to update data if this player is currently online (in which case it would be an instance of CMongoPlayer)
-        if (player1 instanceof CMongoPlayer) ((CMongoPlayer)player1).updateForSaving();
-        //And then get the database object representation.
-        DBObject objectForPlayer = player1.getObjectForPlayer();
-        //And save it into the database.
-        this.database.getCollection(MongoKey.USERS_COLLETION.toString()).save(objectForPlayer);
-        player1.setObjectId(getValueFrom(objectForPlayer, MongoKey.ID_KEY, ObjectId.class));
-    }
-
-    @Override
     @Synchronized
     public void playerLoggedIn(Player player, InetAddress address) throws CPlayerJoinException {
         //Creates a new CMongoPlayer by passing the player, the offline player (for data), and this.
@@ -176,7 +120,13 @@ public final class CMongoPlayerManager implements CPlayerManager {
     public void deletePlayerRecords(COfflinePlayer player) throws IllegalArgumentException {
         if (player instanceof CMongoPlayer || !(player instanceof COfflineMongoPlayer))
             throw new IllegalArgumentException("The argument you passed is not an instance of the correct object!");
-        database.getCollection(MongoKey.USERS_COLLETION.toString()).remove(new BasicDBObject(MongoKey.ID_KEY.toString(), ((COfflineMongoPlayer) player).getObjectId()));
+        super.deletePlayerRecords(player);
+    }
+
+    @Override
+    public void savePlayerData(COfflinePlayer player) throws DatabaseConnectException {
+        if (player instanceof CMongoPlayer) ((CMongoPlayer)player).updateForSaving();
+        super.savePlayerData(player);
     }
 
     @Override

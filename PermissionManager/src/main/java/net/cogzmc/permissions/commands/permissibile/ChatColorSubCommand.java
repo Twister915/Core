@@ -36,7 +36,7 @@ public final class ChatColorSubCommand<T extends CPermissible> extends Permissib
 
     @Override
     protected void doAction(T permissible, String argument) {
-        permissible.setChatColor(ChatColor.getByChar(argument.toCharArray()[1]));
+        permissible.setChatColor(argument);
     }
 
     @Override

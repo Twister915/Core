@@ -4,22 +4,25 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
 import lombok.*;
-import net.cogzmc.core.Core;
+import lombok.extern.java.Log;
 import net.cogzmc.core.asset.Asset;
-import net.cogzmc.core.player.*;
-import org.apache.commons.lang.IllegalClassException;
+import net.cogzmc.core.player.CGroup;
+import net.cogzmc.core.player.COfflinePlayer;
+import net.cogzmc.core.player.CPermissible;
+import net.cogzmc.core.player.DatabaseConnectException;
+import net.cogzmc.util.ColorSupplements;
 import org.bson.types.ObjectId;
-import org.bukkit.ChatColor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.util.*;
 
 import static net.cogzmc.core.player.mongo.MongoUtils.*;
-import static net.cogzmc.core.util.RandomUtils.safeCast;
+import static net.cogzmc.util.RandomUtils.safeCast;
 
 @EqualsAndHashCode(of = {"uniqueIdentifier"})
-class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
+@Log
+class COfflineMongoPlayer implements COfflinePlayer {
     @Getter private List<String> knownUsernames;
     @Getter @Setter(AccessLevel.PROTECTED) private String lastKnownUsername;
     @Getter private UUID uniqueIdentifier;
@@ -32,24 +35,24 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     private Map<String, Object> settings;
 
     /* helpers */
-    protected final CMongoPlayerManager playerManager;
+    protected final CMongoPlayerRepository playerRepository;
     @Getter @Setter private ObjectId objectId;
 
     /* Permissions */
-    @Getter @Setter private ChatColor tablistColor;
-    @Getter @Setter private ChatColor chatColor;
+    @Getter @Setter private String tablistColor;
+    @Getter @Setter private String chatColor;
     @Getter @Setter private String chatPrefix;
     @Getter @Setter private String chatSuffix;
     private String displayName;
-    private Map<String, Boolean> declaredPermissions;
-    @Getter private Map<String, Boolean> allPermissions;
-    private List<CGroup> groups;
-    @Getter private CGroup primaryGroup;
-    private List<ObjectId> groupIds;
+    protected Map<String, Boolean> declaredPermissions;
+    @Getter protected Map<String, Boolean> allPermissions;
+    protected List<CGroup> groups;
+    @Getter protected CGroup primaryGroup;
+    protected List<ObjectId> groupIds;
 
     //Called in all instances when we're loading a player from the database
-    public COfflineMongoPlayer(UUID uniqueIdentifier, DBObject player, @NonNull CMongoPlayerManager manager) {
-        this.playerManager = manager;
+    public COfflineMongoPlayer(UUID uniqueIdentifier, DBObject player, @NonNull CMongoPlayerRepository repository) {
+        this.playerRepository = repository;
         if (player == null) {
             this.assets = new ArrayList<>();
             this.settings = new HashMap<>();
@@ -62,16 +65,14 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
         }
         this.objectId = getValueFrom(player, MongoKey.ID_KEY, ObjectId.class);
         updateFromDBObject(player); //Updates the states of our variables using the database object.
-        Core.getPermissionsManager().registerObserver(this);
     }
 
     //Used as the super-constructor when we're creating a CPlayer from a COfflinePlayer (when a player comes online)
     //This copies the state of all variables in the other COfflinePlayer object that is being passed.
-    protected COfflineMongoPlayer(COfflineMongoPlayer otherCPlayer, CMongoPlayerManager manager) {
-        this.playerManager = manager;
+    protected COfflineMongoPlayer(COfflineMongoPlayer otherCPlayer, CMongoPlayerRepository manager) {
+        this.playerRepository = manager;
         this.objectId = otherCPlayer.getObjectId();
         updateFromDBObject(otherCPlayer.getObjectForPlayer());
-        Core.getPermissionsManager().registerObserver(this);
     }
 
     final DBObject getObjectForPlayer() {
@@ -99,6 +100,11 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
         objectBuilder.add(MongoKey.USER_GROUPS_KEY.toString(), getDBListFor(groupIds));
         combineObjectBuilders(objectBuilder, getObjectForPermissible(this));
         return objectBuilder.get();
+    }
+
+    @Override
+    public Set<String> getSettingKeys() {
+        return settings.keySet();
     }
 
     @Override
@@ -137,18 +143,13 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     }
 
     @Override
-    public CPlayer getPlayer() {
-        return this.playerManager.getOnlineCPlayerForUUID(this.uniqueIdentifier);
-    }
-
-    @Override
     public final void updateFromDatabase() {
-        updateFromDBObject(this.playerManager.getPlayerDocumentFor(this.uniqueIdentifier));
+        updateFromDBObject(this.playerRepository.getPlayerDocumentFor(this.uniqueIdentifier));
     }
 
     @Override
     public final void saveIntoDatabase() throws DatabaseConnectException {
-        this.playerManager.savePlayerData(this);
+        this.playerRepository.savePlayerData(this);
     }
 
     @Override
@@ -168,11 +169,11 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
         return new ArrayList<>(groups);
     }
 
-    private void updateFromDBObject(@NonNull DBObject player) {
+    protected void updateFromDBObject(@NonNull DBObject player) {
         this.lastKnownUsername = getValueFrom(player, MongoKey.LAST_USERNAME_KEY, String.class);
         this.uniqueIdentifier = UUID.fromString(getValueFrom(player, MongoKey.UUID_KEY, String.class));
         this.displayName = getValueFrom(player, MongoKey.DISPLAY_NAME, String.class);
-        if (this.displayName != null) this.displayName = ChatColor.translateAlternateColorCodes('&', this.displayName);
+        if (this.displayName != null) this.displayName = ColorSupplements.translateAlternateColorCodes('&', this.displayName);
         this.firstTimeOnline = getValueFrom(player, MongoKey.FIRST_JOIN_KEY, Date.class);
         this.lastTimeOnline = getValueFrom(player, MongoKey.LAST_SEEN_KEY, Date.class);
         Long time_online = getValueFrom(player, MongoKey.TIME_ONLINE_KEY, Long.class);
@@ -190,12 +191,12 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
             Class<?> assetClass;
             try {
                 assetClass = Class.forName(fqcn);
-                if (!Asset.class.isAssignableFrom(assetClass)) throw new IllegalClassException("This class does not extend Asset!");
+                if (!Asset.class.isAssignableFrom(assetClass)) throw new ClassNotFoundException("This class does not extend Asset!");
                 Map<String, Object> meta = getMapFor(getValueFrom(assetObject, MongoKey.META_KEY, DBObject.class));
                 Asset asset = (Asset) assetClass.getConstructor(COfflinePlayer.class, Map.class).newInstance(this, meta);
                 this.assets.add(asset);
-            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException | ClassNotFoundException | IllegalClassException e) {
-                Core.getInstance().getLogger().severe("Could not load asset for player " + this.lastKnownUsername + " - " + fqcn + " - " + e.getMessage());
+            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                log.severe("Could not load asset for player " + this.lastKnownUsername + " - " + fqcn + " - " + e.getMessage());
             }
         }
         CPermissible permissibleDataFor = getPermissibileDataFor(player);
@@ -206,7 +207,6 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
         this.declaredPermissions = permissibleDataFor.getDeclaredPermissions();
         if (this.declaredPermissions == null) this.declaredPermissions = new HashMap<>();
         groupIds = getListFor(getValueFrom(player, MongoKey.USER_GROUPS_KEY, BasicDBList.class), ObjectId.class);
-        reloadPermissions0();
     }
 
     @Override
@@ -240,7 +240,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
     @Override
     @Synchronized
     public void reloadPermissions() {
-        reloadPermissions0();
+        throw new UnsupportedOperationException("Could not reload permissions without being a live player." );
     }
 
     @Override
@@ -248,53 +248,15 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
         return lastKnownUsername;
     }
 
-    //Reloads the allPermissions map based on declaredPermissions and inheritance
-    @Synchronized private void reloadPermissions0() {
-        //Why do we need this? When the permissions manager reloads, it creates new instances to represent the same groups, so we need to reload our group instances.
-        this.groups = new ArrayList<>();
-        this.primaryGroup = null;
-        CPermissionsManager permissionsManager1 = Core.getPermissionsManager();
-        assert permissionsManager1 instanceof CMongoPermissionsManager;
-        CMongoPermissionsManager permissionsManager = (CMongoPermissionsManager) permissionsManager1;
-        if (groupIds != null) {
-            for (ObjectId groupId : groupIds) {
-                CGroup groupByObjectId = permissionsManager.getGroupByObjectId(groupId);
-                if (groupByObjectId == null) continue;
-                this.groups.add(groupByObjectId);
-            }
-        }
-        //Then we need to reload our permissions map.
-        allPermissions = new HashMap<>(declaredPermissions);
-        CGroup defaultGroup = permissionsManager.getDefaultGroup();
-        if (groups.size() == 0 && defaultGroup != null) processGroupInternal(defaultGroup);
-        for (CGroup group : groups) {
-            processGroupInternal(group);
-        }
 
-        //And now we get our primary group
-        for (CGroup group : this.groups) {
-            if (this.primaryGroup == null) {
-                this.primaryGroup = group;
-                continue;
-            }
-            if (this.primaryGroup.getPriority() < group.getPriority()) this.primaryGroup = group;
-        }
-
-        if (this.primaryGroup == null) this.primaryGroup = defaultGroup;
-    }
 
     //Process a group into our allPermissions map, use care when calling as this can mess things up really bad.
-    private synchronized void processGroupInternal(CGroup group) {
+    protected final synchronized void processGroupInternal(CGroup group) {
         Map<String, Boolean> groupPermissions = group.getAllPermissions();
         for (Map.Entry<String, Boolean> permission : groupPermissions.entrySet()) {
             String permNode = permission.getKey();
             if (!allPermissions.containsKey(permNode) || !allPermissions.get(permNode)) allPermissions.put(permNode, permission.getValue());
         }
-    }
-
-    @Override
-    public void onReloadPermissions(CMongoPermissionsManager manager) {
-        reloadPermissions(); //Reload and re-attach permissions if needed.
     }
 
     @Override
@@ -313,7 +275,7 @@ class COfflineMongoPlayer implements COfflinePlayer, GroupReloadObserver {
             this.displayName = null;
             return;
         }
-        this.displayName = ChatColor.translateAlternateColorCodes('&', string);
+        this.displayName = ColorSupplements.translateAlternateColorCodes('&', string);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package net.cogzmc.core.util;
+package net.cogzmc.util;
 
 import com.google.common.collect.ImmutableSet;
 

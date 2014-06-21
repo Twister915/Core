@@ -4,11 +4,8 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
 import lombok.*;
-import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CGroup;
-import net.cogzmc.core.player.CPlayer;
 import org.bson.types.ObjectId;
-import org.bukkit.ChatColor;
 
 import java.util.*;
 
@@ -26,8 +23,8 @@ final class CMongoGroup implements CGroup {
     private ObjectId objectId;
 
     /* Group stuff */
-    @NonNull private ChatColor tablistColor;
-    @NonNull private ChatColor chatColor;
+    @NonNull private String tablistColor;
+    @NonNull private String chatColor;
     @NonNull private String chatPrefix;
     @NonNull private String chatSuffix;
     @Setter(AccessLevel.NONE) private Map<String, Boolean> allPermissions;
@@ -77,15 +74,6 @@ final class CMongoGroup implements CGroup {
     }
 
     @Override
-    public List<CPlayer> getOnlineDirectMembers() {
-        List<CPlayer> players = new ArrayList<>();
-        for (CPlayer cPlayer : Core.getPlayerManager()) {
-            if (cPlayer.getGroups().contains(this)) players.add(cPlayer);
-        }
-        return players;
-    }
-
-    @Override
     public void reloadPermissions() {
         allPermissions = new HashMap<>(declaredPermissions);
 
@@ -113,11 +101,6 @@ final class CMongoGroup implements CGroup {
                     allPermissions.put(stringBooleanEntry.getKey(), stringBooleanEntry.getValue()); //Put it into ours
                 }
             }
-        }
-
-        //Get the online players, and force a reload.
-        for (CPlayer cPlayer : getOnlineDirectMembers()) {
-            cPlayer.reloadPermissions(); //This will ensure that all players with permissions from this group will get permissions.
         }
     }
 

@@ -6,15 +6,14 @@ import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
 import lombok.NonNull;
 import net.cogzmc.core.player.CPermissible;
-import org.bukkit.ChatColor;
 
 import java.util.*;
 
 public final class MongoUtils {
     public static BasicDBObjectBuilder getObjectForPermissible(CPermissible permissible) {
         BasicDBObjectBuilder builder = new BasicDBObjectBuilder();
-        builder.add(MongoKey.GROUPS_TABLIST_COLOR_KEY.toString(), permissible.getTablistColor() == null ? null : permissible.getTablistColor().name());
-        builder.add(MongoKey.GROUPS_CHAT_COLOR_KEY.toString(), permissible.getChatColor() == null ? null : permissible.getChatColor().name());
+        builder.add(MongoKey.GROUPS_TABLIST_COLOR_KEY.toString(), permissible.getTablistColor() == null ? null : permissible.getTablistColor());
+        builder.add(MongoKey.GROUPS_CHAT_COLOR_KEY.toString(), permissible.getChatColor() == null ? null : permissible.getChatColor());
         builder.add(MongoKey.GROUPS_CHAT_PREFIX_KEY.toString(), permissible.getChatPrefix());
         builder.add(MongoKey.GROUPS_CHAT_SUFFIX_KEY.toString(), permissible.getChatSuffix());
         //builder.add(MongoKey.GROUPS_PERMISSIONS_KEY.toString(), getDBObjectFor(permissible.getDeclaredPermissions() == null ?  Collections.emptyMap() : permissible.getDeclaredPermissions()));
@@ -41,19 +40,19 @@ public final class MongoUtils {
         for (Map permissionObject : permissionObjects) {
             declaredPermissions.put((String) permissionObject.get(MongoKey.PERMISSION_PERM.toString()), (Boolean) permissionObject.get(MongoKey.PERMISSION_VALUE.toString()));
         }
-        String cColor = getValueFrom(object, MongoKey.GROUPS_CHAT_COLOR_KEY, String.class); final ChatColor chatColor = cColor == null ? null : ChatColor.valueOf(cColor);
-        String tColor = getValueFrom(object, MongoKey.GROUPS_TABLIST_COLOR_KEY, String.class); final ChatColor tablistColor = tColor == null ? null : ChatColor.valueOf(tColor);
+        final String cColor = getValueFrom(object, MongoKey.GROUPS_CHAT_COLOR_KEY, String.class);
+        final String tColor = getValueFrom(object, MongoKey.GROUPS_TABLIST_COLOR_KEY, String.class);
         final String chatPrefix = getValueFrom(object, MongoKey.GROUPS_CHAT_PREFIX_KEY, String.class);
         final String chatSuffix = getValueFrom(object, MongoKey.GROUPS_CHAT_SUFFIX_KEY, String.class);
         return new CPermissible() {
             @Override
-            public ChatColor getChatColor() {
-                return chatColor;
+            public String getChatColor() {
+                return cColor;
             }
 
             @Override
-            public ChatColor getTablistColor() {
-                return tablistColor;
+            public String getTablistColor() {
+                return tColor;
             }
 
             @Override
@@ -65,12 +64,12 @@ public final class MongoUtils {
             public String getChatSuffix() {return chatSuffix;}
 
             @Override
-            public void setChatColor(ChatColor color) {
+            public void setChatColor(String color) {
                 throw new UnsupportedOperationException("This CPermissible is for data access only!");
             }
 
             @Override
-            public void setTablistColor(ChatColor color) {
+            public void setTablistColor(String color) {
                 throw new UnsupportedOperationException("This CPermissible is for data access only!");
             }
 

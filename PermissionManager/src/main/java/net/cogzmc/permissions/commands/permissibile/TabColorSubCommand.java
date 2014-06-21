@@ -36,7 +36,7 @@ public final class TabColorSubCommand<T extends CPermissible> extends Permissibl
 
     @Override
     protected void doAction(T permissible, String argument) {
-        permissible.setTablistColor(ChatColor.getByChar(argument.toCharArray()[1]));
+        permissible.setTablistColor(argument);
     }
 
     @Override

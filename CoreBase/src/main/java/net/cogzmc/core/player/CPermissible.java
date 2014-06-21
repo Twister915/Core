@@ -1,7 +1,5 @@
 package net.cogzmc.core.player;
 
-import org.bukkit.ChatColor;
-
 import java.util.Map;
 
 /**
@@ -9,16 +7,15 @@ import java.util.Map;
  */
 public interface CPermissible {
     /**
-     * Gets a {@link org.bukkit.ChatColor} instance that should be used to prefix the player's name in the chat.
-     * @return The {@link org.bukkit.ChatColor}
+     *
      */
-    ChatColor getChatColor();
+    String getChatColor();
 
     /**
      *
      * @return
      */
-    ChatColor getTablistColor();
+    String getTablistColor();
 
     /**
      *
@@ -36,13 +33,13 @@ public interface CPermissible {
      *
      * @param color
      */
-    void setChatColor(ChatColor color);
+    void setChatColor(String color);
 
     /**
      *
      * @param color
      */
-    void setTablistColor(ChatColor color);
+    void setTablistColor(String color);
 
     /**
      *
