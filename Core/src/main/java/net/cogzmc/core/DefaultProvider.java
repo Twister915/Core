@@ -37,7 +37,7 @@ final class DefaultProvider implements Provider {
 
     @Override
     public NetworkManager getNewNetworkManager(Core core) {
-        if (core.getServer().getPluginManager().getPlugin("LilyPad-Connect") != null)
+        if (core.getServer().getPluginManager().getPlugin(core.getConfig().getString("lilypad-plugin")) != null)
             return new LilyPadNetworkManager();
         core.getLogger().severe("COULD NOT FIND A NETWORK PLUGIN TO CONNECT TO!");
         return null;
