@@ -12,9 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-/**
- * Created by Joey on 6/21/2014.
- */
 public class COfflineLiveMongoPlayer extends COfflineMongoPlayer implements GroupReloadObserver {
     protected COfflineLiveMongoPlayer(COfflineMongoPlayer otherCPlayer, CMongoPlayerRepository manager) {
         super(otherCPlayer, manager);

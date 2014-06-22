@@ -12,5 +12,6 @@ abstract class BaseArena implements Arena {
     public void load() {
         if (loaded) throw new IllegalStateException("You cannot load when we have already loaded!");
         world = createOrLoadWorld();
+        loaded = true;
     }
 }

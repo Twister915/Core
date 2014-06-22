@@ -18,6 +18,7 @@
         <module>EntityAPI</module>
         <module>Chat2</module>
         <module>GameAPI</module>
+        <module>DataServerlet</module>
     </modules>
 
     <packaging>pom</packaging>

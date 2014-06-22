@@ -1,7 +1,9 @@
 package net.cogzmc.core.gui;
 
 import com.google.common.collect.ImmutableList;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Setter;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.modular.command.EmptyHandlerException;
 import net.cogzmc.core.player.CPlayer;
@@ -27,7 +29,7 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
     protected final String title;
     protected Inventory inventory;
     protected final Map<Integer, InventoryButton> inventoryButtons = new HashMap<>();
-    protected Set<Integer> updatedSlots = new HashSet<>();
+    @Setter(AccessLevel.NONE) protected Set<Integer> updatedSlots = new HashSet<>();
 
     public InventoryGraphicalInterface(Integer size, String title) {
         if (size % 9 != 0) throw new IllegalArgumentException("The size of an inventory must be divisible by 9 evenly.");

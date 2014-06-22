@@ -4,8 +4,6 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
 
-import java.util.Arrays;
-
 public final class NaturalArena extends BaseArena {
     @Override
     World createOrLoadWorld() {
