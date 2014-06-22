@@ -87,6 +87,7 @@ public final class CMongoPlayerManager extends CMongoLivePlayerRepository implem
 
     @Override
     public COfflineMongoPlayer getCOfflinePlayerForOfflinePlayer(OfflinePlayer player) {
+        if (player instanceof Player) return getCPlayerForPlayer((Player) player);
         return getOfflinePlayerByUUID(player.getUniqueId());
     }
 
