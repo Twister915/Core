@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import lombok.Getter;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.modular.ModuleMeta;
+import net.cogzmc.hub.items.HubItem;
 import net.cogzmc.hub.items.HubItemsManager;
 import net.cogzmc.hub.limitations.Limitation;
 import net.cogzmc.hub.limitations.LimitationNotRequiredException;
@@ -50,7 +51,10 @@ public final class Hub extends ModularPlugin {
         /* commands */
         registerCommand(new SetSpawn());
         registerCommand(new Spawn());
-        registerListener(this.spawnHandler);
+
+        /* listeners */
+		registerListener(this.spawnHandler);
+		registerListener(HubItem.EventDispatcher.getInstance());
 
         /* limitations */
         registerLimitation(new BuildLimitation());

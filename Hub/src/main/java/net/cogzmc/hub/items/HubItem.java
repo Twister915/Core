@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +38,8 @@ import java.util.List;
  *
  * Once we have a suitable replacement, we'll be good to depricate this.
  */
-public abstract class HubItem implements Listener {
+public abstract class HubItem {
+
     /**
      * This method is called when the {@link org.bukkit.entity.Player} left clicks on an {@link org.bukkit.inventory.ItemStack}
      * with the correct {@link net.cogzmc.hub.items.annotations.HubItemMeta}.
@@ -78,35 +80,8 @@ public abstract class HubItem implements Listener {
         this.meta = getClass().getAnnotation(HubItemMeta.class);
         if (this.meta == null) throw new IllegalStateException("The HubItem class must be annotated with the HubItemMeta annotation.");
         if (requiresEvents) {
-            Hub.getInstance().registerListener(this);
+			EventDispatcher.addItem(this);
         }
-    }
-
-    @EventHandler
-    @SuppressWarnings("unused")
-    public final void onPlayerInteract(PlayerInteractEvent event) {
-        ItemStack itemStack = event.getPlayer().getItemInHand();
-        if (event.getAction() == Action.PHYSICAL ||
-                itemStack == null ||
-                itemStack.getType() == Material.AIR ||
-                !itemStack.hasItemMeta() ||
-                !itemStack.getItemMeta().hasDisplayName() ||
-                !itemStack.getItemMeta().getDisplayName().equals(getItemStacks().get(0).getItemMeta().getDisplayName())) {
-            return;
-        }
-        switch (event.getAction()) {
-            case RIGHT_CLICK_AIR:
-            case RIGHT_CLICK_BLOCK:
-                onRightClick(event.getPlayer());
-                break;
-            case LEFT_CLICK_AIR:
-            case LEFT_CLICK_BLOCK:
-                onLeftClick(event.getPlayer());
-                break;
-            default:
-                return;
-        }
-        event.setCancelled(true);
     }
 
     /**
@@ -197,9 +172,72 @@ public abstract class HubItem implements Listener {
     /**
      * Returns the {@link org.bukkit.configuration.ConfigurationSection} that data about this item is stored in.
      *
-     * @return
+     * @return the configuration section corresponding to the item
      */
     public final ConfigurationSection getConfigurationSection() {
         return instance.getConfig().getConfigurationSection("hub-items." + meta.key() + ".properties");
     }
+
+	/**
+	 * Unregisters self from the EventDispatcher
+	 */
+	public final void unregisterListner() {
+		EventDispatcher.removeItem(this);
+	}
+
+	/**
+	 * Singleton class for dispatching events to HubItems, to avoid
+	 * having each item having an individual listener
+	 */
+	public static final class EventDispatcher implements Listener {
+		private static final EventDispatcher instance = new EventDispatcher();
+
+		public static EventDispatcher getInstance() {
+			return instance;
+		}
+
+		public static void addItem(HubItem item) {
+			getInstance().items.add(item);
+		}
+
+		public static void removeItem(HubItem item) {
+			getInstance().items.remove(item);
+		}
+
+		List<HubItem> items =  new ArrayList<>();
+
+		private EventDispatcher() {}
+
+		@EventHandler
+		@SuppressWarnings("unused")
+		public void onPlayerInteract(PlayerInteractEvent event) {
+			ItemStack itemStack = event.getPlayer().getItemInHand();
+			if (event.getAction() == Action.PHYSICAL ||
+					itemStack == null ||
+					itemStack.getType() == Material.AIR ||
+					!itemStack.hasItemMeta() ||
+					!itemStack.getItemMeta().hasDisplayName()) {
+				return;
+			}
+			HubItem matchedItem = null;
+			for (HubItem item : items) {
+				if (!itemStack.getItemMeta().getDisplayName().equals(item.getItemStacks().get(0).getItemMeta().getDisplayName())) continue;
+				matchedItem = item;
+			}
+			if (matchedItem == null) return;
+			switch (event.getAction()) {
+				case RIGHT_CLICK_AIR:
+				case RIGHT_CLICK_BLOCK:
+					matchedItem.onRightClick(event.getPlayer());
+					break;
+				case LEFT_CLICK_AIR:
+				case LEFT_CLICK_BLOCK:
+					matchedItem.onLeftClick(event.getPlayer());
+					break;
+				default:
+					return;
+			}
+			event.setCancelled(true);
+		}
+	}
 }
