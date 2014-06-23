@@ -46,7 +46,7 @@ public final class ParticleEffect {
     /**
      * Speed is how quickly they dissipate.
      */
-    @NonNull private Float speed = 1.0f;
+    private Float speed;
 
     /**
      * Allows you to set a custom ID for the particle instead of using the {@link #type} in the constructor.
@@ -61,7 +61,7 @@ public final class ParticleEffect {
         packet.setOffsetZ(zSpread);
         packet.setNumberOfParticles(amount);
         packet.setParticleName(customParticle != null ? customParticle : type.toString());
-        packet.setParticleSpeed(speed);
+        if (speed != null) packet.setParticleSpeed(speed);
         return packet;
     }
 

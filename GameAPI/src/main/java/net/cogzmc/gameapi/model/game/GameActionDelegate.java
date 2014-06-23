@@ -2,7 +2,7 @@ package net.cogzmc.gameapi.model.game;
 
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.gameapi.model.arena.Arena;
-import net.cogzmc.gameapi.model.arena.Point;
+import net.cogzmc.core.util.Point;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;

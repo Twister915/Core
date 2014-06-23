@@ -2,7 +2,7 @@ package net.cogzmc.gameapi.model.game;
 
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.gameapi.model.arena.Arena;
-import net.cogzmc.gameapi.model.arena.Point;
+import net.cogzmc.core.util.Point;
 
 public class GameMessageDelegate<ArenaType extends Arena> extends GameDelegate<ArenaType>{
     protected GameMessageDelegate(Game<ArenaType> game) {

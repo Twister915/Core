@@ -12,9 +12,9 @@ public final class GameUtils {
         }
     }
 
-    public static void hidePlayersFrom(Iterable<Player> playersToHide, Player toHideFRom) {
+    public static void hidePlayersFrom(Iterable<Player> playersToHide, Player toHideFrom) {
         for (Player player : playersToHide) {
-            toHideFRom.hidePlayer(player);
+            toHideFrom.hidePlayer(player);
         }
     }
 

@@ -1,4 +1,4 @@
-package net.cogzmc.gameapi.model.arena;
+package net.cogzmc.core.util;
 
 import lombok.Data;
 import lombok.NonNull;

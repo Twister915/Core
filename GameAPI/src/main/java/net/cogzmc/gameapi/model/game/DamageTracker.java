@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.*;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.gameapi.model.arena.Arena;
-import net.cogzmc.gameapi.model.arena.Point;
+import net.cogzmc.core.util.Point;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.*;
