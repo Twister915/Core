@@ -48,11 +48,13 @@ public abstract class PermissibleSubCommand<PermissibleType extends CPermissible
             if (!tookControlOfMessage) sender.sendMessage(getSuccessMessage(permissible));
         }
         if (shouldReload()) {
-            if (permissible instanceof COfflinePlayer && !(permissible instanceof CPlayer)) try {
-                Core.getPlayerManager().savePlayerData((COfflinePlayer) permissible);
-            } catch (DatabaseConnectException e) {
-                PermissionsManager.getInstance().logMessage("&cCould not save " + permissible.getName() + " to the database during command " + getFormattedName() + "!");
-            }
+            if (permissible instanceof COfflinePlayer && !(permissible instanceof CPlayer))
+                try {
+                    Core.getPlayerManager().savePlayerData((COfflinePlayer) permissible);
+                } catch (DatabaseConnectException e) {
+                    PermissionsManager.getInstance().logMessage("&cCould not save " + permissible.getName() + " to the database during command " + getFormattedName() + "!");
+                }
+            Core.getPermissionsManager().save();
             Core.getPermissionsManager().reloadPermissions();
         }
     }

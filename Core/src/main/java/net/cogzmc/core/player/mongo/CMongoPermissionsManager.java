@@ -1,7 +1,5 @@
 package net.cogzmc.core.player.mongo;
 
-import lombok.AccessLevel;
-import lombok.Setter;
 import net.cogzmc.core.player.*;
 
 import java.lang.ref.WeakReference;
