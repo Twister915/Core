@@ -17,6 +17,7 @@ import java.util.Set;
 
 public final class MuteManager extends BaseMongoManager<Mute> implements Listener {
     private final Set<CPlayer> mutedPlayers = new HashSet<>();
+    private final Punishments module = Core.getModule(Punishments.class);
 
     public MuteManager() {
         super(Mute.class);
@@ -31,6 +32,10 @@ public final class MuteManager extends BaseMongoManager<Mute> implements Listene
     @Override
     void onPunish(CPlayer player, Mute punishment) {
         mutedPlayers.add(player);
+        player.sendMessage(module.getFormat("new-mute",
+                new String[]{"<reason>", punishment.getMessage()},
+                new String[]{"<issuer>", punishment.getIssuer().getName()},
+                new String[]{"<expires>", "never"}));
     }
 
     @Override
@@ -40,7 +45,7 @@ public final class MuteManager extends BaseMongoManager<Mute> implements Listene
 
     @Override
     void onJoin(CPlayer player, Mute punishment) {
-        player.sendMessage(Core.getModule(Punishments.class).getFormat("muted"));
+        player.sendMessage(Core.getModule(Punishments.class).getFormat("muted", new String[]{"<expires>", "never"}));
         mutedPlayers.add(player);
     }
 
@@ -58,6 +63,6 @@ public final class MuteManager extends BaseMongoManager<Mute> implements Listene
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (!mutedPlayers.contains(Core.getOnlinePlayer(event.getPlayer()))) return;
         event.setCancelled(true);
-        event.getPlayer().sendMessage(Core.getModule(Punishments.class).getFormat("muted"));
+        event.getPlayer().sendMessage(module.getFormat("muted", new String[]{"<expires>", "never"}));
     }
 }

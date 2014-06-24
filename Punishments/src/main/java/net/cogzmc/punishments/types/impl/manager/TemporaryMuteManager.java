@@ -4,7 +4,6 @@ import net.cogzmc.core.Core;
 import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.punishments.Punishments;
-import net.cogzmc.punishments.types.impl.model.Mute;
 import net.cogzmc.punishments.types.impl.model.TemporaryMute;
 import org.bson.types.ObjectId;
 import org.bukkit.event.EventHandler;
@@ -18,6 +17,7 @@ import java.util.Set;
 
 public final class TemporaryMuteManager extends BaseTemporaryMongoManager<TemporaryMute> implements Listener {
     private final Set<CPlayer> mutedPlayers = new HashSet<>();
+    private final Punishments module = Core.getModule(Punishments.class);
 
     public TemporaryMuteManager() {
         super(TemporaryMute.class);
@@ -42,7 +42,12 @@ public final class TemporaryMuteManager extends BaseTemporaryMongoManager<Tempor
 
     @Override
     void onJoin(CPlayer player, TemporaryMute punishment) {
-        player.sendMessage(Core.getModule(Punishments.class).getFormat("muted"));
+        player.sendMessage(module.getFormat("new-mute",
+                new String[]{"<reason>", punishment.getMessage()},
+                new String[]{"<issuer>", punishment.getIssuer().getName()},
+                new String[]{"<expires>",
+                        PRETTY_TIME_FORMATTER.format(new Date(punishment.getLengthInSeconds()*1000 + punishment.getDateIssued().getTime()))}
+        ));
         mutedPlayers.add(player);
     }
 
@@ -60,6 +65,7 @@ public final class TemporaryMuteManager extends BaseTemporaryMongoManager<Tempor
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (!mutedPlayers.contains(Core.getOnlinePlayer(event.getPlayer()))) return;
         event.setCancelled(true);
-        event.getPlayer().sendMessage(Core.getModule(Punishments.class).getFormat("muted"));
+        TemporaryMute punishment = getActivePunishmentFor(Core.getOnlinePlayer(event.getPlayer()));
+        event.getPlayer().sendMessage(module.getFormat("muted", new String[]{"<expires>", PRETTY_TIME_FORMATTER.format(new Date(punishment.getLengthInSeconds() * 1000 + punishment.getDateIssued().getTime()))}));
     }
 }

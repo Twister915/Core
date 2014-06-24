@@ -25,7 +25,6 @@ abstract class BasePunishCommand<T extends Punishment, M extends PunishmentManag
 
     @Override
     protected void handleCommand(CPlayer sender, String[] args) throws CommandException {
-        String name = clazz.getSimpleName().toLowerCase();
-        if (!sender.hasPermission("punish." + name)) throw new PermissionException("You do not have permission to " + name + " people!");
+
     }
 }
