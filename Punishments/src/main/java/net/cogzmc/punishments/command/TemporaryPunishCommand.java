@@ -20,13 +20,12 @@ import java.util.Arrays;
 )
 public final class TemporaryPunishCommand<T extends TimedPunishment> extends BasePunishCommand<T, TimedPunishmentManager<T>> {
     public TemporaryPunishCommand(Class<T> clazz) {
-        super(clazz.getSimpleName().toLowerCase(), clazz);
+        super(Punishments.getNameFor(clazz), clazz);
     }
 
     @Override
     protected void handleCommand(CPlayer sender, String[] args) throws CommandException {
         Punishments module = Core.getModule(Punishments.class);
-        String name = clazz.getSimpleName().toLowerCase();
         super.handleCommand(sender, args);
         if (args.length < 3)
             throw new ArgumentRequirementException("You must specify a target, length, and reason to " + name + " someone!");

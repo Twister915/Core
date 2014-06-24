@@ -15,7 +15,7 @@ import org.bukkit.command.CommandSender;
 )
 public final class UnPunishCommand<T extends Punishment> extends BasePunishCommand<T, PunishmentManager<T>> {
     public UnPunishCommand(Class<T> clazz) {
-        super("un" + clazz.getSimpleName().toLowerCase(), clazz);
+        super("un" + Punishments.getNameFor(clazz), clazz);
     }
 
     @Override
@@ -25,7 +25,6 @@ public final class UnPunishCommand<T extends Punishment> extends BasePunishComma
 
     @Override
     protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
-        String name = clazz.getSimpleName().toLowerCase();
         if (!sender.hasPermission("punish." + name)) throw new PermissionException("You do not have permission to " + name + " people!");
         if (args.length < 1) throw new ArgumentRequirementException("You have not specified a player!");
         COfflinePlayer targetByArg = getTargetByArg(args[0]);

@@ -20,13 +20,12 @@ import java.util.Arrays;
 )
 public final class PermanentPunishCommand<T extends Punishment> extends BasePunishCommand<T, PunishmentManager<T>> {
     public PermanentPunishCommand(Class<T> clazz) {
-        super(clazz.getSimpleName().toLowerCase(), clazz);
+        super(Punishments.getNameFor(clazz), clazz);
     }
 
     @Override
     protected void handleCommand(CPlayer sender, String[] args) throws CommandException {
         Punishments module = Core.getModule(Punishments.class);
-        String name = clazz.getSimpleName().toLowerCase();
         super.handleCommand(sender, args);
         if (args.length < 2)
             throw new ArgumentRequirementException("You need to specify both a target and a reason to " + name + " someone!");
