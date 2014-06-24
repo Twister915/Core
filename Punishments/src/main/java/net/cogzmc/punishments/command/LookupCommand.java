@@ -23,7 +23,7 @@ public final class LookupCommand extends TargetedCommand {
     @Override
     protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
         Punishments punishmentsModule = Core.getModule(Punishments.class);
-        if (sender.hasPermission("punish.lookup")) throw new PermissionException("You do not have permission for this command!");
+        if (!sender.hasPermission("punish.lookup")) throw new PermissionException("You do not have permission for this command!");
         if (args.length < 1) throw new ArgumentRequirementException("You have not specified a target!");
         COfflinePlayer player = getTargetByArg(args[0]);
         List<Punishment> punishments = new ArrayList<>();
@@ -38,11 +38,11 @@ public final class LookupCommand extends TargetedCommand {
                 return (int) (o1.getDateIssued().getTime()-o2.getDateIssued().getTime());
             }
         });
-        sender.sendMessage(punishmentsModule.getFormat("lookup-top-line", new String[]{"<count>", String.valueOf(punishments.size())}, new String[]{"<target>", player.getName()}));
+        sender.sendMessage(punishmentsModule.getFormat("lookup-top-line", false, new String[]{"<count>", String.valueOf(punishments.size())}, new String[]{"<target>", player.getName()}));
         for (Punishment punishment : punishments) {
             String dateIssued = PRETTY_TIME_FORMATTER.format(punishment.getDateIssued());
             String dateExpires = (punishment instanceof TimedPunishment) ? PRETTY_TIME_FORMATTER.format(new Date(punishment.getDateIssued().getTime() + ((TimedPunishment) punishment).getLengthInSeconds()*1000)) : "never";
-            sender.sendMessage(punishmentsModule.getFormat("lookup-punishment",
+            sender.sendMessage(punishmentsModule.getFormat("lookup-punishment", false,
                     new String[]{"<active>", punishment.isActive() ? "yes" : "no"},
                     new String[]{"<type>", Punishments.getNameFor(punishment.getClass())},
                     new String[]{"<issuer>", punishment.getIssuer().getName()},
