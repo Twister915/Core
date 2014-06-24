@@ -51,8 +51,8 @@ public final class MuteManager extends BaseMongoManager<Mute> implements Listene
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-        if (mutedPlayers.contains(Core.getOnlinePlayer(event.getPlayer())))
-            event.setCancelled(true);
+        if (!mutedPlayers.contains(Core.getOnlinePlayer(event.getPlayer()))) return;
+        event.setCancelled(true);
         event.getPlayer().sendMessage(Core.getModule(Punishments.class).getFormat("muted"));
     }
 }
