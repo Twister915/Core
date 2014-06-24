@@ -7,10 +7,6 @@ import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.punishments.PunishmentManager;
 import net.cogzmc.punishments.Punishments;
 import net.cogzmc.punishments.types.Punishment;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-
-import java.util.List;
 
 abstract class BasePunishCommand<T extends Punishment, M extends PunishmentManager<T>> extends TargetedCommand {
     protected final Class<T> clazz;
@@ -25,6 +21,7 @@ abstract class BasePunishCommand<T extends Punishment, M extends PunishmentManag
 
     @Override
     protected void handleCommand(CPlayer sender, String[] args) throws CommandException {
-
+        String name = clazz.getSimpleName().toLowerCase();
+        if (!sender.hasPermission("punish." + name)) throw new PermissionException("You do not have permission to " + name + " people!");
     }
 }

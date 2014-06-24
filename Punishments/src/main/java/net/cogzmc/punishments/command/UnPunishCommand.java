@@ -1,11 +1,9 @@
 package net.cogzmc.punishments.command;
 
 import net.cogzmc.core.Core;
-import net.cogzmc.core.modular.command.ArgumentRequirementException;
-import net.cogzmc.core.modular.command.CommandException;
-import net.cogzmc.core.modular.command.CommandMeta;
-import net.cogzmc.core.modular.command.PermissionException;
+import net.cogzmc.core.modular.command.*;
 import net.cogzmc.core.player.COfflinePlayer;
+import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.punishments.PunishmentManager;
 import net.cogzmc.punishments.Punishments;
 import net.cogzmc.punishments.types.Punishment;
@@ -18,6 +16,11 @@ import org.bukkit.command.CommandSender;
 public final class UnPunishCommand<T extends Punishment> extends BasePunishCommand<T, PunishmentManager<T>> {
     public UnPunishCommand(Class<T> clazz) {
         super("un" + clazz.getSimpleName().toLowerCase(), clazz);
+    }
+
+    @Override
+    protected void handleCommand(CPlayer sender, String[] args) throws CommandException {
+        throw new EmptyHandlerException();
     }
 
     @Override
