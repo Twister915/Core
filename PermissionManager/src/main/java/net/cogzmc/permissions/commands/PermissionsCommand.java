@@ -1,6 +1,7 @@
 package net.cogzmc.permissions.commands;
 
 import net.cogzmc.core.modular.command.CommandMeta;
+import net.cogzmc.core.modular.command.CommandPermission;
 import net.cogzmc.core.modular.command.ModuleCommand;
 import net.cogzmc.permissions.commands.group.GroupSubCommand;
 import net.cogzmc.permissions.commands.player.PlayerSubCommand;
@@ -8,6 +9,7 @@ import net.cogzmc.permissions.commands.player.PlayerSubCommand;
 @CommandMeta(
         aliases = {"perm", "perms"}
 )
+@CommandPermission("permissions.manage")
 public final class PermissionsCommand extends ModuleCommand {
     /*
      * The command should be structured as follows

@@ -9,7 +9,7 @@ import org.bukkit.ChatColor;
 import java.util.List;
 
 @CommandMeta(aliases = {"nick", "nickname"})
-@CommandPermission("core.nick")
+@CommandPermission("core.essentials.nick")
 public final class NickNameCommand extends ModuleCommand {
     public NickNameCommand() {
         super("nick");

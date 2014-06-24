@@ -4,6 +4,7 @@ import net.cogzmc.core.Core;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.modular.command.CommandException;
 import net.cogzmc.core.modular.command.CommandMeta;
+import net.cogzmc.core.modular.command.CommandPermission;
 import net.cogzmc.core.modular.command.ModuleCommand;
 import net.cogzmc.coreessentials.CoreEssentials;
 import org.bukkit.Bukkit;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @CommandMeta(aliases = {"plugins", "pl", "?"}, description = "Lists the modules and plugins on this instance.")
+@CommandPermission("core.essentials.about")
 public final class PluginsCommand extends ModuleCommand {
     public PluginsCommand() {
         super("coreplugins");

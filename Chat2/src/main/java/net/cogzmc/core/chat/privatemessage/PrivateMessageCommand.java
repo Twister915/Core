@@ -3,16 +3,14 @@ package net.cogzmc.core.chat.privatemessage;
 import com.google.common.base.Joiner;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.chat.CoreChat;
-import net.cogzmc.core.modular.command.ArgumentRequirementException;
-import net.cogzmc.core.modular.command.CommandException;
-import net.cogzmc.core.modular.command.CommandMeta;
-import net.cogzmc.core.modular.command.ModuleCommand;
+import net.cogzmc.core.modular.command.*;
 import net.cogzmc.core.player.CPlayer;
 
 import java.util.Arrays;
 import java.util.List;
 
 @CommandMeta(aliases = {"pm", "whisper", "w", "tell", "t", "message"})
+@CommandPermission("core.chat.pm")
 public final class PrivateMessageCommand extends ModuleCommand {
     public PrivateMessageCommand() {
         super("msg");
