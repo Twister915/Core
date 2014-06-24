@@ -4,4 +4,4 @@ muted: "&aYou are currently muted"
 prefix: "&3[&ePunishments&3]"
 warned: "&cYou have been warned by &a<issuer>&c for &a<message>"
 punishment-error: "&cFailed to punish user <error>"
-punishment-success: "&c
+punishment-success: "&aYou have <punishment>'d <target> for <reason>"
