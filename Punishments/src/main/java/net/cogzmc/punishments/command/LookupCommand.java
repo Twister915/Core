@@ -26,6 +26,7 @@ public final class LookupCommand extends TargetedCommand {
         if (!sender.hasPermission("punish.lookup")) throw new PermissionException("You do not have permission for this command!");
         if (args.length < 1) throw new ArgumentRequirementException("You have not specified a target!");
         COfflinePlayer player = getTargetByArg(args[0]);
+        if (player == null) throw new ArgumentRequirementException("The player you specified is not specific enough!");
         List<Punishment> punishments = new ArrayList<>();
         for (PunishmentManager<?> punishmentManager : Core.getModule(Punishments.class).getPunishmentManagers()) {
             for (Punishment punishment : punishmentManager.getPunishmentsFor(player)) {
@@ -35,16 +36,18 @@ public final class LookupCommand extends TargetedCommand {
         Collections.sort(punishments, new Comparator<Punishment>() {
             @Override
             public int compare(Punishment o1, Punishment o2) {
-                return (int) (o1.getDateIssued().getTime()-o2.getDateIssued().getTime());
+                return (int) (o2.getDateIssued().getTime()-o1.getDateIssued().getTime());
             }
         });
         sender.sendMessage(punishmentsModule.getFormat("lookup-top-line", false, new String[]{"<count>", String.valueOf(punishments.size())}, new String[]{"<target>", player.getName()}));
         for (Punishment punishment : punishments) {
+            StringBuilder nameBuilder = new StringBuilder(Punishments.getNameFor(punishment.getClass()));
+            nameBuilder.setCharAt(0,Character.toUpperCase(nameBuilder.charAt(0)));
             String dateIssued = PRETTY_TIME_FORMATTER.format(punishment.getDateIssued());
             String dateExpires = (punishment instanceof TimedPunishment) ? PRETTY_TIME_FORMATTER.format(new Date(punishment.getDateIssued().getTime() + ((TimedPunishment) punishment).getLengthInSeconds()*1000)) : "never";
             sender.sendMessage(punishmentsModule.getFormat("lookup-punishment", false,
                     new String[]{"<active>", punishment.isActive() ? "yes" : "no"},
-                    new String[]{"<type>", Punishments.getNameFor(punishment.getClass())},
+                    new String[]{"<type>", nameBuilder.toString()},
                     new String[]{"<issuer>", punishment.getIssuer().getName()},
                     new String[]{"<expires>", dateExpires},
                     new String[]{"<issued>", dateIssued}));
