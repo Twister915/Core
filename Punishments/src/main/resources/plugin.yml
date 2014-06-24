@@ -1,0 +1,6 @@
+name: CorePunishments
+version: 2.0
+authors: [Twister915]
+main: net.cogzmc.punishments.Punishments
+description: Punishments
+depend: [Core]

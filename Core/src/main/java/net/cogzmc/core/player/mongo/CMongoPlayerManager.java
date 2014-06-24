@@ -49,6 +49,14 @@ public final class CMongoPlayerManager extends CMongoLivePlayerRepository implem
     }
 
     @Override
+    public COfflineMongoPlayer getOfflinePlayerByUUID(UUID uuid) {
+        for (CPlayer player : this) {
+            if (player.getUniqueIdentifier().equals(uuid)) return (CMongoPlayer) player;
+        }
+        return super.getOfflinePlayerByUUID(uuid);
+    }
+
+    @Override
     public List<COfflinePlayer> getOfflinePlayerByName(String username) {
         CPlayer onlinePlayer;
         if ((onlinePlayer = getOnlineCPlayerForName(username)) != null) {
@@ -109,7 +117,13 @@ public final class CMongoPlayerManager extends CMongoLivePlayerRepository implem
             throw new CPlayerJoinException("Error while logging you in in the CPlayerManager " + e.getClass().getSimpleName() + " : " + e.getMessage() + "\nPlease contact a developer!");
         }
         for (CPlayerConnectionListener playerConnectionListener : playerConnectionListeners) {
-            playerConnectionListener.onPlayerLogin(cMongoPlayer, address);
+            try {
+                playerConnectionListener.onPlayerLogin(cMongoPlayer, address);
+            } catch (CPlayerJoinException e) {
+                throw e;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         //Now, let's place this player in our online player map
         this.onlinePlayerMap.put(player.getName(), cMongoPlayer);
@@ -142,7 +156,7 @@ public final class CMongoPlayerManager extends CMongoLivePlayerRepository implem
             Core.getInstance().getLogger().severe("Could not save player into the database " + e.getMessage() + " - " + cPlayerForPlayer.getName());
         }
         for (CPlayerConnectionListener playerConnectionListener : playerConnectionListeners) {
-            playerConnectionListener.onPlayerDisconnect(cPlayerForPlayer);
+            try {playerConnectionListener.onPlayerDisconnect(cPlayerForPlayer);} catch (Exception e) {e.printStackTrace();}
         }
         this.onlinePlayerMap.remove(player.getName());
         if (Core.getNetworkManager() != null) Core.getNetworkManager().updateHeartbeat();

@@ -1,9 +1,4 @@
-no-permission: "&cYou don't have permission to do that."
-banned: "&cYou have been banned by <issuer> for: <reason>"
-kicked: "&eYou have been kicked by <issuer> for: <reason>"
-muted: "&cYou have been muted by <issuer> for: <reason>"
-muted-chat: "&eYou cannot type while muted."
-warned: "&eYou have been warned by <issuer> for: <reason>"
-
-lookup-item: "[<punishment>] <issuer> punished <target> for <reason> at <date>"
-lookup-clean: "<target>'s record is clean."
+disconnect-message-perm: "&3Punishments\n&ePunishment Type: &a<type>ed\n&eReason: &a<reason>\n&eIssued:&a <issued> by <issuer>\n&eExpires:&a <expires>"
+kick: "&3Punishments\n&cKicked by &a<issuer>&c for &a<reason>"
+muted: "&aYou are currently muted"
+prefix: "&3[&ePunishments&3]"

@@ -9,6 +9,7 @@ import net.cogzmc.core.Core;
 import net.cogzmc.core.model.Model;
 import net.cogzmc.core.model.ModelField;
 import net.cogzmc.core.model.ModelSerializer;
+import net.cogzmc.core.model.SerializationException;
 import net.cogzmc.core.netfiles.NetElement;
 import net.cogzmc.core.network.NetworkServer;
 import net.cogzmc.core.player.COfflinePlayer;
@@ -30,7 +31,12 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
         Class<? extends Model> modelClass = model.getClass();
         boolean typeAnnotated = modelClass.isAnnotationPresent(ModelField.class);
         ModelField annotation = typeAnnotated ? modelClass.getAnnotation(ModelField.class) : null;
-        for (Field field : modelClass.getDeclaredFields()) {
+        Field[] declaredFields = modelClass.getDeclaredFields();
+        Field[] fields = modelClass.getFields();
+        Set<Field> allFields = new HashSet<>();
+        Collections.addAll(allFields, declaredFields);
+        Collections.addAll(allFields, fields);
+        for (Field field : allFields) {
             if (typeAnnotated == field.isAnnotationPresent(ModelField.class)) continue; //check NetCommand source for more info on how this works, very similar pattern there.
             if (!typeAnnotated) annotation = field.getAnnotation(ModelField.class);
             field.setAccessible(true);
@@ -65,6 +71,11 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
             declaredField.set(t, applyTypeFiltersFromDB(dbObject.get(key), declaredField.getType()));
         }
         return t;
+    }
+
+    @Override
+    public Object sanatizeObject(Object object) throws SerializationException {
+        return applyTypeFiltersForDB(object);
     }
 
     static Object applyTypeFiltersForDB(Object object) {

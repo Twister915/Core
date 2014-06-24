@@ -62,7 +62,11 @@ class MongoModelStorage<T extends Model> implements ModelStorage<T> {
         try {
             declaredField = modelType.getDeclaredField(key);
         } catch (NoSuchFieldException e) {
-            return null;
+            try {
+                declaredField = modelType.getField(key);
+            } catch (NoSuchFieldException e2) {
+                return null;
+            }
         }
         if (!declaredField.getType().isAssignableFrom(value.getClass())) return null;
         List<T> ts = new ArrayList<>();

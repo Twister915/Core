@@ -15,5 +15,4 @@ import lombok.EqualsAndHashCode;
  */
 public class CPlayerJoinException extends Exception {
     private final String disconectMessage;
-    private boolean disconnect;
 }
