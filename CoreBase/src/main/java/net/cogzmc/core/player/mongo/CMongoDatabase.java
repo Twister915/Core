@@ -43,9 +43,11 @@ public final class CMongoDatabase implements CDatabase {
 
     @Override
     public void disconnect() {
-        this.mongoDatabase = null; //Memory management FTW
-        this.client.close();
-        this.client = null;
+        if (this.mongoDatabase != null) this.mongoDatabase = null; //Memory management FTW
+        if (this.client != null) {
+            this.client.close();
+            this.client = null;
+        }
     }
 
     public DBCollection getCollection(String name) {
