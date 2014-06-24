@@ -16,7 +16,7 @@ public final class VoidLimitation extends Limitation {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (event.getTo().getY() > 0) return; //This first because it's a more exclusive case and easier to test than doing a permissions check.
+        if (event.getTo().getY() > 1) return; //This first because it's a more exclusive case and easier to test than doing a permissions check.
         if (shouldIgnoreLimitation(event)) return;
         event.setCancelled(true);
         Player player = event.getPlayer();

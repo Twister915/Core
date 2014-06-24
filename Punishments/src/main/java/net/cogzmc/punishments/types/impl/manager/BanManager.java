@@ -30,6 +30,7 @@ public final class BanManager extends BaseMongoManager<Ban> {
                 new String[]{"<type>", activePunishmentFor.getClass().getSimpleName()},
                 new String[]{"<reason>", activePunishmentFor.getMessage()},
                 new String[]{"<issuer>", activePunishmentFor.getIssuer().getName()},
-                new String[]{"<date-issued>", PRETTY_TIME_FORMATTER.format(activePunishmentFor.getDateIssued())}));
+                new String[]{"<issued>", PRETTY_TIME_FORMATTER.format(activePunishmentFor.getDateIssued())},
+                new String[]{"<expires>", "never"}));
     }
 }

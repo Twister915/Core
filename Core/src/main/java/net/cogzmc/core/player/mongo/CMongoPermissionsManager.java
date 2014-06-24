@@ -1,5 +1,7 @@
 package net.cogzmc.core.player.mongo;
 
+import lombok.AccessLevel;
+import lombok.Setter;
 import net.cogzmc.core.player.*;
 
 import java.lang.ref.WeakReference;
@@ -42,7 +44,6 @@ public final class CMongoPermissionsManager extends CMongoGroupRepository implem
 
     @Override
     public void reloadPermissions() {
-        save();
         reloadGroups();
         Iterator<WeakReference<GroupReloadObserver>> iterator = groupReloadObservers.iterator();
         while (iterator.hasNext()) {

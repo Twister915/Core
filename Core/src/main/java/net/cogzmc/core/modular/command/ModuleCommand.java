@@ -133,6 +133,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
                 String[] choppedArgs = args.length < 2 ? new String[0] : Arrays.copyOfRange(args, 1, args.length);
                 preSubCommandDispatch(sender, choppedArgs, subCommand); //Notify the subclass that we are using a sub-command in case any staging needs to take place.
                 subCommand.onCommand(sender, command, s, choppedArgs);
+                handlePostSubCommand(sender, args);
                 return true;
             }
             //Get the permission and test for it
@@ -245,16 +246,17 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
 
     //Handles for all types in the event that no specific handler is overridden above.
     protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {throw new EmptyHandlerException();}
+    protected void handlePostSubCommand(CommandSender sender, String[] args) throws CommandException {throw new EmptyHandlerException();}
 
     protected boolean shouldGenerateHelpCommand() {return true;}
 
     //Default behavior if we delegate the call to the sub-class
     protected List<String> handleTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> ss = new ArrayList<>(); //Create a list to put possible names
-        String arg = args.length > 0 ? args[args.length - 1] : ""; //Get the last argument
+        String arg = args.length > 0 ? args[args.length - 1].toLowerCase() : ""; //Get the last argument
         for (Player player : Bukkit.getOnlinePlayers()) { //Loop through all the players
             String name1 = player.getName(); //Get this players name (since we reference it twice)
-            if (name1.startsWith(arg)) ss.add(name1); //And if it starts with the argument we add it to this list
+            if (name1.toLowerCase().startsWith(arg)) ss.add(name1); //And if it starts with the argument we add it to this list
         }
         return ss; //Return what we found.
     }

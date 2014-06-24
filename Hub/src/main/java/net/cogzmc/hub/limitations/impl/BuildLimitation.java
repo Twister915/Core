@@ -56,6 +56,10 @@ public final class BuildLimitation extends Limitation {
             case JUKEBOX:
             case CAKE_BLOCK:
             case ENDER_PORTAL_FRAME:
+            case WOODEN_DOOR:
+            case ENDER_CHEST:
+            case DISPENSER:
+            case DROPPER:
                 break;
             default:
                 return;

@@ -30,6 +30,11 @@ public final class TemporaryMuteManager extends BaseTemporaryMongoManager<Tempor
     }
 
     @Override
+    void onPunish(CPlayer player, TemporaryMute punishment) {
+        mutedPlayers.add(player);
+    }
+
+    @Override
     boolean canConnect(CPlayer player, TemporaryMute punishment) {
         return true;
     }

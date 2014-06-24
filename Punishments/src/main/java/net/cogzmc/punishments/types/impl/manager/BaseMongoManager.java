@@ -7,8 +7,8 @@ import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerJoinException;
 import net.cogzmc.core.player.mongo.CMongoDatabase;
 import net.cogzmc.punishments.PunishmentManager;
-import net.cogzmc.punishments.types.PunishmentException;
 import net.cogzmc.punishments.Punishments;
+import net.cogzmc.punishments.types.PunishmentException;
 import net.cogzmc.punishments.types.TimedPunishment;
 import net.cogzmc.punishments.types.impl.TargetOnlinesOnly;
 import net.cogzmc.punishments.types.impl.model.MongoPunishment;
@@ -94,7 +94,7 @@ abstract class BaseMongoManager<T extends MongoPunishment> implements Punishment
 
     @Override
     public T getActivePunishmentFor(COfflinePlayer target) {
-        if (target instanceof CPlayer) return activePunishments.get(target);
+        if (target instanceof CPlayer && activePunishments.containsKey(target)) return activePunishments.get(target);
         for (T t : getPunishmentsFor(target)) {
             if (t.isActive()) return t;
         }

@@ -29,6 +29,11 @@ public final class MuteManager extends BaseMongoManager<Mute> implements Listene
     }
 
     @Override
+    void onPunish(CPlayer player, Mute punishment) {
+        mutedPlayers.add(player);
+    }
+
+    @Override
     boolean canConnect(CPlayer player, Mute punishment) {
         return true;
     }

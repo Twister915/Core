@@ -38,6 +38,7 @@ public final class PermanentPunishCommand<T extends Punishment> extends BasePuni
             punishmentManager.punish(targetPlayer, reason, sender);
         } catch (PunishmentException e) {
             sender.sendMessage(module.getFormat("punishment-error", new String[]{"<error>", e.getMessage()}));
+            return;
         }
         sender.sendMessage(module.getFormat("punishment-success", new String[]{"<punishment>", name}, new String[]{"<target>", targetPlayer.getName()}, new String[]{"<reason>", reason}));
     }

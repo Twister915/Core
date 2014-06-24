@@ -7,6 +7,10 @@ import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.punishments.PunishmentManager;
 import net.cogzmc.punishments.Punishments;
 import net.cogzmc.punishments.types.Punishment;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+
+import java.util.List;
 
 abstract class BasePunishCommand<T extends Punishment, M extends PunishmentManager<T>> extends TargetedCommand {
     protected final Class<T> clazz;
