@@ -4,7 +4,6 @@ import net.cogzmc.core.Core;
 import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.punishments.Punishments;
-import net.cogzmc.punishments.types.TimedPunishment;
 import net.cogzmc.punishments.types.impl.model.TemporaryBan;
 import org.bson.types.ObjectId;
 
