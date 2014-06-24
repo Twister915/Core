@@ -40,7 +40,8 @@ public final class LookupCommand extends TargetedCommand {
             }
         });
         sender.sendMessage(punishmentsModule.getFormat("lookup-top-line", false, new String[]{"<count>", String.valueOf(punishments.size())}, new String[]{"<target>", player.getName()}));
-        for (Punishment punishment : punishments) {
+        for (int x = 0; x < punishments.size(); x++) {
+            Punishment punishment = punishments.get(x);
             StringBuilder nameBuilder = new StringBuilder(Punishments.getNameFor(punishment.getClass()));
             nameBuilder.setCharAt(0,Character.toUpperCase(nameBuilder.charAt(0)));
             String dateIssued = PRETTY_TIME_FORMATTER.format(punishment.getDateIssued());
@@ -50,7 +51,8 @@ public final class LookupCommand extends TargetedCommand {
                     new String[]{"<type>", nameBuilder.toString()},
                     new String[]{"<issuer>", punishment.getIssuer().getName()},
                     new String[]{"<expires>", dateExpires},
-                    new String[]{"<issued>", dateIssued}));
+                    new String[]{"<issued>", dateIssued},
+                    new String[]{"<index>", String.valueOf(x)}));
         }
     }
 }
