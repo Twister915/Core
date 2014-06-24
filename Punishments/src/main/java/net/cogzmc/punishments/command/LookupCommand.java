@@ -52,6 +52,7 @@ public final class LookupCommand extends TargetedCommand {
                     new String[]{"<issuer>", punishment.getIssuer().getName()},
                     new String[]{"<expires>", dateExpires},
                     new String[]{"<issued>", dateIssued},
+                    new String[]{"<reason>", punishment.getMessage()},
                     new String[]{"<index>", String.valueOf(x+1)}));
         }
     }
