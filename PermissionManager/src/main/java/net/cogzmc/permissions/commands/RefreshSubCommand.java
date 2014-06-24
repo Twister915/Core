@@ -19,6 +19,7 @@ public class RefreshSubCommand extends ModuleCommand {
     @Override
     protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
         boolean isGlobal = args.length > 1 && args[0].equalsIgnoreCase("network");
+        Core.getPermissionsManager().save();
         Core.getPermissionsManager().reloadPermissions();
         if (isGlobal && Core.getNetworkManager() != null) Core.getNetworkManager().sendMassNetCommand(new PermissionsReloadNetCommand());
         sender.sendMessage(PermissionsManager.getInstance().getFormat("reloaded"));
