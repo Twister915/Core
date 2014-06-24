@@ -13,6 +13,7 @@ import net.cogzmc.punishments.types.TimedPunishment;
 import net.cogzmc.punishments.types.impl.TargetOnlinesOnly;
 import net.cogzmc.punishments.types.impl.model.MongoPunishment;
 import org.bson.types.ObjectId;
+import org.ocpsoft.prettytime.Duration;
 import org.ocpsoft.prettytime.PrettyTime;
 
 import java.net.InetAddress;
@@ -105,16 +106,18 @@ abstract class BaseMongoManager<T extends MongoPunishment> implements Punishment
     public void onPlayerLogin(CPlayer player, InetAddress address) throws CPlayerJoinException {
         T activePunishmentFor = getActivePunishmentFor(player);
         if (activePunishmentFor == null) return;
-        if (!canConnect(player, activePunishmentFor))
+        if (!canConnect(player, activePunishmentFor)) {
+            List<Duration> durations = PRETTY_TIME_FORMATTER.calculatePreciseDuration(activePunishmentFor.getDateIssued());
+            String timeSince = PRETTY_TIME_FORMATTER.format(durations);
+            String expires = (activePunishmentFor instanceof TimedPunishment) ? PRETTY_TIME_FORMATTER.format(new Date(activePunishmentFor.getDateIssued().getTime() + (((TimedPunishment) activePunishmentFor).getLengthInSeconds() * 1000))) : "never";
             throw new CPlayerJoinException(Core.getModule(Punishments.class).getFormat("disconnect-message-perm", false,
                     new String[]{"<type>", activePunishmentFor.getClass().getSimpleName()},
                     new String[]{"<reason>", activePunishmentFor.getMessage()},
                     new String[]{"<issuer>", activePunishmentFor.getIssuer().getName()},
-                    new String[]{"<issued>", PRETTY_TIME_FORMATTER.format(activePunishmentFor.getDateIssued())},
-                    new String[]{"<expires>",
-                        (activePunishmentFor instanceof TimedPunishment) ?
-                            "in " + PRETTY_TIME_FORMATTER.format(new Date(activePunishmentFor.getDateIssued().getTime()+(((TimedPunishment) activePunishmentFor).getLengthInSeconds()*1000))) : "never"}
-                    ));
+                    new String[]{"<issued>", timeSince},
+                    new String[]{"<expires>", expires}
+            ));
+        }
         activePunishments.put(player, activePunishmentFor);
         onJoin(player, activePunishmentFor);
     }
