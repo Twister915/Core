@@ -96,7 +96,7 @@ abstract class BaseMongoManager<T extends MongoPunishment> implements Punishment
     public T getActivePunishmentFor(COfflinePlayer target) {
         if (target instanceof CPlayer) return activePunishments.get(target);
         for (T t : getPunishmentsFor(target)) {
-            if (!t.isActive()) return t;
+            if (t.isActive()) return t;
         }
         return null;
     }
