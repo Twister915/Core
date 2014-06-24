@@ -7,3 +7,4 @@ target/
 
 #MacOS
 .DS_Store
+DataServerlet/dependency-reduced-pom.xml

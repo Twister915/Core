@@ -15,7 +15,7 @@ public class ChannelNetCommandHandler implements NetCommandHandler<ChatNetComman
         if (offlinePlayerByUUID == null) return;
         Channel channelByName = CoreChat.getInstance().getChannelManager().getChannelByName(netCommand.getChannel());
         try {
-            ChatterListener.handleCrossServer(offlinePlayerByUUID, netCommand.getMessage(), channelByName);
+            ChatterListener.sendMessage(offlinePlayerByUUID, netCommand.getMessage(), channelByName);
         } catch (ChannelException e) {
             Core.getInstance().getLogger().severe("Unable to handle cross server message from " + sender.getName() + " on channel " + netCommand.getChannel());
         }

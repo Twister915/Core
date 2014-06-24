@@ -17,8 +17,7 @@ public final class ServerCommand extends ModuleCommand implements NetworkServerD
         ImmutableList<ModuleCommand> subCommands = getSubCommands();
         unregisterSubCommand(subCommands.toArray(new ModuleCommand[subCommands.size()]));
         for (NetworkServer networkServer : Core.getNetworkManager().getServers()) {
-            if (!networkServer.equals(Core.getNetworkManager().getThisServer()))
-                registerSubCommand(new NetworkServerCommand(networkServer));
+            registerSubCommand(new NetworkServerCommand(networkServer));
         }
     }
 

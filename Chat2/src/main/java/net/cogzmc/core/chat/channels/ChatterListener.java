@@ -43,6 +43,7 @@ public final class ChatterListener implements Listener {
         for (ChatterObserver chatterObserver : channelManager.getChatterObservers()) {
             chatterObserver.onMessageSent(sender, channel, message);
         }
+        Bukkit.getServer().getConsoleSender().sendMessage(message);
         try {
             attemptCrossServer(sender, message, channel);
         } catch (ChannelException ignored) {
@@ -63,7 +64,7 @@ public final class ChatterListener implements Listener {
         Core.getNetworkManager().sendMassNetCommand(chatNetCommand);
     }
 
-    static void handleCrossServer(COfflinePlayer sender, String message, Channel channel) throws ChannelException {
+    static void sendMessage(COfflinePlayer sender, String message, Channel channel) throws ChannelException {
         IChannelManager cManager = CoreChat.getInstance().getChannelManager();
         String s = channel.formatMessage(sender, message);
         for (CPlayer cPlayer : cManager.getListeners(channel)) {
