@@ -133,7 +133,9 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
                 String[] choppedArgs = args.length < 2 ? new String[0] : Arrays.copyOfRange(args, 1, args.length);
                 preSubCommandDispatch(sender, choppedArgs, subCommand); //Notify the subclass that we are using a sub-command in case any staging needs to take place.
                 subCommand.onCommand(sender, command, s, choppedArgs);
-                handlePostSubCommand(sender, args);
+                try {
+                    handlePostSubCommand(sender, args);
+                } catch (EmptyHandlerException ignored) {}
                 return true;
             }
             //Get the permission and test for it
