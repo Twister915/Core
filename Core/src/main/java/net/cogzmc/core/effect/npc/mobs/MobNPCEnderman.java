@@ -28,6 +28,11 @@ public final class MobNPCEnderman extends AbstractMobNPC {
     }
 
     @Override
+    protected Float getMaximumHealth() {
+        return 40F;
+    }
+
+    @Override
     protected void onDataWatcherUpdate() {
         super.onDataWatcherUpdate();
         dataWatcher.setObject(16, carriedItemStack.getTypeId());

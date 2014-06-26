@@ -34,10 +34,13 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     protected final WrappedDataWatcher dataWatcher;
     @Getter private boolean spawned;
     @Getter protected final int id;
-    @Getter private String customName;
+    @Getter @Setter private String customName;
+    @Getter @Setter private Float health = getMaximumHealth();
+    @Getter @Setter private boolean showingNametag = true;
     private InteractWatcher listener;
 
     protected abstract EntityType getEntityType();
+    protected abstract Float getMaximumHealth();
     protected void onUpdate() {}
     protected void onDataWatcherUpdate() {}
 
@@ -187,16 +190,12 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     }
 
     protected void updateDataWatcher() {
-        dataWatcher.setObject(6, 20f); //Health
-        dataWatcher.setObject(11, customName == null ? 0 : (byte)1); //Always show nametag
-        if (customName != null) dataWatcher.setObject(10, customName); //Nametag value
+        dataWatcher.setObject(6, Math.min(health, getMaximumHealth())); //Health
+        if (showingNametag) dataWatcher.setObject(11, (byte)1); //Always show nametag
+        else if (dataWatcher.getObject(11) != null) dataWatcher.removeObject(11);
+        if (customName != null) dataWatcher.setObject(10, customName.substring(0, Math.min(customName.length(), 64))); //Nametag value
         else if (dataWatcher.getObject(10) != null) dataWatcher.removeObject(10);
         onDataWatcherUpdate();
-    }
-
-    public void setCustomName(String name) {
-        this.customName = name;
-        updateDataWatcher();
     }
 
     public ImmutableSet<CPlayer> getViewers() {

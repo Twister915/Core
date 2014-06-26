@@ -27,6 +27,11 @@ public final class MobNPCCreeper extends AbstractAgeableMobNPC {
     }
 
     @Override
+    protected Float getMaximumHealth() {
+        return 20F;
+    }
+
+    @Override
     protected void onDataWatcherUpdate() {
         super.onDataWatcherUpdate();
         dataWatcher.setObject(16, (byte)(fused ? 1 : -1));

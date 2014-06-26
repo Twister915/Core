@@ -24,6 +24,11 @@ public final class MobNPCOcelot extends AbstractTameableMobNPC {
     }
 
     @Override
+    protected Float getMaximumHealth() {
+        return 10F;
+    }
+
+    @Override
     protected void onDataWatcherUpdate() {
         super.onDataWatcherUpdate();
         if (!isTame() && (ocelotType == null || ocelotType.getId() != 1)) ocelotType = Ocelot.Type.WILD_OCELOT;

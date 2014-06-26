@@ -3,9 +3,7 @@ package net.cogzmc.core.effect.npc.mobs;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.Setter;
 import net.cogzmc.core.effect.npc.AbstractGearMobNPC;
-import net.cogzmc.core.effect.npc.AbstractMobNPC;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.util.Point;
 import org.bukkit.World;
@@ -15,7 +13,7 @@ import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public final class MobNPCZombie extends AbstractGearMobNPC {
+public class MobNPCZombie extends AbstractGearMobNPC {
     private boolean villager;
     private boolean child;
     private boolean converting;
@@ -30,9 +28,14 @@ public final class MobNPCZombie extends AbstractGearMobNPC {
     }
 
     @Override
+    protected Float getMaximumHealth() {
+        return 20F;
+    }
+
+    @Override
     protected void onDataWatcherUpdate() {
         super.onDataWatcherUpdate();
-        if (child) dataWatcher.setObject(12, (byte)1);
+        if (child) dataWatcher.setObject(12, (byte) 1);
         else if (dataWatcher.getObject(12) != null) dataWatcher.removeObject(12);
 
         if (villager) dataWatcher.setObject(13, (byte)1);

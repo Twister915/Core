@@ -8,14 +8,13 @@ import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.util.Point;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
 public final class MobNPCSkeleton extends AbstractGearMobNPC {
-    private boolean wither;
+    private boolean wither = false;
 
     public MobNPCSkeleton(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
         super(location, world, observers, title);
@@ -24,6 +23,11 @@ public final class MobNPCSkeleton extends AbstractGearMobNPC {
     @Override
     protected EntityType getEntityType() {
         return EntityType.SKELETON;
+    }
+
+    @Override
+    protected Float getMaximumHealth() {
+        return 20F;
     }
 
     @Override

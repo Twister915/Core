@@ -36,6 +36,11 @@ public final class MobNPCVillager extends AbstractMobNPC {
     }
 
     @Override
+    protected Float getMaximumHealth() {
+        return 20F;
+    }
+
+    @Override
     protected void onDataWatcherUpdate() {
         if (profession != null) dataWatcher.setObject(16, profession.getId()); //Profession
         else if (dataWatcher.getObject(16) != null) dataWatcher.removeObject(16);
