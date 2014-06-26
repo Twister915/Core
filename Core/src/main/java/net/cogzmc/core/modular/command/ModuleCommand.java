@@ -116,6 +116,12 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
             //STEP ONE: Handle sub-commands
             ModuleCommand subCommand = null;
 
+            //Get the permission and test for it
+            if (getClass().isAnnotationPresent(CommandPermission.class)) {
+                CommandPermission annotation = getClass().getAnnotation(CommandPermission.class);
+                if (!sender.hasPermission(annotation.value()) && !(sender.isOp() && annotation.isOpExempt())) throw new PermissionException("You do not have permission for this command!");
+            }
+            
             //Check if we HAVE to use sub-commands (a behavior this class provides)
             if (isUsingSubCommandsOnly()) {
                 //Check if there are not enough args for there to be a sub command
@@ -137,11 +143,6 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
                     handlePostSubCommand(sender, args);
                 } catch (EmptyHandlerException ignored) {}
                 return true;
-            }
-            //Get the permission and test for it
-            if (getClass().isAnnotationPresent(CommandPermission.class)) {
-                CommandPermission annotation = getClass().getAnnotation(CommandPermission.class);
-                if (!sender.hasPermission(annotation.value()) && !(sender.isOp() && annotation.isOpExempt())) throw new PermissionException("You do not have permission for this command!");
             }
 
             //Now that we've made it past the sub commands and permissions, STEP TWO: actually handle the command and it's args.
