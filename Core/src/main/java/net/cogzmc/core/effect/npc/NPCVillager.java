@@ -224,6 +224,7 @@ public final class NPCVillager implements Observable<NPCObserver> {
             for (NPCObserver npcObserver : watchingFor.getObservers()) {
                 try {npcObserver.onPlayerInteract(onlinePlayer, watchingFor, clickAction);} catch (Exception e) {e.printStackTrace();}
             }
+            event.setCancelled(true);
         }
     }
 }
