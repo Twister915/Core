@@ -13,7 +13,7 @@ import net.cogzmc.core.effect.CustomEntityIDManager;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.util.Point;
 import net.cogzmc.util.Observable;
-import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
@@ -28,6 +28,7 @@ import static org.bukkit.entity.Villager.Profession;
 @Setter(AccessLevel.NONE)
 public final class NPCVillager implements Observable<NPCObserver> {
     @Getter private Point location;
+    @Getter private final World world;
     private final Set<CPlayer> viewers;
     private final Set<NPCObserver> observers;
     private final WrappedDataWatcher dataWatcher;
@@ -41,12 +42,13 @@ public final class NPCVillager implements Observable<NPCObserver> {
         SoftVillagerManager.getInstance().villagerRefs.add(new WeakReference<>(this));
     }
 
-    public NPCVillager(Point location, Set<CPlayer> observers, String title) {
-        this(location, observers, title, null);
+    public NPCVillager(Point location, World world, Set<CPlayer> observers, String title) {
+        this(location, world, observers, title, null);
     }
 
-    public NPCVillager(@NonNull Point location, Set<CPlayer> observers, @NonNull String title, Profession profession) {
+    public NPCVillager(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title, Profession profession) {
         this.location = location;
+        this.world = world;
         this.viewers = new HashSet<>();
         if (observers != null) this.viewers.addAll(observers);
         this.dataWatcher = new WrappedDataWatcher();
@@ -91,15 +93,16 @@ public final class NPCVillager implements Observable<NPCObserver> {
     }
 
     private Player[] getTargets() {
-        if (this.viewers.size() == 0) return Bukkit.getOnlinePlayers();
-        else {
-            CPlayer[] cPlayers = this.viewers.toArray(new CPlayer[this.viewers.size()]);
-            Player[] players = new Player[cPlayers.length];
-            for (int x = 0; x < cPlayers.length; x++) {
-                players[x] = cPlayers[x].getBukkitPlayer();
-            }
-            return players;
+        CPlayer[] cPlayers = (this.viewers.size() == 0 ? Core.getPlayerManager().getOnlinePlayers() : this.viewers).
+                toArray(new CPlayer[this.viewers.size()]);
+        Player[] players = new Player[cPlayers.length];
+        //filter the players
+        for (int x = 0; x < cPlayers.length; x++) {
+            Player bukkitPlayer = cPlayers[x].getBukkitPlayer();
+            if (!bukkitPlayer.getWorld().equals(world)) continue;
+            players[x] = bukkitPlayer;
         }
+        return players;
     }
 
     public void spawn() {
@@ -189,7 +192,8 @@ public final class NPCVillager implements Observable<NPCObserver> {
         if (customName != null) dataWatcher.setObject(10, customName); //Nametag value
         else if (dataWatcher.getObject(10) != null) dataWatcher.removeObject(10);
         dataWatcher.setObject(12, 1); //Age (adult)
-        if (profession != null) dataWatcher.setObject(16, profession.getId()); //Profession
+        if (profession != null) //noinspection deprecation
+            dataWatcher.setObject(16, profession.getId()); //Profession
         else if (dataWatcher.getObject(16) != null) dataWatcher.removeObject(16);
     }
 
