@@ -17,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,6 +36,10 @@ public final class NPCVillager implements Observable<NPCObserver> {
     @Getter private String customName;
     @Getter private Profession profession;
     private InteractWatcher listener;
+
+    {
+        SoftVillagerManager.getInstance().villagerRefs.add(new WeakReference<>(this));
+    }
 
     public NPCVillager(Point location, Set<CPlayer> observers, String title) {
         this(location, observers, title, null);
@@ -116,6 +121,7 @@ public final class NPCVillager implements Observable<NPCObserver> {
         }
         ProtocolLibrary.getProtocolManager().removePacketListener(listener);
         listener = null;
+        spawned = false;
     }
 
     public void forceSpawn(Player player) {
@@ -195,6 +201,10 @@ public final class NPCVillager implements Observable<NPCObserver> {
     public void setProfession(Profession profession) {
         this.profession = profession;
         updateDataWatcher();
+    }
+
+    public ImmutableSet<CPlayer> getViewers() {
+        return ImmutableSet.copyOf(viewers);
     }
 
     private static class InteractWatcher extends PacketAdapter {

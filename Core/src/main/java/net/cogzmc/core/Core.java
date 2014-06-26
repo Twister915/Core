@@ -3,6 +3,7 @@ package net.cogzmc.core;
 import lombok.Getter;
 import net.cogzmc.core.config.YAMLConfigurationFile;
 import net.cogzmc.core.effect.enderBar.EnderBarManager;
+import net.cogzmc.core.effect.npc.SoftVillagerManager;
 import net.cogzmc.core.model.ModelManager;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.netfiles.NetFileManager;
@@ -77,6 +78,7 @@ public class Core extends JavaPlugin {
 
             //Some extras
             this.enderBarManager = new EnderBarManager();
+            new SoftVillagerManager();
         } catch (Throwable t) {
             t.printStackTrace();
             Bukkit.getPluginManager().disablePlugin(this);
