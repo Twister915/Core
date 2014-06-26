@@ -12,5 +12,5 @@ public interface NPCObserver {
      * @param villager The villager that was interacted with.
      * @param action How they interacted with the entity.
      */
-    void onPlayerInteract(CPlayer player, NPCVillager villager, ClickAction action);
+    void onPlayerInteract(CPlayer player, AbstractNPC villager, ClickAction action);
 }
