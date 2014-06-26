@@ -8,6 +8,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.google.common.collect.ImmutableSet;
 import lombok.*;
+import lombok.extern.java.Log;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.effect.CustomEntityIDManager;
 import net.cogzmc.core.player.CPlayer;
@@ -24,7 +25,8 @@ import java.util.Set;
 @Data
 @Getter(AccessLevel.NONE)
 @Setter(AccessLevel.NONE)
-public abstract class AbstractNPC implements Observable<NPCObserver> {
+@Log(topic = "Abstract Mob Log")
+public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     @Getter private Point location;
     @Getter private final World world;
     private final Set<CPlayer> viewers;
@@ -35,15 +37,15 @@ public abstract class AbstractNPC implements Observable<NPCObserver> {
     @Getter private String customName;
     private InteractWatcher listener;
 
-    abstract EntityType getEntityType();
-    void onUpdate() {}
-    void onDataWatcherUpdate() {}
+    protected abstract EntityType getEntityType();
+    protected void onUpdate() {}
+    protected void onDataWatcherUpdate() {}
 
     {
         SoftNPCManager.getInstance().villagerRefs.add(new WeakReference<>(this));
     }
 
-    public AbstractNPC(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
+    public AbstractMobNPC(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
         this.location = location;
         this.world = world;
         this.viewers = new HashSet<>();
@@ -109,6 +111,7 @@ public abstract class AbstractNPC implements Observable<NPCObserver> {
             packet.sendPacket(player);
         }
         spawned = true;
+        log.info("Spawning " + packet.getType() + " with ID #" + id);
     }
 
     public void despawn() {
@@ -188,7 +191,6 @@ public abstract class AbstractNPC implements Observable<NPCObserver> {
         dataWatcher.setObject(11, customName == null ? 0 : (byte)1); //Always show nametag
         if (customName != null) dataWatcher.setObject(10, customName); //Nametag value
         else if (dataWatcher.getObject(10) != null) dataWatcher.removeObject(10);
-        dataWatcher.setObject(12, 1); //Age (adult)
         onDataWatcherUpdate();
     }
 
@@ -202,9 +204,9 @@ public abstract class AbstractNPC implements Observable<NPCObserver> {
     }
 
     private static class InteractWatcher extends PacketAdapter {
-        private final AbstractNPC watchingFor;
+        private final AbstractMobNPC watchingFor;
 
-        public InteractWatcher(AbstractNPC watchingFor) {
+        public InteractWatcher(AbstractMobNPC watchingFor) {
             super(Core.getInstance(), PacketType.Play.Client.USE_ENTITY);
             this.watchingFor = watchingFor;
         }

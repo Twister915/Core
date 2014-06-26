@@ -1,6 +1,7 @@
 package net.cogzmc.core.effect.npc;
 
 import com.comphenix.packetwrapper.WrapperPlayServerEntityEquipment;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.util.Point;
@@ -15,12 +16,13 @@ import java.util.Set;
 /**
  * Represents an NPC who has an item inhand or as armor.
  */
-abstract class AbstractGearNPC extends AbstractNPC {
+@EqualsAndHashCode(callSuper = true)
+public abstract class AbstractGearMobNPC extends AbstractMobNPC {
     private ItemStack itemInHand;
     private ItemStack[] armor = new ItemStack[4];
     private final Set<Integer> gearToUpdate = new HashSet<>();
 
-    public AbstractGearNPC(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
+    public AbstractGearMobNPC(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
         super(location, world, observers, title);
     }
 
@@ -56,7 +58,7 @@ abstract class AbstractGearNPC extends AbstractNPC {
     }
 
     @Override
-    void onUpdate() {
+    protected void onUpdate() {
         super.onUpdate();
         updateEquipment();
     }

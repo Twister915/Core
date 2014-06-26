@@ -3,7 +3,7 @@ package net.cogzmc.core.effect.npc;
 import net.cogzmc.core.player.CPlayer;
 
 /**
- * Observer for the {@link net.cogzmc.core.effect.npc.NPCVillager} villager.
+ * Observer for the {@link net.cogzmc.core.effect.npc.mobs.MobNPCVillager} villager.
  */
 public interface NPCObserver {
     /**
@@ -12,5 +12,5 @@ public interface NPCObserver {
      * @param villager The villager that was interacted with.
      * @param action How they interacted with the entity.
      */
-    void onPlayerInteract(CPlayer player, AbstractNPC villager, ClickAction action);
+    void onPlayerInteract(CPlayer player, AbstractMobNPC villager, ClickAction action);
 }

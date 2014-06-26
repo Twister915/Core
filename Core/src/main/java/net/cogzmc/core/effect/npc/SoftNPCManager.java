@@ -21,7 +21,7 @@ import java.util.Set;
 public final class SoftNPCManager implements CPlayerConnectionListener, Listener {
     @Getter private static SoftNPCManager instance;
 
-    final Set<WeakReference<AbstractNPC>> villagerRefs = new HashSet<>();
+    final Set<WeakReference<AbstractMobNPC>> villagerRefs = new HashSet<>();
 
     public SoftNPCManager() {
         instance = this;
@@ -30,9 +30,9 @@ public final class SoftNPCManager implements CPlayerConnectionListener, Listener
     }
 
     private void ensureAllValid() {
-        Iterator<WeakReference<AbstractNPC>> iterator = villagerRefs.iterator();
+        Iterator<WeakReference<AbstractMobNPC>> iterator = villagerRefs.iterator();
         while (iterator.hasNext()) {
-            WeakReference<AbstractNPC> next = iterator.next();
+            WeakReference<AbstractMobNPC> next = iterator.next();
             if (next.get() == null) iterator.remove();
         }
     }
@@ -43,8 +43,8 @@ public final class SoftNPCManager implements CPlayerConnectionListener, Listener
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         ensureAllValid();
-        for (WeakReference<AbstractNPC> villagerRef : villagerRefs) {
-            final AbstractNPC npcVillager = villagerRef.get();
+        for (WeakReference<AbstractMobNPC> villagerRef : villagerRefs) {
+            final AbstractMobNPC npcVillager = villagerRef.get();
             if (npcVillager == null) continue;
             if (npcVillager.isSpawned() && npcVillager.getViewers().size() == 0) {
                 npcVillager.forceSpawn(event.getPlayer());
@@ -55,8 +55,8 @@ public final class SoftNPCManager implements CPlayerConnectionListener, Listener
     @Override
     public void onPlayerDisconnect(CPlayer player) {
         ensureAllValid();
-        for (WeakReference<AbstractNPC> villagerRef : villagerRefs) {
-            final AbstractNPC villager = villagerRef.get();
+        for (WeakReference<AbstractMobNPC> villagerRef : villagerRefs) {
+            final AbstractMobNPC villager = villagerRef.get();
             if (villager == null) continue;
             if (villager.getViewers().contains(player)) villager.removeViewer(player);
         }
@@ -66,8 +66,8 @@ public final class SoftNPCManager implements CPlayerConnectionListener, Listener
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         ensureAllValid();
         final CPlayer onlinePlayer = Core.getOnlinePlayer(event.getPlayer());
-        for (WeakReference<AbstractNPC> villagerRef : villagerRefs) {
-            final AbstractNPC villager = villagerRef.get();
+        for (WeakReference<AbstractMobNPC> villagerRef : villagerRefs) {
+            final AbstractMobNPC villager = villagerRef.get();
             if (villager == null) continue;
             if (!villager.isSpawned()) continue;
             if (!villager.getWorld().equals(event.getRespawnLocation().getWorld())) continue;

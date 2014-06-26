@@ -1,7 +1,8 @@
-package net.cogzmc.core.effect.npc;
+package net.cogzmc.core.effect.npc.mobs;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import net.cogzmc.core.effect.npc.AbstractMobNPC;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.util.Point;
 import org.bukkit.World;
@@ -12,14 +13,14 @@ import java.util.Set;
 import static org.bukkit.entity.Villager.Profession;
 
 @EqualsAndHashCode(callSuper = true)
-public final class NPCVillager extends AbstractNPC {
+public final class MobNPCVillager extends AbstractMobNPC {
     private Profession profession;
 
-    public NPCVillager(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
+    public MobNPCVillager(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
         this(location, world, observers, title, null);
     }
 
-    public NPCVillager(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title, Profession profession) {
+    public MobNPCVillager(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title, Profession profession) {
         super(location, world, observers, title);
         this.profession = profession;
     }
@@ -30,12 +31,12 @@ public final class NPCVillager extends AbstractNPC {
     }
 
     @Override
-    EntityType getEntityType() {
+    protected EntityType getEntityType() {
         return EntityType.VILLAGER;
     }
 
     @Override
-    void onDataWatcherUpdate() {
+    protected void onDataWatcherUpdate() {
         if (profession != null) dataWatcher.setObject(16, profession.getId()); //Profession
         else if (dataWatcher.getObject(16) != null) dataWatcher.removeObject(16);
     }
