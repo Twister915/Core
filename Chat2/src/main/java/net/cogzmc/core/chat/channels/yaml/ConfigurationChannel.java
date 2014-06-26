@@ -82,9 +82,9 @@ public final class ConfigurationChannel implements Channel {
         }
         values.put("sender-actual", player.getName());
         values.put("sender-display", player.getDisplayName());
-        String prefix = player.getChatPrefix() == null ? player.getPrimaryGroup().getChatPrefix() : player.getChatPrefix();
-        String suffix = player.getChatSuffix() == null ? player.getPrimaryGroup().getChatSuffix() : player.getChatSuffix();
-        String nameColor = player.getChatColor() == null ? player.getPrimaryGroup().getChatColor() : player.getChatColor();
+        String prefix = player.getChatPrefix() == null ? player.getPrimaryGroup() == null ? "" : player.getPrimaryGroup().getChatPrefix() : player.getChatPrefix();
+        String suffix = player.getChatSuffix() == null ? player.getPrimaryGroup() == null ? "" : player.getPrimaryGroup().getChatSuffix() : player.getChatSuffix();
+        String nameColor = player.getChatColor() == null ? player.getPrimaryGroup() == null ? "" : player.getPrimaryGroup().getChatColor() : player.getChatColor();
         values.put("prefix", ChatColor.translateAlternateColorCodes('&',prefix));
         values.put("suffix", ChatColor.translateAlternateColorCodes('&',suffix));
         values.put("name-color", ChatColor.translateAlternateColorCodes('&',nameColor));
