@@ -69,6 +69,7 @@ public final class SoftVillagerManager implements CPlayerConnectionListener, Lis
         for (WeakReference<NPCVillager> villagerRef : villagerRefs) {
             final NPCVillager villager = villagerRef.get();
             if (villager == null) continue;
+            if (!villager.isSpawned()) continue;
             if (!villager.getWorld().equals(event.getRespawnLocation().getWorld())) continue;
             Bukkit.getScheduler().runTask(Core.getInstance(), new Runnable() {
                 @Override
