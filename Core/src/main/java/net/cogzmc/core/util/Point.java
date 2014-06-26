@@ -32,4 +32,15 @@ public final class Point {
         Location l = block.getLocation();
         return Point.of((double)l.getBlockX(), (double)l.getBlockY(), (double)l.getBlockZ(), 0f, 0f);
     }
+
+    public Double distanceSquared(Point point) {
+        Double x = Math.pow((this.x-point.getX()), 2);
+        Double y = Math.pow((this.y-point.getX()), 2);
+        Double z = Math.pow((this.z-point.getX()), 2);
+        return x + y + z;
+    }
+
+    public Double distance(Point point) {
+        return Math.sqrt(distanceSquared(point));
+    }
 }
