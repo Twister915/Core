@@ -44,4 +44,12 @@ public class MobNPCZombie extends AbstractGearMobNPC {
         if (converting) dataWatcher.setObject(14, (byte)1);
         else if (dataWatcher.getObject(14) != null) dataWatcher.removeObject(14);
     }
+
+    public void playBecomeVillager() {
+        playStatus(16);
+    }
+
+    public void playBecomeVillager(Set<CPlayer> players) {
+        playStatus(players, 16);
+    }
 }

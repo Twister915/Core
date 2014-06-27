@@ -49,4 +49,20 @@ public final class MobNPCVillager extends AbstractMobNPC {
         else if (dataWatcher.getObject(16) != null) dataWatcher.removeObject(16);
     }
 
+    public void playAngryVillagerAnimation() {
+        playStatus(13);
+    }
+
+    public void playAngryVillagerAnimation(Set<CPlayer> players) {
+        playStatus(players, 13);
+    }
+
+    public void playHappyVillagerAnimation() {
+        playStatus(14);
+    }
+
+    public void playHappyVillagerAnimation(Set<CPlayer> players) {
+        playStatus(players, 14);
+    }
+
 }
