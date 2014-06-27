@@ -75,7 +75,10 @@ public final class Hub extends ModularPlugin {
         try {
             limitation.enable();
         } catch (LimitationNotRequiredException e) {
-            //TODO figure out if LOWER_CAMEL vs UPPER_CAMEL makes a difference. :D
+            //What was a 'to do' figure out if LOWER_CAMEL vs UPPER_CAMEL makes a difference. :D
+            //Well, in technicality, UPPER_CAMEL is the correct choice. UPPER_CAMEL should be used for class names, while LOWER_CAMEL is to be used for variable/field/method names.
+            //BUT, since we are converting from this CaseFormat, and since it is going to be converted to lowercase anyhow... this should not make a difference. But lets play it safe,
+            //And just use UPPER_CAMEL :D
             logMessage("Did not enable " + CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, limitation.getClass().getSimpleName()) + "! must set value " + limitation.getConfigKey() + " to true in your config.yml to enable this!");
             return false;
         }
