@@ -3,8 +3,10 @@ package net.cogzmc.core.netfiles.mongo;
 import com.mongodb.BasicDBObject;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSFile;
+import net.cogzmc.core.netfiles.NetElement;
 import net.cogzmc.core.netfiles.NetFileManager;
 import net.cogzmc.core.player.mongo.CMongoDatabase;
+import org.bson.types.ObjectId;
 
 //Joe was here
 
@@ -55,4 +57,12 @@ public class MongoNetFileManager extends MongoNetDirectory implements NetFileMan
         return new MongoNetFileManager(rootDirectory,fs);
     }
 
+    @Override
+    public NetElement lookupNetElement(String id) {
+        GridFSFile returnedFile = getFs().find(new ObjectId(id));//File found from the passed ID
+        if(returnedFile == null){
+            return null;
+        }
+        return new MongoNetElement(returnedFile,getFs());
+    }
 }

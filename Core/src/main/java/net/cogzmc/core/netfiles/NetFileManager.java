@@ -5,4 +5,11 @@ package net.cogzmc.core.netfiles;
  */
 public interface NetFileManager extends NetDirectory {
 
+    /**
+     * Used for looking up a specific file within the Root filesystem
+     * @param id    ID of object to lookup
+     * @return      The found NetElement, if it exists. Otherwise, return null.
+     */
+    public NetElement lookupNetElement(String id);
+
 }
