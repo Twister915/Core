@@ -61,26 +61,7 @@ public final class MobNPCHorse extends AbstractTameableMobNPC {
         if (rearing) bools |= 0x40;
         if (mouthOpen) bools |= 0x80;
         dataWatcher.setObject(16, bools);
-
-        byte type = 0;
-        switch (variant) {
-            case HORSE:
-                type = 0;
-                break;
-            case DONKEY:
-                type = 1;
-                break;
-            case MULE:
-                type = 2;
-                break;
-            case UNDEAD_HORSE:
-                type = 3;
-                break;
-            case SKELETON_HORSE:
-                type = 4;
-                break;
-        }
-        dataWatcher.setObject(19, type);
+        dataWatcher.setObject(19, (byte)variant.ordinal());
         dataWatcher.setObject(20, color.ordinal() & 0xFF | style.ordinal() << 8);
         dataWatcher.setObject(21, getOwnerName());
         dataWatcher.setObject(22, armorType.ordinal());
