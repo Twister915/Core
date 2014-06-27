@@ -9,4 +9,6 @@ public interface NetDirectory extends NetElement, Iterable<NetElement> {
 
     void placeFile(NetFile file);
     boolean containsFile(NetFile file);
+
+    NetDirectory createNewDirectory(String name);
 }
