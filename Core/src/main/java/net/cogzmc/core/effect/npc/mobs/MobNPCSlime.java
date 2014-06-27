@@ -14,6 +14,12 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class MobNPCSlime extends AbstractMobNPC {
+    public final static class Size {
+        public static final int SMALL = 1;
+        public static final int NORMAL = 2;
+        private static final int LARGE = 4;
+    }
+
     private int size = 1;
 
     public MobNPCSlime(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
