@@ -39,7 +39,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     private final Set<NPCObserver> observers;
     protected final WrappedDataWatcher dataWatcher;
     private WrappedDataWatcher lastDataWatcher;
-    @Getter private boolean spawned;
+    @Getter boolean spawned;
     @Getter protected final int id;
     @Getter @Setter private String customName;
     @Setter private Float health = null;

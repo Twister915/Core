@@ -7,6 +7,7 @@ import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerConnectionListener;
 import net.cogzmc.core.player.CPlayerJoinException;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -89,6 +90,7 @@ public final class SoftNPCManager implements CPlayerConnectionListener, Listener
             AbstractMobNPC abstractMobNPC = villagerRef.get();
             if (abstractMobNPC == null) continue;
             ids.add(abstractMobNPC.getId());
+            abstractMobNPC.spawned = false;
         }
         WrapperPlayServerEntityDestroy packet = new WrapperPlayServerEntityDestroy();
         int[] idsArray = new int[ids.size()];
@@ -97,5 +99,8 @@ public final class SoftNPCManager implements CPlayerConnectionListener, Listener
             idsArray[x] = idsIntegerArray[x];
         }
         packet.setEntities(idsArray);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            packet.sendPacket(player);
+        }
     }
 }
