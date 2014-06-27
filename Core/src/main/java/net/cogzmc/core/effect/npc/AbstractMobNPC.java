@@ -233,7 +233,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         final Point location1 = this.location;
         this.location = point;
         AbstractPacket packet;
-        if (location1.distanceSquared(point) > 16) { //if we're moving more than four blocks
+        if (location1.distanceSquared(point) < 16) { //if we're moving LESS than four blocks
             WrapperPlayServerEntityMoveLook packet1 = new WrapperPlayServerEntityMoveLook();
             packet1.setEntityID(id);
             packet1.setDx(location1.getX() - point.getX());
