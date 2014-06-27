@@ -89,10 +89,12 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
 
     public void addViewer(CPlayer player) {
         this.viewers.add(player);
+        if (this.isSpawned()) forceSpawn(player.getBukkitPlayer());
     }
 
     public void removeViewer(CPlayer player) {
         this.viewers.remove(player);
+        if (this.isSpawned()) forceDespawn(player.getBukkitPlayer());
     }
 
     public void makeGlobal() {
@@ -127,16 +129,25 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         log.info("Spawning " + packet.getType() + " with ID #" + id);
     }
 
-    public void despawn() {
-        if (!spawned) throw new IllegalStateException("You cannot despawn something that you have not spawned!");
+    private WrapperPlayServerEntityDestroy getDespawnPacket() {
         WrapperPlayServerEntityDestroy packet = new WrapperPlayServerEntityDestroy();
         packet.setEntities(new int[]{id});
+        return packet;
+    }
+
+    public void despawn() {
+        if (!spawned) throw new IllegalStateException("You cannot despawn something that you have not spawned!");
+        WrapperPlayServerEntityDestroy packet = getDespawnPacket();
         for (Player player : getTargets()) {
             packet.sendPacket(player);
         }
         ProtocolLibrary.getProtocolManager().removePacketListener(listener);
         listener = null;
         spawned = false;
+    }
+
+    public void forceDespawn(Player bukkitPlayer) {
+        getDespawnPacket().sendPacket(bukkitPlayer);
     }
 
     public void forceSpawn(Player player) {

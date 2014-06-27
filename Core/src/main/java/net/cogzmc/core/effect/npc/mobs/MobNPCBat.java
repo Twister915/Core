@@ -10,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
 import java.util.Set;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 public final class MobNPCBat extends AbstractMobNPC {

@@ -1,5 +1,6 @@
 package net.cogzmc.core.effect.npc;
 
+import com.comphenix.packetwrapper.WrapperPlayServerEntityDestroy;
 import lombok.Getter;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CPlayer;
@@ -16,6 +17,7 @@ import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public final class SoftNPCManager implements CPlayerConnectionListener, Listener {
@@ -78,5 +80,22 @@ public final class SoftNPCManager implements CPlayerConnectionListener, Listener
                 }
             });
         }
+    }
+
+    public void removeAllEntities() {
+        ensureAllValid();
+        LinkedHashSet<Integer> ids = new LinkedHashSet<>();
+        for (WeakReference<AbstractMobNPC> villagerRef : villagerRefs) {
+            AbstractMobNPC abstractMobNPC = villagerRef.get();
+            if (abstractMobNPC == null) continue;
+            ids.add(abstractMobNPC.getId());
+        }
+        WrapperPlayServerEntityDestroy packet = new WrapperPlayServerEntityDestroy();
+        int[] idsArray = new int[ids.size()];
+        Integer[] idsIntegerArray = ids.toArray(new Integer[ids.size()]);
+        for (int x = 0; x < ids.size(); x++) {
+            idsArray[x] = idsIntegerArray[x];
+        }
+        packet.setEntities(idsArray);
     }
 }
