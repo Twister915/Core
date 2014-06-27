@@ -6,6 +6,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import com.google.common.collect.ImmutableSet;
 import lombok.*;
 import lombok.extern.java.Log;
@@ -19,7 +20,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -33,6 +36,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     private final Set<CPlayer> viewers;
     private final Set<NPCObserver> observers;
     protected final WrappedDataWatcher dataWatcher;
+    private WrappedDataWatcher lastDataWatcher;
     @Getter private boolean spawned;
     @Getter protected final int id;
     @Getter @Setter private String customName;
@@ -152,11 +156,17 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         if (!spawned) spawn();
         updateDataWatcher();
         WrapperPlayServerEntityMetadata packet = new WrapperPlayServerEntityMetadata();
-        packet.setEntityMetadata(dataWatcher.getWatchableObjects());
+        List<WrappedWatchableObject> watchableObjects = dataWatcher.getWatchableObjects();
+        List<WrappedWatchableObject> toBeSent = new ArrayList<>();
+        for (WrappedWatchableObject watchableObject : watchableObjects) {
+            if (!lastDataWatcher.getObject(watchableObject.getIndex()).equals(watchableObject.getValue())) toBeSent.add(watchableObject);
+        }
+        packet.setEntityMetadata(toBeSent);
         packet.setEntityId(id);
         for (Player player : getTargets()) {
             packet.sendPacket(player);
         }
+        lastDataWatcher = dataWatcher.deepClone(); //So things are only sent when we need to, track changes.
         onUpdate();
     }
 
