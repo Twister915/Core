@@ -29,4 +29,20 @@ public abstract class AbstractTameableMobNPC extends AbstractAgeableMobNPC {
         dataWatcher.setObject(16, value);
         if (ownerName != null) dataWatcher.setObject(17, ownerName);
     }
+
+    public void playHeartParticles() {
+        playStatus(6);
+    }
+
+    public void playSmokeParticles() {
+        playStatus(7);
+    }
+
+    public void playHeartParticles(Set<CPlayer> players) {
+        playStatus(players, 6);
+    }
+
+    public void playSmokeParticles(Set<CPlayer> players) {
+        playStatus(players, 7);
+    }
 }

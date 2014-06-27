@@ -36,4 +36,20 @@ public final class MobNPCIronGolem extends AbstractMobNPC {
         if (playerCreated) dataWatcher.setObject(16, (byte)1);
         else if (dataWatcher.getObject(16) != null) dataWatcher.removeObject(16);
     }
+
+    public void playArmThrowing(Set<CPlayer> players) {
+        playStatus(players, 4);
+    }
+
+    public void playHandRoseOver(Set<CPlayer> players) {
+        playStatus(players, 11);
+    }
+
+    public void playArmThrowing() {
+        playStatus(4);
+    }
+
+    public void playHandRoseOver() {
+        playStatus(11);
+    }
 }

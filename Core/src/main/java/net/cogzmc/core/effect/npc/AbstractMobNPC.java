@@ -15,9 +15,11 @@ import net.cogzmc.core.effect.CustomEntityIDManager;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.util.Point;
 import net.cogzmc.util.Observable;
+import net.cogzmc.util.RandomUtils;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -40,7 +42,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     @Getter private boolean spawned;
     @Getter protected final int id;
     @Getter @Setter private String customName;
-    @Getter @Setter private Float health = getMaximumHealth();
+    @Setter private Float health = null;
     @Getter @Setter private boolean showingNametag = true;
     private InteractWatcher listener;
 
@@ -97,6 +99,10 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         this.viewers.clear();
     }
 
+    public Float getHealth() {
+        return health == null ? getMaximumHealth() : Math.min(getMaximumHealth(), health);
+    }
+
     protected Player[] getTargets() {
         CPlayer[] cPlayers = (this.viewers.size() == 0 ? Core.getPlayerManager().getOnlinePlayers() : this.viewers).
                 toArray(new CPlayer[this.viewers.size()]);
@@ -151,23 +157,61 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         return packet;
     }
 
-    public void update() {
-        if (!spawned) spawn();
-        updateDataWatcher();
-        WrapperPlayServerEntityMetadata packet = new WrapperPlayServerEntityMetadata();
-        List<WrappedWatchableObject> watchableObjects = dataWatcher.getWatchableObjects();
-        List<WrappedWatchableObject> toBeSent = new ArrayList<>();
-        if (lastDataWatcher == null) toBeSent.addAll(dataWatcher.getWatchableObjects());
-        else {
-            for (WrappedWatchableObject watchableObject : watchableObjects) {
-                Object object = lastDataWatcher.getObject(watchableObject.getIndex());
-                if (object == null || !object.equals(watchableObject.getValue())) toBeSent.add(watchableObject);
-            }
-        }
-        packet.setEntityMetadata(toBeSent);
+    private WrapperPlayServerEntityStatus getStatusPacket(Integer status) {
+        WrapperPlayServerEntityStatus packet = new WrapperPlayServerEntityStatus();
         packet.setEntityId(id);
+        packet.setEntityStatus(status);
+        return packet;
+    }
+
+    protected void playStatus(Set<CPlayer> players, Integer status) {
+        WrapperPlayServerEntityStatus packet = getStatusPacket(status);
+        Player[] targets = getTargets();
+        for (CPlayer player : players) {
+            Player bukkitPlayer = player.getBukkitPlayer();
+            if (viewers.size() == 0 || RandomUtils.contains(targets, bukkitPlayer)) packet.sendPacket(bukkitPlayer);
+        }
+    }
+
+    protected void playStatus(Integer status) {
+        WrapperPlayServerEntityStatus packet = getStatusPacket(status);
         for (Player player : getTargets()) {
             packet.sendPacket(player);
+        }
+    }
+
+    public void playHurtAnimation() {
+        playStatus(2);
+    }
+
+    public void playDeadAnimation() {
+        playStatus(3);
+    }
+    public void playHurtAnimation(Set<CPlayer> players) {
+        playStatus(players, 2);
+    }
+
+    public void playDeadAnimation(Set<CPlayer> players) {
+        playStatus(players, 3);
+    }
+
+    public void update() {
+        if (!spawned) spawn();
+        updateDataWatcher(); //Send a call to update the datawatcher
+        WrapperPlayServerEntityMetadata packet = new WrapperPlayServerEntityMetadata();
+        List<WrappedWatchableObject> watchableObjects = new ArrayList<>();
+        //Let's check through the last datawatcher values sent (that we store later in this method) and sent changed values.
+        if (lastDataWatcher == null) watchableObjects.addAll(dataWatcher.getWatchableObjects());
+        else {
+            for (WrappedWatchableObject watchableObject : dataWatcher.getWatchableObjects()) {
+                Object object = lastDataWatcher.getObject(watchableObject.getIndex());
+                if (object == null || !object.equals(watchableObject.getValue())) watchableObjects.add(watchableObject);
+            }
+        }
+        packet.setEntityMetadata(watchableObjects);
+        packet.setEntityId(id);
+        for (Player player : getTargets()) {
+            packet.sendPacket(player); //Broadcast the packet
         }
         lastDataWatcher = dataWatcher.deepClone(); //So things are only sent when we need to, track changes.
         onUpdate();
@@ -203,6 +247,17 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         }
     }
 
+    public void addVelocity(Vector vector) {
+        WrapperPlayServerEntityVelocity packet = new WrapperPlayServerEntityVelocity();
+        packet.setEntityId(id);
+        packet.setVelocityX(vector.getX());
+        packet.setVelocityY(vector.getY());
+        packet.setVelocityZ(vector.getZ());
+        for (Player player : getTargets()) {
+            packet.sendPacket(player);
+        }
+    }
+
     public void moveHead(byte parts) {
         if (!spawned) throw new IllegalStateException("You cannot modify the rotation of the head of a non-spawned entity!");
         headRotation = headRotation + parts;
@@ -215,7 +270,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     }
 
     protected void updateDataWatcher() {
-        dataWatcher.setObject(6, Math.min(health, getMaximumHealth())); //Health
+        dataWatcher.setObject(6, getHealth()); //Health
         if (showingNametag) dataWatcher.setObject(11, (byte)1); //Always show nametag
         else if (dataWatcher.getObject(11) != null) dataWatcher.removeObject(11);
         if (customName != null) dataWatcher.setObject(10, customName.substring(0, Math.min(customName.length(), 64))); //Nametag value

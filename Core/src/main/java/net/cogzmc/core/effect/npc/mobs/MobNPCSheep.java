@@ -37,4 +37,12 @@ public final class MobNPCSheep extends AbstractAgeableMobNPC {
         //noinspection deprecation
         dataWatcher.setObject(16, color.getData());
     }
+
+    public void playGrassEat() {
+        playStatus(10);
+    }
+
+    public void playGrassEat(Set<CPlayer> players) {
+        playStatus(players, 10);
+    }
 }

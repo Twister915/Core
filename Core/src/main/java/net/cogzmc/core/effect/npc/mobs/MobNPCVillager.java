@@ -48,4 +48,5 @@ public final class MobNPCVillager extends AbstractMobNPC {
         if (profession != null) dataWatcher.setObject(16, profession.getId()); //Profession
         else if (dataWatcher.getObject(16) != null) dataWatcher.removeObject(16);
     }
+
 }
