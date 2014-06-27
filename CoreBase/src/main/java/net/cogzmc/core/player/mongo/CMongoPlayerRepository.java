@@ -62,6 +62,16 @@ public class CMongoPlayerRepository implements CPlayerRepository {
             DBObject playerDocumentFor = getPlayerDocumentFor(uuid);
             if (playerDocumentFor == null) continue; //If this UUID is invalid, this method will not return the player.
             //TODO actually, this is just here to mark this as a point of interest. Should we create new players we can't find a match for or should we ignore them?
+            /*
+            Joe's opinion:
+                Since all you would be storing is their UUID and their name, there is no reason for storing any more data. I consider it a waste of space.
+                In all of the object, you store such things like tablist colors, permission nodes, which can all be resolved the first time they log on, if
+                they log on. In addition, between the time they are created, and the time they log on, actual defaults may have changed, so it would cause desync.
+                I know you don't have to store all of the fields in a Mongo Document, but for sanity's sake, just throw a null. This also alerts the calling code
+                that that player just doesn't exist in our view.
+
+                I guess another interesting question: Should we simply exclude the person from the list, or insert a null where they should be?
+             */
             offlinePlayers.add(getPlayerFor(uuid, playerDocumentFor));
         }
         return offlinePlayers;
