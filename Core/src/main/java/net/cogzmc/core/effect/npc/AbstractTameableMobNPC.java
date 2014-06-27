@@ -14,7 +14,7 @@ import java.util.Set;
 public abstract class AbstractTameableMobNPC extends AbstractAgeableMobNPC {
     private boolean tame = false;
     private boolean sitting = false;
-    private String ownerName = "Notch";
+    @NonNull private String ownerName = "Notch";
 
     public AbstractTameableMobNPC(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
         super(location, world, observers, title);
@@ -23,10 +23,10 @@ public abstract class AbstractTameableMobNPC extends AbstractAgeableMobNPC {
     @Override
     protected void onDataWatcherUpdate() {
         super.onDataWatcherUpdate();
-        byte mask = 0;
-        mask |= (tame?1:0)<<0x01;
-        mask |= (sitting?1:0)<<0x04;
-        dataWatcher.setObject(16, mask);
+        byte value = 0;
+        if (sitting) value |= 0x01;
+        if (tame) value |= 0x04;
+        dataWatcher.setObject(16, value);
         if (ownerName != null) dataWatcher.setObject(17, ownerName);
     }
 }

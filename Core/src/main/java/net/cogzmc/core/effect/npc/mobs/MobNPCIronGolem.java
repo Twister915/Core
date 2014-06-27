@@ -13,27 +13,27 @@ import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class MobNPCSpider extends AbstractMobNPC {
-    private boolean climbing;
+public final class MobNPCIronGolem extends AbstractMobNPC {
+    private boolean playerCreated;
 
-    public MobNPCSpider(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
+    public MobNPCIronGolem(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
         super(location, world, observers, title);
     }
 
     @Override
     protected EntityType getEntityType() {
-        return EntityType.SPIDER;
+        return EntityType.IRON_GOLEM;
     }
 
     @Override
     protected Float getMaximumHealth() {
-        return 16F;
+        return 100F;
     }
 
     @Override
     protected void onDataWatcherUpdate() {
         super.onDataWatcherUpdate();
-        if (climbing) dataWatcher.setObject(16, (byte)1);
-        else if (dataWatcher.getObject(16) != null) dataWatcher .removeObject(16);
+        if (playerCreated) dataWatcher.setObject(16, (byte)1);
+        else if (dataWatcher.getObject(16) != null) dataWatcher.removeObject(16);
     }
 }

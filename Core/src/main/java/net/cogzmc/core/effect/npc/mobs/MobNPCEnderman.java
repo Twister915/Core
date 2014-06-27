@@ -35,8 +35,10 @@ public final class MobNPCEnderman extends AbstractMobNPC {
     @Override
     protected void onDataWatcherUpdate() {
         super.onDataWatcherUpdate();
-        dataWatcher.setObject(16, carriedItemStack.getTypeId());
-        dataWatcher.setObject(17, carriedItemStack.getDurability());
+        if (carriedItemStack != null) {
+            dataWatcher.setObject(16, carriedItemStack.getTypeId());
+            dataWatcher.setObject(17, carriedItemStack.getDurability());
+        }
         if (screaming) dataWatcher.setObject(18, (byte)1);
         else if (dataWatcher.getObject(18) != null) dataWatcher.removeObject(18);
     }

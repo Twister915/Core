@@ -28,6 +28,7 @@ import java.util.Set;
 @Log(topic = "Abstract Mob Log")
 public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     @Getter private Point location;
+    @Getter private Integer headRotation;
     @Getter private final World world;
     private final Set<CPlayer> viewers;
     private final Set<NPCObserver> observers;
@@ -184,6 +185,17 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
             packet1.setYaw(point.getYaw());
             packet = packet1;
         }
+        for (Player player : getTargets()) {
+            packet.sendPacket(player);
+        }
+    }
+
+    public void moveHead(byte parts) {
+        if (!spawned) throw new IllegalStateException("You cannot modify the rotation of the head of a non-spawned entity!");
+        headRotation = headRotation + parts;
+        WrapperPlayServerEntityHeadRotation packet = new WrapperPlayServerEntityHeadRotation();
+        packet.setEntityId(id);
+        packet.setHeadYaw(headRotation);
         for (Player player : getTargets()) {
             packet.sendPacket(player);
         }

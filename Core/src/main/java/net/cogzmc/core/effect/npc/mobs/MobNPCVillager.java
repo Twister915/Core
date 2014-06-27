@@ -1,5 +1,6 @@
 package net.cogzmc.core.effect.npc.mobs;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import net.cogzmc.core.effect.npc.AbstractMobNPC;
@@ -12,6 +13,8 @@ import java.util.Set;
 
 import static org.bukkit.entity.Villager.Profession;
 
+
+@Data
 @EqualsAndHashCode(callSuper = true)
 public final class MobNPCVillager extends AbstractMobNPC {
     private Profession profession;

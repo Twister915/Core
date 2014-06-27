@@ -15,7 +15,7 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public final class MobNPCSheep extends AbstractAgeableMobNPC {
-    private DyeColor color = DyeColor.WHITE;
+    @NonNull private DyeColor color = DyeColor.WHITE;
 
     public MobNPCSheep(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
         super(location, world, observers, title);
