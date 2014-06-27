@@ -3,7 +3,7 @@ package net.cogzmc.core.effect.npc.mobs;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import net.cogzmc.core.effect.npc.AbstractTameableMobNPC;
+import net.cogzmc.core.effect.npc.AbstractAgeableMobNPC;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.util.Point;
 import org.bukkit.World;
@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public final class MobNPCHorse extends AbstractTameableMobNPC {
+public final class MobNPCHorse extends AbstractAgeableMobNPC {
     public static enum ArmorType {
         NONE,
         IRON,
@@ -33,6 +33,9 @@ public final class MobNPCHorse extends AbstractTameableMobNPC {
     private boolean eating;
     private boolean rearing;
     private boolean mouthOpen;
+    private boolean tame;
+
+    private String ownerName = "Notch";
 
     public MobNPCHorse(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
         super(location, world, observers, title);
@@ -63,6 +66,7 @@ public final class MobNPCHorse extends AbstractTameableMobNPC {
         dataWatcher.setObject(16, bools);
         dataWatcher.setObject(19, (byte)variant.ordinal());
         dataWatcher.setObject(20, color.ordinal() & 0xFF | style.ordinal() << 8);
+        dataWatcher.removeObject(17); //Remove the name from the superclass.
         dataWatcher.setObject(21, getOwnerName());
         dataWatcher.setObject(22, armorType.ordinal());
     }

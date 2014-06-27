@@ -63,7 +63,6 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         this.spawned = false;
         this.customName = title;
         this.id = CustomEntityIDManager.getNextId();
-        updateDataWatcher();
     }
 
     private InteractWatcher createNewInteractWatcher() {
@@ -158,8 +157,12 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         WrapperPlayServerEntityMetadata packet = new WrapperPlayServerEntityMetadata();
         List<WrappedWatchableObject> watchableObjects = dataWatcher.getWatchableObjects();
         List<WrappedWatchableObject> toBeSent = new ArrayList<>();
-        for (WrappedWatchableObject watchableObject : watchableObjects) {
-            if (!lastDataWatcher.getObject(watchableObject.getIndex()).equals(watchableObject.getValue())) toBeSent.add(watchableObject);
+        if (lastDataWatcher == null) toBeSent.addAll(dataWatcher.getWatchableObjects());
+        else {
+            for (WrappedWatchableObject watchableObject : watchableObjects) {
+                Object object = lastDataWatcher.getObject(watchableObject.getIndex());
+                if (object == null || !object.equals(watchableObject.getValue())) toBeSent.add(watchableObject);
+            }
         }
         packet.setEntityMetadata(toBeSent);
         packet.setEntityId(id);
