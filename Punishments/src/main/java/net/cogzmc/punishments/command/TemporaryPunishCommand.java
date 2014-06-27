@@ -7,6 +7,7 @@ import net.cogzmc.core.modular.command.CommandException;
 import net.cogzmc.core.modular.command.CommandMeta;
 import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
+import net.cogzmc.core.util.TimeUtils;
 import net.cogzmc.punishments.Punishments;
 import net.cogzmc.punishments.TimedPunishmentManager;
 import net.cogzmc.punishments.types.PunishmentException;
@@ -31,8 +32,15 @@ public final class TemporaryPunishCommand<T extends TimedPunishment> extends Bas
             throw new ArgumentRequirementException("You must specify a target, length, and reason to " + name + " someone!");
         String target = args[0];
         String reason = Joiner.on(" ").join(Arrays.copyOfRange(args, 2, args.length));
-        String length = args[1];
-        Integer seconds = null; //TODO lol parse length
+        Long mseconds = TimeUtils.parseTime(args[1]);
+        Integer seconds = null;
+        if(mseconds != null){
+            seconds = (int)(mseconds/1000);
+        }
+        else
+        {
+            throw new ArgumentRequirementException("Could not parse time '"+args[1]+"'.");
+        }
         COfflinePlayer targetByArg = getTargetByArg(target);
         if (targetByArg == null) throw new ArgumentRequirementException("You have specified a player that is not specific enough!");
         try {
