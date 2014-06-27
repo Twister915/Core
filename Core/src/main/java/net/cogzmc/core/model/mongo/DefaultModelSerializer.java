@@ -84,7 +84,7 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
         if (object instanceof COfflinePlayer) return ((COfflinePlayer) object).getUniqueIdentifier().toString();
         //If the value of this field is an Enum, we'll store the name of the value
         if (object instanceof Enum) return ((Enum) object).name();
-        //If the value of the field is in the NetFile system, let's store the ID, however this may change as this system is technically under TODO
+        //If the value of the field is in the NetFile system, store the ID for later lookup.
         if (object instanceof NetElement) return ((NetElement) object).getId();
         //If the value is a Network server of some kind, we'll return the network server's name.
         if (object instanceof NetworkServer) return ((NetworkServer) object).getName();
@@ -134,10 +134,11 @@ final class DefaultModelSerializer<T extends Model> implements ModelSerializer<T
     //This is responsible for reading a *part* of a DBObject (a single value) and attempting to convert it to a destination type.
     static Object applyTypeFiltersFromDB(Object object, Class type) {
         //If the type we're trying to get to is a COfflinePlayer, and we have a String in the database, let's assume that string is the UUID and grab the player with that UUID
-        if (COfflinePlayer.class.isAssignableFrom(type) && object instanceof String) Core.getPlayerManager().getOfflinePlayerByUUID(UUID.fromString((String) object));
+        if (COfflinePlayer.class.isAssignableFrom(type) && object instanceof String) return Core.getPlayerManager().getOfflinePlayerByUUID(UUID.fromString((String) object));
         //If the type we're trying to get to is an Enum, and we have a String in the database, let's try and get the enum value by name based on the string in the db.
-        if (Enum.class.isAssignableFrom(type) && object instanceof String) Enum.valueOf(type, (String) object);
-        //TODO NetFile
+        if (Enum.class.isAssignableFrom(type) && object instanceof String) return Enum.valueOf(type, (String) object);
+        //If the type we're trying to get to is a NetElement, and we have a string, lets look up the NetElement from the Network File manager in Core.
+        if(NetElement.class.isAssignableFrom(type) && object instanceof String) return Core.getNetFileManager().lookupNetElement(((String) object));
         //If the type we're trying to get is a NetworkServer, and we've got a String in the db, let's grab a known server by that name.
         if (NetworkServer.class.isAssignableFrom(type) && object instanceof String) return Core.getNetworkManager().getServer((String) object);
         if (Vector.class.isAssignableFrom(type) && object instanceof BasicDBObject) {
