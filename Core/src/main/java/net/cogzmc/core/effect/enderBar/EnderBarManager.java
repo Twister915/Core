@@ -19,7 +19,7 @@ import java.util.Map;
 @SuppressWarnings("UnusedDeclaration")
 public final class EnderBarManager implements CPlayerConnectionListener {
     final Map<CPlayer, MobNPCEnderDragon> enderBars = new HashMap<>();
-    private int lastId = 3000;
+    final static Double HEIGHT = -300D;
 
     /**
      * Creates a manager for the EnderBar system.
@@ -78,17 +78,12 @@ public final class EnderBarManager implements CPlayerConnectionListener {
         HashSet<CPlayer> cPlayers = new HashSet<>();
         cPlayers.add(player);
         Point of = Point.of(bukkitPlayer.getLocation());
-        of.setY(-300D);
+        of.setY(HEIGHT);
         MobNPCEnderDragon enderDragon = new MobNPCEnderDragon(of, bukkitPlayer.getWorld(), cPlayers, "Ender Dragon");
         enderDragon.setInvisible(true);
         enderBars.put(player, enderDragon);
         enderDragon.spawn();
         return true;
-    }
-
-    Integer getNextId() {
-        lastId++;
-        return lastId;
     }
 
     @Override

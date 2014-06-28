@@ -250,9 +250,9 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
             if (Core.DEBUG) log.info("Teleporting #" + id + " using relative move. " + getClass().getSimpleName());
             WrapperPlayServerEntityMoveLook packet1 = new WrapperPlayServerEntityMoveLook();
             packet1.setEntityID(id);
-            packet1.setDx(location1.getX() - point.getX());
-            packet1.setDy(location1.getY() - point.getY());
-            packet1.setDz(location1.getZ() - point.getZ());
+            packet1.setDx(point.getX() - location1.getX());
+            packet1.setDy(point.getY() - location1.getY());
+            packet1.setDz(point.getZ() - location1.getZ());
             packet1.setPitch(point.getPitch());
             packet1.setYaw(point.getYaw());
             packet = packet1;

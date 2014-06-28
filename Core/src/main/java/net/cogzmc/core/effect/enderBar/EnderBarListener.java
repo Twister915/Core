@@ -14,6 +14,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import static net.cogzmc.core.effect.enderBar.EnderBarManager.HEIGHT;
+
 @Data
 final class EnderBarListener implements Listener {
     private final EnderBarManager manager;
@@ -23,9 +25,11 @@ final class EnderBarListener implements Listener {
         CPlayer onlinePlayer = Core.getOnlinePlayer(event.getPlayer());
         MobNPCEnderDragon enderBarFor = manager.enderBars.get(onlinePlayer);
         Point current = Point.of(event.getTo());
-        current.setY(-300D);
+        current.setY(HEIGHT);
+        current.setPitch(0F);
+        current.setYaw(0F);
         if (enderBarFor != null && enderBarFor.isSpawned() && current.distanceSquared(enderBarFor.getLocation()) > 9) {
-            enderBarFor.move(Point.of(event.getTo().getX(), -300d, event.getTo().getZ(), 0F, 0F));
+            enderBarFor.move(current);
         }
     }
 
