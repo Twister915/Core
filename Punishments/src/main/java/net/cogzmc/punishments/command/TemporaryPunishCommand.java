@@ -32,15 +32,8 @@ public final class TemporaryPunishCommand<T extends TimedPunishment> extends Bas
             throw new ArgumentRequirementException("You must specify a target, length, and reason to " + name + " someone!");
         String target = args[0];
         String reason = Joiner.on(" ").join(Arrays.copyOfRange(args, 2, args.length));
-        Long mseconds = TimeUtils.parseTime(args[1]);
-        Integer seconds = null;
-        if(mseconds != null){
-            seconds = (int)(mseconds/1000);
-        }
-        else
-        {
-            throw new ArgumentRequirementException("Could not parse time '"+args[1]+"'.");
-        }
+        Integer seconds = TimeUtils.parseTime(args[1]).intValue();
+        if (seconds == 0) throw new ArgumentRequirementException("The time you specified is invalid!");
         COfflinePlayer targetByArg = getTargetByArg(target);
         if (targetByArg == null) throw new ArgumentRequirementException("You have specified a player that is not specific enough!");
         try {
