@@ -3,7 +3,7 @@ package net.cogzmc.core.util;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TimeUtils {
+public final class TimeUtils {
     private static final Map<Character, Double> TIMEMAP = new HashMap<>();
 
     static {
