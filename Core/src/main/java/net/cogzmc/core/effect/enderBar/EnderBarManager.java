@@ -92,6 +92,7 @@ public final class EnderBarManager implements CPlayerConnectionListener {
 
     @Override
     public void onPlayerDisconnect(CPlayer player) {
+        if (!this.enderBars.containsKey(player)) return;
         this.enderBars.get(player).despawn();
         this.enderBars.remove(player);
     }

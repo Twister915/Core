@@ -23,8 +23,6 @@ import static net.cogzmc.core.player.mongo.MongoUtils.getValueFrom;
 
 @SuppressWarnings("UnusedParameters")
 abstract class BaseMongoManager<T extends MongoPunishment> implements PunishmentManager<T> {
-    static PrettyTime PRETTY_TIME_FORMATTER = new PrettyTime();
-
     protected final DBCollection collection;
     private final Map<CPlayer, T> activePunishments = new HashMap<>();
     protected final Class<T> punishmentClazz;
@@ -107,9 +105,10 @@ abstract class BaseMongoManager<T extends MongoPunishment> implements Punishment
         T activePunishmentFor = getActivePunishmentFor(player);
         if (activePunishmentFor == null) return;
         if (!canConnect(player, activePunishmentFor)) {
-            List<Duration> durations = PRETTY_TIME_FORMATTER.calculatePreciseDuration(activePunishmentFor.getDateIssued());
-            String timeSince = PRETTY_TIME_FORMATTER.format(durations);
-            String expires = (activePunishmentFor instanceof TimedPunishment) ? PRETTY_TIME_FORMATTER.format(new Date(activePunishmentFor.getDateIssued().getTime() + (((TimedPunishment) activePunishmentFor).getLengthInSeconds() * 1000))) : "never";
+            PrettyTime prettyTime = new PrettyTime();
+            List<Duration> durations = prettyTime.calculatePreciseDuration(activePunishmentFor.getDateIssued());
+            String timeSince = prettyTime.format(durations);
+            String expires = (activePunishmentFor instanceof TimedPunishment) ? prettyTime.format(new Date(activePunishmentFor.getDateIssued().getTime() + (((TimedPunishment) activePunishmentFor).getLengthInSeconds() * 1000))) : "never";
             throw new CPlayerJoinException(Core.getModule(Punishments.class).getFormat("disconnect-message-perm", false,
                     new String[]{"<type>", activePunishmentFor.getClass().getSimpleName()},
                     new String[]{"<reason>", activePunishmentFor.getMessage()},

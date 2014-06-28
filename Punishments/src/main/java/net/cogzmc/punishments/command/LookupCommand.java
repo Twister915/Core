@@ -15,7 +15,6 @@ import org.ocpsoft.prettytime.PrettyTime;
 import java.util.*;
 
 public final class LookupCommand extends TargetedCommand {
-    static PrettyTime PRETTY_TIME_FORMATTER = new PrettyTime();
     public LookupCommand() {
         super("lookup");
     }
@@ -40,12 +39,13 @@ public final class LookupCommand extends TargetedCommand {
             }
         });
         sender.sendMessage(punishmentsModule.getFormat("lookup-top-line", false, new String[]{"<count>", String.valueOf(punishments.size())}, new String[]{"<target>", player.getName()}));
+        PrettyTime prettyTime = new PrettyTime();
         for (int x = 0; x < punishments.size(); x++) {
             Punishment punishment = punishments.get(x);
             StringBuilder nameBuilder = new StringBuilder(Punishments.getNameFor(punishment.getClass()));
             nameBuilder.setCharAt(0,Character.toUpperCase(nameBuilder.charAt(0)));
-            String dateIssued = PRETTY_TIME_FORMATTER.format(punishment.getDateIssued());
-            String dateExpires = (punishment instanceof TimedPunishment) ? PRETTY_TIME_FORMATTER.format(new Date(punishment.getDateIssued().getTime() + ((TimedPunishment) punishment).getLengthInSeconds()*1000)) : "never";
+            String dateIssued = prettyTime.format(punishment.getDateIssued());
+            String dateExpires = (punishment instanceof TimedPunishment) ? prettyTime.format(new Date(punishment.getDateIssued().getTime() + ((TimedPunishment) punishment).getLengthInSeconds()*1000)) : "never";
             sender.sendMessage(punishmentsModule.getFormat("lookup-punishment", false,
                     new String[]{"<active>", punishment.isActive() ? "yes" : "no"},
                     new String[]{"<type>", nameBuilder.toString()},

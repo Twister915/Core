@@ -17,10 +17,13 @@ import net.cogzmc.coreessentials.signs.ColoredSigns;
                 "instances."
 )
 public final class CoreEssentials extends ModularPlugin {
+    @Getter private static CoreEssentials instance;
     @Getter private TabColorManager tabColorManager;
 
     @Override
     protected void onModuleEnable() {
+        instance = this;
+        registerCommand(new PlayerReportCommand());
         registerCommand(new PluginsCommand());
         registerCommand(new NickNameCommand());
         registerCommand(new LagInfoCommand());
