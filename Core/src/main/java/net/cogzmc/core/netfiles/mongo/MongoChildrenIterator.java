@@ -13,7 +13,6 @@ import java.util.Iterator;
  */
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class MongoChildrenIterator implements Iterator<NetElement> {
-
     Iterator<ObjectId> ids;
 
     GridFS fileSystem;
@@ -26,5 +25,10 @@ public class MongoChildrenIterator implements Iterator<NetElement> {
     @Override
     public NetElement next() {
         return new MongoNetElement(fileSystem.find(ids.next()),fileSystem); //Find the NetFile, and then wrap it with a MongoNetElement, along with the fileSystem.
+    }
+
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException("Joe you should check if this is supported or not because I just want it to compile");
     }
 }

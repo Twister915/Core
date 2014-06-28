@@ -80,6 +80,7 @@ public final class EnderBarManager implements CPlayerConnectionListener {
         Point of = Point.of(bukkitPlayer.getLocation());
         of.setY(-300D);
         MobNPCEnderDragon enderDragon = new MobNPCEnderDragon(of, bukkitPlayer.getWorld(), cPlayers, "Ender Dragon");
+        enderDragon.setInvisible(true);
         enderBars.put(player, enderDragon);
         enderDragon.spawn();
         return true;

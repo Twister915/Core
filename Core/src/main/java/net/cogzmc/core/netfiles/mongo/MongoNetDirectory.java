@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.mongodb.DBObject;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSFile;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import net.cogzmc.core.netfiles.NetDirectory;
 import net.cogzmc.core.netfiles.NetElement;
 import net.cogzmc.core.netfiles.NetFile;
