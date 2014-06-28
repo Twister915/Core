@@ -6,6 +6,7 @@ import com.mongodb.gridfs.GridFSFile;
 import com.mongodb.gridfs.GridFSInputFile;
 import lombok.Cleanup;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import net.cogzmc.core.netfiles.NetDirectory;
 import net.cogzmc.core.netfiles.NetFile;
 import org.bson.types.ObjectId;
@@ -41,13 +42,13 @@ public class MongoNetFile extends MongoNetElement implements NetFile {
      * @return          The resulting {@link net.cogzmc.core.netfiles.mongo.MongoNetFile} that was created
      * @throws FileNotFoundException
      */
-    public static MongoNetFile upload(@NonNull File localFile, @NonNull NetDirectory parent, @NonNull String name) throws FileNotFoundException {
+    public static MongoNetFile upload(@NonNull File localFile, @NonNull NetDirectory parent, @NonNull String name) throws IOException {
         if (parent instanceof MongoNetDirectory) {
             if(name.equals("/")){
                 throw new MongoIllegalFilename();
             }
             MongoNetDirectory mongoParent = (MongoNetDirectory) parent;
-            @Cleanup FileInputStream fileInputStream = new FileInputStream(localFile);
+            FileInputStream fileInputStream = new FileInputStream(localFile);
             GridFSInputFile inputFile = mongoParent.getFs().createFile(fileInputStream, name, true);
             inputFile.save();
             MongoNetFile netFile = new MongoNetFile(mongoParent.getFs().findOne(((ObjectId) inputFile.getId())), mongoParent.getFs());
