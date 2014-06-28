@@ -25,9 +25,9 @@ public class TimeUtils {
             Double multiplier = TIMEMAP.get(characterTesting); //Gets the multiplexer for this marker, for "d" it will be 86400
             StringBuilder number = new StringBuilder(); //Start to build all the characters before this marker
             for (int cursor = x-1; cursor >= 0; cursor--) { //Go through it from the previous character until it reaches the start of our string going in reverse
-                char aChar = chars[cursor]; //Gets the current character
-                if (!Character.isDigit(cursor)) break; //If we've reached the end of the digits, stop reading
-                number.append(aChar); //otherwise, append it to the string builder
+                char possibleDigit = chars[cursor]; //Gets the current character
+                if (!Character.isDigit(possibleDigit)) break; //If we've reached the end of the digits, stop reading
+                number.append(possibleDigit); //otherwise, append it to the string builder
             }
             String s = number.reverse().toString(); //Then, reverse it and get the string value
             Double time; //Attempt a parse
@@ -40,5 +40,4 @@ public class TimeUtils {
         }
         return seconds;
     }
-
 }
