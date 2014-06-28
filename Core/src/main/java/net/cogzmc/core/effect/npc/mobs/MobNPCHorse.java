@@ -56,7 +56,7 @@ public final class MobNPCHorse extends AbstractAgeableMobNPC {
         super.onDataWatcherUpdate();
         //Bools
         int bools = 0;
-        if (isTame()) bools |= 0x02;
+        if (tame) bools |= 0x02;
         if (saddled) bools |= 0x04;
         if (chest) bools |= 0x08;
         if (bred) bools |= 0x10;
