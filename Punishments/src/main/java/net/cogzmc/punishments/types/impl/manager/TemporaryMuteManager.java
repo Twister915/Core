@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.ocpsoft.prettytime.PrettyTime;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -42,11 +43,12 @@ public final class TemporaryMuteManager extends BaseTemporaryMongoManager<Tempor
 
     @Override
     void onJoin(CPlayer player, TemporaryMute punishment) {
+        PrettyTime formatter = new PrettyTime();
         player.sendMessage(module.getFormat("new-mute",
                 new String[]{"<reason>", punishment.getMessage()},
                 new String[]{"<issuer>", punishment.getIssuer().getName()},
                 new String[]{"<expires>",
-                        PRETTY_TIME_FORMATTER.format(new Date(punishment.getLengthInSeconds()*1000 + punishment.getDateIssued().getTime()))}
+                        formatter.format(new Date(punishment.getLengthInSeconds()*1000 + punishment.getDateIssued().getTime()))}
         ));
         mutedPlayers.add(player);
     }
@@ -65,7 +67,8 @@ public final class TemporaryMuteManager extends BaseTemporaryMongoManager<Tempor
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (!mutedPlayers.contains(Core.getOnlinePlayer(event.getPlayer()))) return;
         event.setCancelled(true);
+        PrettyTime formatter = new PrettyTime();
         TemporaryMute punishment = getActivePunishmentFor(Core.getOnlinePlayer(event.getPlayer()));
-        event.getPlayer().sendMessage(module.getFormat("muted", new String[]{"<expires>", PRETTY_TIME_FORMATTER.format(new Date(punishment.getLengthInSeconds() * 1000 + punishment.getDateIssued().getTime()))}));
+        event.getPlayer().sendMessage(module.getFormat("muted", new String[]{"<expires>", formatter.format(new Date(punishment.getLengthInSeconds() * 1000 + punishment.getDateIssued().getTime()))}));
     }
 }

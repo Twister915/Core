@@ -6,6 +6,7 @@ import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.punishments.Punishments;
 import net.cogzmc.punishments.types.impl.model.Ban;
 import org.bson.types.ObjectId;
+import org.ocpsoft.prettytime.PrettyTime;
 
 import java.util.Date;
 
@@ -26,11 +27,12 @@ public final class BanManager extends BaseMongoManager<Ban> {
 
     @Override
     void onPunish(CPlayer player, Ban activePunishmentFor) {
+        PrettyTime formatter = new PrettyTime();
         player.getBukkitPlayer().kickPlayer(Core.getModule(Punishments.class).getFormat("disconnect-message-perm", false,
                 new String[]{"<type>", activePunishmentFor.getClass().getSimpleName()},
                 new String[]{"<reason>", activePunishmentFor.getMessage()},
                 new String[]{"<issuer>", activePunishmentFor.getIssuer().getName()},
-                new String[]{"<issued>", PRETTY_TIME_FORMATTER.format(activePunishmentFor.getDateIssued())},
+                new String[]{"<issued>", formatter.format(activePunishmentFor.getDateIssued())},
                 new String[]{"<expires>", "never"}));
     }
 }
