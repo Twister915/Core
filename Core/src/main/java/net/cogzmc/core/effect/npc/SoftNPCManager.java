@@ -6,11 +6,13 @@ import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerConnectionListener;
 import net.cogzmc.core.player.CPlayerJoinException;
+import net.cogzmc.util.RandomUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
@@ -24,7 +26,7 @@ import java.util.Set;
 public final class SoftNPCManager implements CPlayerConnectionListener, Listener {
     @Getter private static SoftNPCManager instance;
 
-    final Set<WeakReference<AbstractMobNPC>> villagerRefs = new HashSet<>();
+    final Set<WeakReference<AbstractMobNPC>> mobRefs = new HashSet<>();
 
     public SoftNPCManager() {
         instance = this;
@@ -33,10 +35,10 @@ public final class SoftNPCManager implements CPlayerConnectionListener, Listener
     }
 
     private void ensureAllValid() {
-        Iterator<WeakReference<AbstractMobNPC>> iterator = villagerRefs.iterator();
+        Iterator<WeakReference<AbstractMobNPC>> iterator = mobRefs.iterator();
         while (iterator.hasNext()) {
-            WeakReference<AbstractMobNPC> next = iterator.next();
-            if (next.get() == null) iterator.remove();
+            WeakReference<AbstractMobNPC> mob = iterator.next();
+            if (mob.get() == null) iterator.remove();
         }
     }
 
@@ -46,11 +48,11 @@ public final class SoftNPCManager implements CPlayerConnectionListener, Listener
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         ensureAllValid();
-        for (WeakReference<AbstractMobNPC> villagerRef : villagerRefs) {
-            final AbstractMobNPC npcVillager = villagerRef.get();
-            if (npcVillager == null) continue;
-            if (npcVillager.isSpawned() && npcVillager.getViewers().size() == 0) {
-                npcVillager.forceSpawn(event.getPlayer());
+        for (WeakReference<AbstractMobNPC> mobRef : mobRefs) {
+            final AbstractMobNPC npcMob = mobRef.get();
+            if (npcMob == null) continue;
+            if (npcMob.isSpawned() && npcMob.getViewers().size() == 0) {
+                npcMob.forceSpawn(event.getPlayer());
             }
         }
     }
@@ -58,10 +60,10 @@ public final class SoftNPCManager implements CPlayerConnectionListener, Listener
     @Override
     public void onPlayerDisconnect(CPlayer player) {
         ensureAllValid();
-        for (WeakReference<AbstractMobNPC> villagerRef : villagerRefs) {
-            final AbstractMobNPC villager = villagerRef.get();
-            if (villager == null) continue;
-            if (villager.getViewers().contains(player)) villager.removeViewer(player);
+        for (WeakReference<AbstractMobNPC> mobRef : mobRefs) {
+            final AbstractMobNPC npcMob = mobRef.get();
+            if (npcMob == null) continue;
+            if (npcMob.getViewers().contains(player)) npcMob.removeViewer(player);
         }
     }
 
@@ -69,24 +71,35 @@ public final class SoftNPCManager implements CPlayerConnectionListener, Listener
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         ensureAllValid();
         final CPlayer onlinePlayer = Core.getOnlinePlayer(event.getPlayer());
-        for (WeakReference<AbstractMobNPC> villagerRef : villagerRefs) {
-            final AbstractMobNPC villager = villagerRef.get();
-            if (villager == null) continue;
-            if (!villager.isSpawned()) continue;
-            if (!villager.getWorld().equals(event.getRespawnLocation().getWorld())) continue;
+        for (WeakReference<AbstractMobNPC> mobRef : mobRefs) {
+            final AbstractMobNPC npcMob = mobRef.get();
+            if (npcMob == null) continue;
+            if (!npcMob.isSpawned()) continue;
+            if (!npcMob.getWorld().equals(event.getRespawnLocation().getWorld())) continue;
             Bukkit.getScheduler().runTask(Core.getInstance(), new Runnable() {
                 @Override
                 public void run() {
-                    villager.forceSpawn(onlinePlayer.getBukkitPlayer());
+                    npcMob.forceSpawn(onlinePlayer.getBukkitPlayer());
                 }
             });
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerWorldChange(PlayerChangedWorldEvent event) {
+        ensureAllValid();
+        for (WeakReference<AbstractMobNPC> mobRef : mobRefs) {
+            AbstractMobNPC mobNPC = mobRef.get();
+            if (mobNPC == null || mobNPC.getViewers().size() != 0 && RandomUtils.contains(mobNPC.getTargets(), event.getPlayer())) continue;
+            if (mobNPC.getWorld() == null || event.getPlayer().getWorld().equals(mobNPC.getWorld()))
+                mobNPC.forceSpawn(event.getPlayer());
         }
     }
 
     public void removeAllEntities() {
         ensureAllValid();
         LinkedHashSet<Integer> ids = new LinkedHashSet<>();
-        for (WeakReference<AbstractMobNPC> villagerRef : villagerRefs) {
+        for (WeakReference<AbstractMobNPC> villagerRef : mobRefs) {
             AbstractMobNPC abstractMobNPC = villagerRef.get();
             if (abstractMobNPC == null) continue;
             ids.add(abstractMobNPC.getId());

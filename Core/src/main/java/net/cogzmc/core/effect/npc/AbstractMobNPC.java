@@ -41,10 +41,16 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     private WrappedDataWatcher lastDataWatcher;
     @Getter boolean spawned;
     @Getter protected final int id;
-    @Getter @Setter private String customName;
-    @Setter private Float health = null;
-    @Getter @Setter private boolean showingNametag = true;
     private InteractWatcher listener;
+
+    @Getter @Setter private String customName;
+    @Getter @Setter private boolean showingNametag = true;
+    @Setter private Float health = null;
+    @Getter @Setter private boolean onFire;
+    @Getter @Setter private boolean crouched;
+    @Getter @Setter private boolean sprinting;
+    @Getter @Setter private boolean blocking;
+    @Getter @Setter private boolean invisible;
 
     protected abstract EntityType getEntityType();
     protected abstract Float getMaximumHealth();
@@ -52,7 +58,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     protected void onDataWatcherUpdate() {}
 
     {
-        SoftNPCManager.getInstance().villagerRefs.add(new WeakReference<>(this));
+        SoftNPCManager.getInstance().mobRefs.add(new WeakReference<>(this));
     }
 
     public AbstractMobNPC(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
@@ -112,7 +118,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         //filter the players
         for (int x = 0; x < cPlayers.length; x++) {
             Player bukkitPlayer = cPlayers[x].getBukkitPlayer();
-            if (!bukkitPlayer.getWorld().equals(world)) continue;
+            if (this.world != null && !bukkitPlayer.getWorld().equals(world)) continue;
             players[x] = bukkitPlayer;
         }
         return players;
@@ -126,7 +132,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
             packet.sendPacket(player);
         }
         spawned = true;
-        log.info("Spawning " + packet.getType() + " with ID #" + id);
+        if (Core.DEBUG) log.info("Spawning " + getClass().getSimpleName() + " with ID #" + id);
     }
 
     private WrapperPlayServerEntityDestroy getDespawnPacket() {
@@ -144,6 +150,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         ProtocolLibrary.getProtocolManager().removePacketListener(listener);
         listener = null;
         spawned = false;
+        log.info("Despawned #" + id + " " + getClass().getSimpleName());
     }
 
     public void forceDespawn(Player bukkitPlayer) {
@@ -219,6 +226,11 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
                 if (object == null || !object.equals(watchableObject.getValue())) watchableObjects.add(watchableObject);
             }
         }
+        if (Core.DEBUG) {
+            for (WrappedWatchableObject watchableObject : watchableObjects) {
+                log.info("Sending update on " + watchableObject.getIndex() + " for #" + id + " (" + getClass().getSimpleName() + " ) =" + watchableObject.getValue() + " (" + watchableObject.getType().getName() + ")");
+            }
+        }
         packet.setEntityMetadata(watchableObjects);
         packet.setEntityId(id);
         for (Player player : getTargets()) {
@@ -233,7 +245,9 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         final Point location1 = this.location;
         this.location = point;
         AbstractPacket packet;
-        if (location1.distanceSquared(point) > 16) { //if we're moving more than four blocks
+        if (Core.DEBUG) log.info("Moving from " + location1.toString() + " to " + point.toString() + "; distance=" + location1.distance(point));
+        if (location1.distanceSquared(point) <= 16) { //if we're moving less than four blocks
+            if (Core.DEBUG) log.info("Teleporting #" + id + " using relative move. " + getClass().getSimpleName());
             WrapperPlayServerEntityMoveLook packet1 = new WrapperPlayServerEntityMoveLook();
             packet1.setEntityID(id);
             packet1.setDx(location1.getX() - point.getX());
@@ -244,6 +258,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
             packet = packet1;
         }
         else {
+            if (Core.DEBUG) log.info("Teleporting #" + id + " using teleport move. " + getClass().getSimpleName());
             WrapperPlayServerEntityTeleport packet1 = new WrapperPlayServerEntityTeleport();
             packet1.setEntityID(id);
             packet1.setX(point.getX());
@@ -281,11 +296,20 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     }
 
     protected void updateDataWatcher() {
+        if (Core.DEBUG) log.info("Update for datawatcher called on " + getClass().getSimpleName() + " #" + id + "!");
         dataWatcher.setObject(6, getHealth()); //Health
         if (showingNametag) dataWatcher.setObject(11, (byte)1); //Always show nametag
         else if (dataWatcher.getObject(11) != null) dataWatcher.removeObject(11);
         if (customName != null) dataWatcher.setObject(10, customName.substring(0, Math.min(customName.length(), 64))); //Nametag value
         else if (dataWatcher.getObject(10) != null) dataWatcher.removeObject(10);
+        //Others
+        byte zeroByte = 0;
+        if (onFire) zeroByte |= 0x01;
+        if (crouched) zeroByte |= 0x02;
+        if (sprinting) zeroByte |= 0x08;
+        if (blocking) zeroByte |= 0x10;
+        if (invisible) zeroByte |= 0x20;
+        dataWatcher.setObject(0, zeroByte);
         onDataWatcherUpdate();
     }
 

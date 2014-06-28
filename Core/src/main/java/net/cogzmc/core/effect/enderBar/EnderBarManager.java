@@ -1,12 +1,16 @@
 package net.cogzmc.core.effect.enderBar;
 
 import net.cogzmc.core.Core;
+import net.cogzmc.core.effect.npc.mobs.MobNPCEnderDragon;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerConnectionListener;
 import net.cogzmc.core.player.CPlayerJoinException;
+import net.cogzmc.core.util.Point;
+import org.bukkit.entity.Player;
 
 import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -14,7 +18,7 @@ import java.util.Map;
  */
 @SuppressWarnings("UnusedDeclaration")
 public final class EnderBarManager implements CPlayerConnectionListener {
-    private final Map<CPlayer, EnderBar> enderBars = new HashMap<>();
+    final Map<CPlayer, MobNPCEnderDragon> enderBars = new HashMap<>();
     private int lastId = 3000;
 
     /**
@@ -32,7 +36,9 @@ public final class EnderBarManager implements CPlayerConnectionListener {
      */
     public void setTextFor(CPlayer player, String text) {
         createIfDoesNotExist(player);
-        enderBars.get(player).setText(text);
+        MobNPCEnderDragon mobNPCEnderDragon = enderBars.get(player);
+        mobNPCEnderDragon.setCustomName(text);
+        mobNPCEnderDragon.update();
     }
 
     /**
@@ -42,7 +48,9 @@ public final class EnderBarManager implements CPlayerConnectionListener {
      */
     public void setHealthPercentageFor(CPlayer player, Float health) {
         createIfDoesNotExist(player);
-        enderBars.get(player).setHealth(health);
+        MobNPCEnderDragon mobNPCEnderDragon = enderBars.get(player);
+        mobNPCEnderDragon.setHealth(health * 200F);
+        mobNPCEnderDragon.update();
     }
 
     /**
@@ -51,8 +59,8 @@ public final class EnderBarManager implements CPlayerConnectionListener {
      */
     public void hideBarFor(CPlayer player) {
         if (!enderBars.containsKey(player)) return;
-        EnderBar enderBar = enderBars.get(player);
-        if (enderBar.isSpawned()) enderBar.remove();
+        MobNPCEnderDragon enderBar = enderBars.get(player);
+        if (enderBar.isSpawned()) enderBar.despawn();
     }
 
     /**
@@ -60,15 +68,20 @@ public final class EnderBarManager implements CPlayerConnectionListener {
      * @param player The {@link net.cogzmc.core.player.CPlayer} to show the ender bar for.
      */
     public void showBarFor(CPlayer player) {
-        EnderBar enderBar = enderBars.get(player);
+        MobNPCEnderDragon enderBar = enderBars.get(player);
         if (!createIfDoesNotExist(player) && !enderBar.isSpawned()) enderBar.spawn();
     }
 
     private boolean createIfDoesNotExist(CPlayer player) {
         if (enderBars.containsKey(player)) return false;
-        EnderBar enderBar = new EnderBar(player, getNextId());
-        enderBar.spawn();
-        enderBars.put(player, enderBar);
+        Player bukkitPlayer = player.getBukkitPlayer();
+        HashSet<CPlayer> cPlayers = new HashSet<>();
+        cPlayers.add(player);
+        Point of = Point.of(bukkitPlayer.getLocation());
+        of.setY(-300D);
+        MobNPCEnderDragon enderDragon = new MobNPCEnderDragon(of, bukkitPlayer.getWorld(), cPlayers, "Ender Dragon");
+        enderBars.put(player, enderDragon);
+        enderDragon.spawn();
         return true;
     }
 
@@ -84,9 +97,5 @@ public final class EnderBarManager implements CPlayerConnectionListener {
     @Override
     public void onPlayerDisconnect(CPlayer player) {
         this.enderBars.remove(player);
-    }
-
-    EnderBar getEnderBarFor(CPlayer player) {
-        return this.enderBars.get(player);
     }
 }

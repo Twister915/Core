@@ -1,13 +1,14 @@
 package net.cogzmc.core.player.mongo;
 
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.MongoException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Synchronized;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.*;
 import net.cogzmc.core.player.scoreboard.ScoreboardManager;
-import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -15,8 +16,6 @@ import org.bukkit.entity.Player;
 
 import java.net.InetAddress;
 import java.util.*;
-
-import static net.cogzmc.core.player.mongo.MongoUtils.getValueFrom;
 
 public final class CMongoPlayerManager extends CMongoLivePlayerRepository implements CPlayerManager {
     private CMongoDatabase database;

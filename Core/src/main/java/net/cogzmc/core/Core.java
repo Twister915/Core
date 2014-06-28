@@ -29,6 +29,20 @@ import java.util.*;
  * @author Joey Sacchini
  */
 public class Core extends JavaPlugin {
+    //**NEVER COMMIT THIS VALUE EQUALING TRUE**
+    /*
+     * This value may be set to true and should be implemented throughout the project
+     * You may only, however, use it when you are locally compiling and locally testing, or you are on a branch of your own
+     *
+     * Do not ever commit this value as *true* to the master git branch of any project.
+     *
+     * This is the only debug variable that should be used throughout the project, although this is subject to change in the future.
+     *
+     * - Joey
+     */
+
+    /* READ THE WARNING ABOVE */ public final static boolean DEBUG = false; /* READ THE WARNING ABOVE */
+
     @Getter private static Core instance;
     @Getter private static Random random = new Random();
 

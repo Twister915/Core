@@ -10,11 +10,11 @@ import org.bukkit.block.Block;
 @Data
 @RequiredArgsConstructor(staticName = "of")
 public final class Point {
-    @NonNull private final Double x;
-    @NonNull private final Double y;
-    @NonNull private final Double z;
-    @NonNull private final Float pitch;
-    @NonNull private final Float yaw;
+    @NonNull private Double x;
+    @NonNull private Double y;
+    @NonNull private Double z;
+    @NonNull private Float pitch;
+    @NonNull private Float yaw;
 
     public Location getLocation(World world) {
         return new Location(world, x, y, z, pitch, yaw);
@@ -35,8 +35,8 @@ public final class Point {
 
     public Double distanceSquared(Point point) {
         Double x = Math.pow((this.x-point.getX()), 2);
-        Double y = Math.pow((this.y-point.getX()), 2);
-        Double z = Math.pow((this.z-point.getX()), 2);
+        Double y = Math.pow((this.y-point.getY()), 2);
+        Double z = Math.pow((this.z-point.getZ()), 2);
         return x + y + z;
     }
 

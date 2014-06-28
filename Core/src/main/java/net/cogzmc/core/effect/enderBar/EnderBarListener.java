@@ -2,7 +2,9 @@ package net.cogzmc.core.effect.enderBar;
 
 import lombok.Data;
 import net.cogzmc.core.Core;
+import net.cogzmc.core.effect.npc.mobs.MobNPCEnderDragon;
 import net.cogzmc.core.player.CPlayer;
+import net.cogzmc.core.util.Point;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,33 +21,20 @@ final class EnderBarListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent event) {
         CPlayer onlinePlayer = Core.getOnlinePlayer(event.getPlayer());
-        EnderBar enderBarFor = manager.getEnderBarFor(onlinePlayer);
-        if (enderBarFor != null && enderBarFor.isSpawned() && event.getTo().distanceSquared(enderBarFor.getCurrentLocation()) > 25) enderBarFor.updateLocation();
+        MobNPCEnderDragon enderBarFor = manager.enderBars.get(onlinePlayer);
+        Point current = Point.of(event.getTo());
+        current.setY(-300D);
+        if (enderBarFor != null && enderBarFor.isSpawned() && current.distanceSquared(enderBarFor.getLocation()) > 9) {
+            enderBarFor.move(Point.of(event.getTo().getX(), -300d, event.getTo().getZ(), 0F, 0F));
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerChangeWorld(PlayerChangedWorldEvent event) {
         CPlayer player = Core.getOnlinePlayer(event.getPlayer());
-        EnderBar enderBarFor = manager.getEnderBarFor(player);
-        if (enderBarFor != null) enderBarFor.newWorld();
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerRespawn(PlayerRespawnEvent event) {
-        CPlayer player = Core.getOnlinePlayer(event.getPlayer());
-        final EnderBar enderBarFor = manager.getEnderBarFor(player);
-        if (enderBarFor != null) Bukkit.getScheduler().runTask(Core.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                if (enderBarFor.isSpawned()) enderBarFor.respawn();
-            }
-        });
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerTeleport(PlayerTeleportEvent event) {
-        CPlayer player = Core.getOnlinePlayer(event.getPlayer());
-        EnderBar enderBar = manager.getEnderBarFor(player);
-        if (enderBar != null && enderBar.isSpawned()) enderBar.updateLocation();
+        MobNPCEnderDragon enderBarFor = manager.enderBars.get(player);
+        if (enderBarFor != null) {
+            enderBarFor.despawn();
+        }
     }
 }
