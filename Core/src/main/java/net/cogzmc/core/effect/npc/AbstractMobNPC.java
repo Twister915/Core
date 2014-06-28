@@ -150,7 +150,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         ProtocolLibrary.getProtocolManager().removePacketListener(listener);
         listener = null;
         spawned = false;
-        log.info("Despawned #" + id + " " + getClass().getSimpleName());
+        if (Core.DEBUG) log.info("Despawned #" + id + " " + getClass().getSimpleName());
     }
 
     public void forceDespawn(Player bukkitPlayer) {
