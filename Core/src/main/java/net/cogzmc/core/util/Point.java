@@ -3,6 +3,7 @@ package net.cogzmc.core.util;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -29,8 +30,7 @@ public final class Point {
     }
 
     public static Point of(Block block) {
-        Location l = block.getLocation();
-        return Point.of((double)l.getBlockX(), (double)l.getBlockY(), (double)l.getBlockZ(), 0f, 0f);
+        return Point.of(block.getLocation());
     }
 
     public Double distanceSquared(Point point) {

@@ -8,5 +8,7 @@ public interface NetDirectory extends NetElement, Iterable<NetElement> {
     List<NetElement> getContents();
 
     void placeFile(NetFile file);
-    void containsFile(NetFile file);
+    boolean containsFile(NetFile file);
+
+    NetDirectory createNewDirectory(String name);
 }
