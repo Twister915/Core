@@ -1,9 +1,11 @@
 package net.cogzmc;
 
 import lombok.NonNull;
+import lombok.ToString;
 import net.cogzmc.core.player.CGroup;
 import net.cogzmc.core.player.COfflinePlayer;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.reflect.Array;
 import java.util.Date;
@@ -12,21 +14,18 @@ import java.util.List;
 import java.util.Map;
 
 @XmlRootElement
-public final class PlayerBean {
-    public final String currentUsername;
-    public final String[] usernames;
-    public final String[] ips;
-    public final String uuid;
-    public final Date firstTimeOnline;
-    public final Date lastTimeSeen;
-    public final Long millisecondsOnline;
-    public final Map<String, Object> settings;
-    public final String[] groups;
-    public final String primaryGroup;
-    public final String displayName;
-    public final String prefix;
-    public final String suffix;
-    public final Map<String, Boolean> declaredPermissions;
+@ToString
+public class PlayerBean {
+    public PlayerBean() {}
+
+    @XmlElement(name = "username") public String currentUsername;
+    public String[] usernames;
+    public String[] ips;
+    public String uuid;
+    public Date firstTimeOnline;
+    public Date lastTimeSeen;
+    public Long millisecondsOnline;
+    public String displayName;
 
     public PlayerBean(@NonNull COfflinePlayer player) {
         this.currentUsername = player.getLastKnownUsername();
@@ -36,20 +35,7 @@ public final class PlayerBean {
         this.firstTimeOnline = player.getFirstTimeOnline();
         this.lastTimeSeen = player.getLastTimeOnline();
         this.millisecondsOnline = player.getMillisecondsOnline();
-        this.settings = new HashMap<>();
-        for (String s : player.getSettingKeys()) {
-            settings.put(s, player.getSettingValue(s, Object.class));
-        }
-        List<CGroup> groups1 = player.getGroups();
-        this.groups = new String[groups1.size()];
-        for (int x = 0; x < groups1.size(); x++) {
-            groups[x] = groups1.get(x).getName();
-        }
-        this.primaryGroup = player.getPrimaryGroup().getName();
-        this.prefix = player.getChatPrefix();
-        this.suffix = player.getChatSuffix();
         this.displayName = player.getDisplayName();
-        this.declaredPermissions = player.getDeclaredPermissions();
     }
 
     public static <T> T[] toArray(@NonNull List<T> ts, @NonNull Class<T> elementType) {

@@ -30,7 +30,7 @@ import java.util.Set;
 @Data
 @Getter(AccessLevel.NONE)
 @Setter(AccessLevel.NONE)
-@Log(topic = "Abstract Mob Log")
+@Log
 public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     @Getter private Point location;
     @Getter private Integer headRotation;
