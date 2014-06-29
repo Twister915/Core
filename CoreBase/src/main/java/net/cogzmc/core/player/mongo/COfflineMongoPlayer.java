@@ -1,6 +1,7 @@
 package net.cogzmc.core.player.mongo;
 
 import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
 import lombok.*;
@@ -182,7 +183,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
         this.knownIPAddresses = ips == null ? new ArrayList<String>() : ips;
         List<String> usernames = getListFor(getValueFrom(player, MongoKey.USERNAMES_KEY, BasicDBList.class), String.class);
         this.knownUsernames = usernames == null ? new ArrayList<String>() : usernames;
-        @SuppressWarnings("unchecked") Map<String, Object> settings1 = getValueFrom(player, MongoKey.SETTINGS_KEY, HashMap.class);
+        @SuppressWarnings("unchecked") Map<String, Object> settings1 = getMapFor(getValueFrom(player, MongoKey.SETTINGS_KEY, BasicDBObject.class));
         this.settings = settings1 == null ? new HashMap<String, Object>() : settings1;
         this.assets = new ArrayList<>();
         List<DBObject> assets1 = getListFor(getValueFrom(player,MongoKey.ASSETS_KEY , BasicDBList.class), DBObject.class);
