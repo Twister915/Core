@@ -30,6 +30,7 @@ public final class Punishments extends ModularPlugin implements CPlayerConnectio
     protected void onModuleEnable() throws Exception {
         Core.getPlayerManager().registerCPlayerConnectionListener(this);
         //Notice the order, this is the specific order in which we want the join events passed.
+        registerPunishmentManager(IPBan.class, new IPBanManager());
         registerPunishmentManager(Ban.class, new BanManager());
         registerPunishmentManager(TemporaryBan.class, new TemporaryBanManager());
         registerPunishmentManager(Mute.class, new MuteManager());

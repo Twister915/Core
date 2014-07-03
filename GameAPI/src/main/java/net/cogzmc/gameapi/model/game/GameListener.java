@@ -52,7 +52,8 @@ public final class GameListener implements Listener {
         Point fromPoint = fromLocation(from);
         Point toPoint = fromLocation(to);
         if (!game.getRuleDelegate().canPlayerMove(cPlayer, fromPoint, toPoint)) {
-            event.setTo(new Location(from.getWorld(), from.getX(), from.getY(), from.getZ(), to.getPitch(), to.getYaw()));
+            //Might as well let them jump a bit :)
+            event.setTo(new Location(from.getWorld(), from.getX(), to.getY(), from.getZ(), to.getYaw(), to.getPitch()));
             return;
         }
         for (GameObserver gameObserver : game.getObservers()) {

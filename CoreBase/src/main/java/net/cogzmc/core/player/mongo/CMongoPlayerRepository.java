@@ -11,6 +11,7 @@ import net.cogzmc.core.player.CPlayerRepository;
 import net.cogzmc.core.player.DatabaseConnectException;
 import org.bson.types.ObjectId;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,20 +27,20 @@ public class CMongoPlayerRepository implements CPlayerRepository {
     public List<COfflinePlayer> getOfflinePlayerByName(String username) {
         DBCollection collection = database.getCollection(MongoKey.USERS_COLLETION.toString());
         DBObject one = collection.findOne(new BasicDBObject(MongoKey.LAST_USERNAME_KEY.toString(), username));
-        if (one != null) return Arrays.asList(playerFrom(one));
+        if (one != null) return Arrays.asList(playerFromDBObject(one));
         DBCursor dbObjects = collection.find(new BasicDBObject(MongoKey.USERNAMES_KEY.toString(), username));
         List<COfflinePlayer> offlinePlayers = new ArrayList<>();
         for (DBObject dbObject : dbObjects) {
-            offlinePlayers.add(playerFrom(dbObject));
+            offlinePlayers.add(playerFromDBObject(dbObject));
         }
         return offlinePlayers;
     }
 
-    COfflinePlayer playerFrom(DBObject dbObject) {
-        return new COfflineMongoPlayer(UUID.fromString(getValueFrom(dbObject, MongoKey.UUID_KEY.toString(), String.class)), dbObject, this);
+    COfflinePlayer playerFromDBObject(DBObject dbObject) {
+        return getPlayerWithUUIDAndObject(UUID.fromString(getValueFrom(dbObject, MongoKey.UUID_KEY.toString(), String.class)), dbObject);
     }
 
-    COfflineMongoPlayer getPlayerFor(UUID uuid, DBObject object) {
+    COfflineMongoPlayer getPlayerWithUUIDAndObject(UUID uuid, DBObject object) {
         return new COfflineMongoPlayer(uuid, object, this);
     }
 
@@ -52,7 +53,7 @@ public class CMongoPlayerRepository implements CPlayerRepository {
     public COfflineMongoPlayer getOfflinePlayerByUUID(UUID uuid) {
         DBObject playerDocumentFor = getPlayerDocumentFor(uuid);
         //We perform no null check here on purpose. The playerDocumentFor variable, when null, is checked in the constructor and used as a marker for a new player
-        return getPlayerFor(uuid, playerDocumentFor);
+        return getPlayerWithUUIDAndObject(uuid, playerDocumentFor);
     }
 
     @Override
@@ -72,9 +73,19 @@ public class CMongoPlayerRepository implements CPlayerRepository {
 
                 I guess another interesting question: Should we simply exclude the person from the list, or insert a null where they should be?
              */
-            offlinePlayers.add(getPlayerFor(uuid, playerDocumentFor));
+            offlinePlayers.add(getPlayerWithUUIDAndObject(uuid, playerDocumentFor));
         }
         return offlinePlayers;
+    }
+
+    @Override
+    public List<COfflinePlayer> getOfflinePlayersForIP(InetAddress address) {
+        DBCursor dbObjects = database.getCollection(MongoKey.USERS_COLLETION.toString()).find(new BasicDBObject(MongoKey.IPS_KEY.toString(), address.getHostAddress()));
+        List<COfflinePlayer> players = new ArrayList<>();
+        for (DBObject dbObject : dbObjects) {
+            players.add(playerFromDBObject(dbObject));
+        }
+        return players;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package net.cogzmc.core.player;
 
+import java.net.InetAddress;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +26,12 @@ public interface CPlayerRepository {
      */
     List<COfflinePlayer> getOfflinePlayersByUUIDS(List<UUID> uuids);
 
+    /**
+     * Gets all players whom have connected via this IP address.
+     * @param address The {@link java.net.InetAddress} to test.
+     * @return A {@link java.util.List} of players.
+     */
+    List<COfflinePlayer> getOfflinePlayersForIP(InetAddress address);
 
     /**
      * Saves a player's data into the database, the exact process of this depends very much on the implementation of this class that you're using.

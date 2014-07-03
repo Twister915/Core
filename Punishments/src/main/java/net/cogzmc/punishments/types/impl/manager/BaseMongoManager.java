@@ -105,20 +105,24 @@ abstract class BaseMongoManager<T extends MongoPunishment> implements Punishment
         T activePunishmentFor = getActivePunishmentFor(player);
         if (activePunishmentFor == null) return;
         if (!canConnect(player, activePunishmentFor)) {
-            PrettyTime prettyTime = new PrettyTime();
-            List<Duration> durations = prettyTime.calculatePreciseDuration(activePunishmentFor.getDateIssued());
-            String timeSince = prettyTime.format(durations);
-            String expires = (activePunishmentFor instanceof TimedPunishment) ? prettyTime.format(new Date(activePunishmentFor.getDateIssued().getTime() + (((TimedPunishment) activePunishmentFor).getLengthInSeconds() * 1000))) : "never";
-            throw new CPlayerJoinException(Core.getModule(Punishments.class).getFormat("disconnect-message-perm", false,
-                    new String[]{"<type>", activePunishmentFor.getClass().getSimpleName()},
-                    new String[]{"<reason>", activePunishmentFor.getMessage()},
-                    new String[]{"<issuer>", activePunishmentFor.getIssuer().getName()},
-                    new String[]{"<issued>", timeSince},
-                    new String[]{"<expires>", expires}
-            ));
+            throwJoinExceptionFor(activePunishmentFor);
         }
         activePunishments.put(player, activePunishmentFor);
         onJoin(player, activePunishmentFor);
+    }
+
+    protected void throwJoinExceptionFor(T activePunishmentFor) throws CPlayerJoinException {
+        PrettyTime prettyTime = new PrettyTime();
+        List<Duration> durations = prettyTime.calculatePreciseDuration(activePunishmentFor.getDateIssued());
+        String timeSince = prettyTime.format(durations);
+        String expires = (activePunishmentFor instanceof TimedPunishment) ? prettyTime.format(new Date(activePunishmentFor.getDateIssued().getTime() + (((TimedPunishment) activePunishmentFor).getLengthInSeconds() * 1000))) : "never";
+        throw new CPlayerJoinException(Core.getModule(Punishments.class).getFormat("disconnect-message-perm", false,
+                new String[]{"<type>", activePunishmentFor.getClass().getSimpleName()},
+                new String[]{"<reason>", activePunishmentFor.getMessage()},
+                new String[]{"<issuer>", activePunishmentFor.getIssuer().getName()},
+                new String[]{"<issued>", timeSince},
+                new String[]{"<expires>", expires}
+        ));
     }
 
     @Override

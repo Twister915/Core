@@ -13,12 +13,7 @@ class CMongoLivePlayerRepository extends CMongoPlayerRepository {
     }
 
     @Override
-    COfflinePlayer playerFrom(DBObject dbObject) {
-        return new COfflineLiveMongoPlayer(UUID.fromString(getValueFrom(dbObject, MongoKey.UUID_KEY.toString(), String.class)), dbObject, this);
-    }
-
-    @Override
-    COfflineMongoPlayer getPlayerFor(UUID uuid, DBObject object) {
+    COfflineMongoPlayer getPlayerWithUUIDAndObject(UUID uuid, DBObject object) {
         return new COfflineLiveMongoPlayer(uuid, object, this);
     }
 }
