@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 import java.net.InetAddress;
 import java.util.*;
 
-public final class CMongoPlayerManager extends CMongoLivePlayerRepository implements CPlayerManager {
+public final class CMongoPlayerManager extends CMongoPlayerRepository implements CPlayerManager {
     private CMongoDatabase database;
 
     private Map<String, CPlayer> onlinePlayerMap = new HashMap<>();

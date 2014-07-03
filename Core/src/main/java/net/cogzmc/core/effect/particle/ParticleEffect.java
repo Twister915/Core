@@ -19,10 +19,6 @@ public final class ParticleEffect {
      * The type of particle to be sent.
      */
     @NonNull private final ParticleEffectType type;
-    /**
-     * Where the particle should be centered.
-     */
-    @NonNull private final Location location;
 
     /**
      * This will be multiplied by a random number between 1.0 and 0.0. This is basically setting a limit for how far
@@ -53,7 +49,7 @@ public final class ParticleEffect {
      */
     private String customParticle = null;
 
-    private WrapperPlayServerWorldParticles getPacket() {
+    private WrapperPlayServerWorldParticles getPacket(Location location) {
         WrapperPlayServerWorldParticles packet = new WrapperPlayServerWorldParticles();
         packet.setLocation(location);
         packet.setOffsetX(xSpread);
@@ -69,17 +65,17 @@ public final class ParticleEffect {
      * Sends the particle effect you have created to the specified online player.
      * @param player The player to send the packet to.
      */
-    public void emitToPlayer(@NonNull Player player) {
-        getPacket().sendPacket(player);
+    public void emitToPlayer(@NonNull Player player, Location location) {
+        getPacket(location).sendPacket(player);
     }
 
     /**
      * Emits a particle effect to all players within a defined radius.
      * @param radius The radius to send the particle within.
      */
-    public void emitGlobally(Long radius) {
+    public void emitGlobally(Long radius, Location location) {
         double distanceSquared = Math.pow(radius, 2); //Distance squared is faster than doing sqrt always.
-        WrapperPlayServerWorldParticles packet = getPacket();
+        WrapperPlayServerWorldParticles packet = getPacket(location);
         for (Player player : location.getWorld().getPlayers()) {
             //Determines if the distance from where our particle will be is less than our radius, and marks for sending if so
             if (player.getLocation().distanceSquared(location) <= distanceSquared) packet.sendPacket(player);

@@ -29,7 +29,7 @@ import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true, of = {"username"})
 @ToString(of = {"username"})
-final class CMongoPlayer extends COfflineLiveMongoPlayer implements CPlayer {
+final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Getter private final String username;
     @Getter private Player bukkitPlayer;
     private PermissionAttachment permissionAttachment;

@@ -4,6 +4,7 @@ import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayerRepository;
 import net.cogzmc.core.player.DatabaseConnectException;
 import net.cogzmc.core.player.mongo.CMongoDatabase;
+import net.cogzmc.core.player.mongo.CMongoGroupRepository;
 import net.cogzmc.core.player.mongo.CMongoPlayerRepository;
 
 import javax.ws.rs.*;
@@ -19,13 +20,16 @@ public class PlayerResource {
     private static CPlayerRepository playerRepository;
 
     static {
-        CMongoDatabase bashurverse = new CMongoDatabase(null, null, null, null, null, null);
+        CMongoDatabase bashurverse = new CMongoDatabase("play.bashursworld.com", 27017, "bashurverse", null, null, "");
         try {
             bashurverse.connect();
         } catch (DatabaseConnectException e) {
             e.printStackTrace();
         }
-        playerRepository = new CMongoPlayerRepository(bashurverse);
+        CMongoPlayerRepository cMongoPlayerRepository = new CMongoPlayerRepository(bashurverse);
+        CMongoGroupRepository groupRepository = new CMongoGroupRepository(bashurverse, cMongoPlayerRepository);
+        playerRepository = cMongoPlayerRepository;
+        cMongoPlayerRepository.setGroupRepository(groupRepository);
     }
 
     @Path("/uuid/{uuid: [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}")

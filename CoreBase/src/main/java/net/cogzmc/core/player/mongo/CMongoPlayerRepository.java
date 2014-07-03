@@ -22,6 +22,7 @@ import static net.cogzmc.core.player.mongo.MongoUtils.getValueFrom;
 @Data
 public class CMongoPlayerRepository implements CPlayerRepository {
     protected final CMongoDatabase database;
+    protected CMongoGroupRepository groupRepository;
 
     @Override
     public List<COfflinePlayer> getOfflinePlayerByName(String username) {

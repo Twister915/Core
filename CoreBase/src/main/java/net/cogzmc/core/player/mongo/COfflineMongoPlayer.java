@@ -208,6 +208,7 @@ class COfflineMongoPlayer implements COfflinePlayer {
         this.declaredPermissions = permissibleDataFor.getDeclaredPermissions();
         if (this.declaredPermissions == null) this.declaredPermissions = new HashMap<>();
         groupIds = getListFor(getValueFrom(player, MongoKey.USER_GROUPS_KEY, BasicDBList.class), ObjectId.class);
+        reloadPermissions0();
     }
 
     @Override
@@ -241,7 +242,40 @@ class COfflineMongoPlayer implements COfflinePlayer {
     @Override
     @Synchronized
     public void reloadPermissions() {
-        throw new UnsupportedOperationException("Could not reload permissions without being a live player." );
+       reloadPermissions0();
+    }
+
+    protected void reloadPermissions0() {
+        //Why do we need this? When the permissions manager reloads, it creates new instances to represent the same groups, so we need to reload our group instances.
+        this.groups = new ArrayList<>();
+        this.primaryGroup = null;
+        CMongoGroupRepository groupRepository = playerRepository.groupRepository;
+        if (groupRepository == null) throw new IllegalStateException("You need to setup the group repository for permissions to work!");
+        if (groupIds != null) {
+            for (ObjectId groupId : groupIds) {
+                CGroup groupByObjectId = groupRepository.getGroupByObjectId(groupId);
+                if (groupByObjectId == null) continue;
+                this.groups.add(groupByObjectId);
+            }
+        }
+        //Then we need to reload our permissions map.
+        allPermissions = new HashMap<>(declaredPermissions);
+        CGroup defaultGroup = groupRepository.getDefaultGroup();
+        if (groups.size() == 0 && defaultGroup != null) processGroupInternal(defaultGroup);
+        for (CGroup group : groups) {
+            processGroupInternal(group);
+        }
+
+        //And now we get our primary group
+        for (CGroup group : this.groups) {
+            if (this.primaryGroup == null) {
+                this.primaryGroup = group;
+                continue;
+            }
+            if (this.primaryGroup.getPriority() < group.getPriority()) this.primaryGroup = group;
+        }
+
+        if (this.primaryGroup == null) this.primaryGroup = defaultGroup;
     }
 
     @Override
