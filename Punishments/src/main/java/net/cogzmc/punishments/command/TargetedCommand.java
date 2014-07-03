@@ -13,10 +13,6 @@ abstract class TargetedCommand extends ModuleCommand {
         super(name);
     }
 
-    protected TargetedCommand(String name, ModuleCommand... subCommands) {
-        super(name, subCommands);
-    }
-
     protected COfflinePlayer getTargetByArg(String target) {
         if (target.length() > 16) {
             if (!target.matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")) return null;
