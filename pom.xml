@@ -19,7 +19,6 @@
         <module>Chat2</module>
         <module>GameAPI</module>
         <module>DataServerlet</module>
-        <module>CoreLogs</module>
     </modules>
 
     <packaging>pom</packaging>
