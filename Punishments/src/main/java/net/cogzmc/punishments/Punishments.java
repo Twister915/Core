@@ -38,20 +38,6 @@ public final class Punishments extends ModularPlugin implements CPlayerConnectio
         registerPunishmentManager(Warning.class, new WarningManager());
         registerPunishmentManager(Kick.class, new KickManager());
 
-        //This order, however, is irrelevant.
-        createPermPunishCommand(Ban.class);
-        createPermPunishCommand(Kick.class);
-        createPermPunishCommand(Mute.class);
-        createPermPunishCommand(Warning.class);
-
-        createTimedPunishmentCommand(TemporaryMute.class);
-        createTimedPunishmentCommand(TemporaryBan.class);
-
-        registerCommand(new UnPunishCommand<>(Ban.class));
-        registerCommand(new UnPunishCommand<>(Mute.class));
-        registerCommand(new UnPunishCommand<>(TemporaryMute.class));
-        registerCommand(new UnPunishCommand<>(TemporaryBan.class));
-
         registerCommand(new LookupCommand());
     }
 
@@ -61,14 +47,10 @@ public final class Punishments extends ModularPlugin implements CPlayerConnectio
 
     private <T extends Punishment> void registerPunishmentManager(Class<T> punishmentClass, PunishmentManager<T> punishmentManager) {
         punishmentManagers.put(punishmentClass, punishmentManager);
-    }
-
-    private <T extends Punishment> void createPermPunishCommand(Class<T> punishmentClass) {
-        registerCommand(new PermanentPunishCommand<>(punishmentClass));
-    }
-
-    private <T extends TimedPunishment> void createTimedPunishmentCommand(Class<T> punishmentClass) {
-        registerCommand(new TemporaryPunishCommand<>(punishmentClass));
+        if (TimedPunishment.class.isAssignableFrom(punishmentClass)) //noinspection unchecked
+            registerCommand(new TemporaryPunishCommand<>((Class<? extends TimedPunishment>)punishmentClass));
+        else registerCommand(new PermanentPunishCommand<>(punishmentClass));
+        registerCommand(new UnPunishCommand<>(punishmentClass));
     }
 
     public <T extends Punishment> PunishmentManager<T> getPunishmentManager(Class<T> punishmentClass) {
