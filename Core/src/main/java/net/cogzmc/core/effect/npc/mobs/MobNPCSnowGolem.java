@@ -13,8 +13,8 @@ import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public final class MobNPCSnowman extends AbstractMobNPC {
-    public MobNPCSnowman(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
+public final class MobNPCSnowGolem extends AbstractMobNPC {
+    public MobNPCSnowGolem(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
         super(location, world, observers, title);
     }
 
