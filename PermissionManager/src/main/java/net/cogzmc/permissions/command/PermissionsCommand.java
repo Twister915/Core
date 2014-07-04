@@ -3,6 +3,7 @@ package net.cogzmc.permissions.command;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.modular.command.ArgumentRequirementException;
 import net.cogzmc.core.modular.command.CommandException;
+import net.cogzmc.core.modular.command.CommandMeta;
 import net.cogzmc.core.modular.command.ModuleCommand;
 import net.cogzmc.core.player.CPermissible;
 import net.cogzmc.permissions.PermissionsReloadNetCommand;
@@ -14,6 +15,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.*;
 
+@CommandMeta(aliases = {"perm", "p"}, description = "Manages permissions for the server!")
 public final class PermissionsCommand extends ModuleCommand {
     private Set<Noun<?>> nouns = new HashSet<>();
 
@@ -51,10 +53,11 @@ public final class PermissionsCommand extends ModuleCommand {
         else if (target == null) strings = new String[]{args[1]};
         verb.perform(sender, target, strings);
         Core.getPermissionsManager().save();
-        broadcastNetCommand();
+        commitChanges();
     }
 
-    private void broadcastNetCommand() {
+    private void commitChanges() {
+        Core.getPermissionsManager().reloadPermissions();
         if (Core.getNetworkManager() != null) Core.getNetworkManager().sendMassNetCommand(new PermissionsReloadNetCommand());
     }
 
@@ -76,6 +79,7 @@ public final class PermissionsCommand extends ModuleCommand {
             case 2:
                 Noun<?> nounFor = getNounFor(args[0]);
                 if (nounFor == null) return Collections.emptyList();
+                return nounFor.getTabCompleteFor(args[1]);
             case 3:
                 Noun<?> nounFor1 = getNounFor(args[0]);
                 if (nounFor1 == null) return Collections.emptyList();

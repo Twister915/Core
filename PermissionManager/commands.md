@@ -22,6 +22,7 @@ Verbs
 - view
 
 Groups:
+
 - create
 - delete
 - setparent
@@ -29,6 +30,7 @@ Groups:
 - setpriority
 
 Players:
+
 - addgroup
 - delgroup
 - setgroup

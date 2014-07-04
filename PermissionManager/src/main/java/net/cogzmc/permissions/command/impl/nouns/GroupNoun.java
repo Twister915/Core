@@ -15,7 +15,7 @@ import java.util.Set;
 @Getter
 public final class GroupNoun extends Noun<CGroup> {
     private final Set<Verb<CGroup>> verbs = new HashSet<>();
-    private final String[] names = new String[]{"player", "user"};
+    private final String[] names = new String[]{"group"};
     private final Class<CGroup> type = CGroup.class;
 
     {

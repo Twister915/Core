@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender;
 @Getter
 public final class PlayerPurgeVerb extends Verb<COfflinePlayer> {
     private final String[] names = new String[]{"purge"};
-    private final Integer requiredArguments = 1;
+    private final Integer requiredArguments = 0;
 
     @Override
     protected void perform(CommandSender sender, COfflinePlayer target, String[] args) throws CommandException {

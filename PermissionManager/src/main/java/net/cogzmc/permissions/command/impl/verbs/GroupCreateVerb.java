@@ -11,7 +11,7 @@ import org.bukkit.command.CommandSender;
 @Getter
 public final class GroupCreateVerb extends Verb<CGroup> {
     private final String[] names = new String[]{"create"};
-    private final Integer requiredArguments = 1;
+    private final Integer requiredArguments = 0;
 
     @Override
     protected void perform(CommandSender sender, CGroup target, String[] args) throws CommandException {
