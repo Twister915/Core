@@ -80,6 +80,6 @@ abstract class BaseTemporaryMongoManager<T extends MongoTemporaryPunishment> ext
     }
 
     public boolean isExpired(T punish) {
-        return (punish.getDateIssued().getTime() + (punish.getLengthInSeconds() * 1000)) < (new Date()).getTime();
+        return (punish.getDateIssued().getTime() + (punish.getLengthInSeconds() * 1000)) < System.currentTimeMillis();
     }
 }

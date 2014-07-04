@@ -2,12 +2,11 @@ package net.cogzmc.permissions;
 
 import lombok.Getter;
 import net.cogzmc.core.Core;
-import net.cogzmc.core.model.ModelStorage;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.modular.ModuleMeta;
 import net.cogzmc.core.player.CGroup;
 import net.cogzmc.core.player.CPermissionsManager;
-import net.cogzmc.permissions.commands.PermissionsCommand;
+import net.cogzmc.permissions.command.PermissionsCommand;
 
 @ModuleMeta(
         name = "Permissions Manager",
@@ -15,7 +14,6 @@ import net.cogzmc.permissions.commands.PermissionsCommand;
 )
 public final class PermissionsManager extends ModularPlugin {
     @Getter private static PermissionsManager instance;
-    @Getter private ModelStorage<PermissionChange> changeLog;
 
     @Override
     public void onModuleEnable() {
@@ -28,8 +26,5 @@ public final class PermissionsManager extends ModularPlugin {
             permissionsManager.saveGroup(defaultGroup);
         }
         registerCommand(new PermissionsCommand());
-        //Get the changelog
-        changeLog = Core.getModelManager().getModelStorage(PermissionChange.class);
-        changeLog.reload();
     }
 }

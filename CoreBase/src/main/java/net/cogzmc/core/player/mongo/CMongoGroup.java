@@ -113,7 +113,7 @@ final class CMongoGroup implements CGroup {
     }
 
     void checkForRecursiveParenthood(CGroup group) {
-        if (group.isParent(this)) throw new IllegalStateException("You cannot parent a group that is your parent.");
+        if (group.isParent(this)) throw new IllegalStateException("You cannot set a child as a parent.");
         if (group.getParents().size() > 0)
             for (CGroup group2 : group.getParents())
                 checkForRecursiveParenthood(group2);
