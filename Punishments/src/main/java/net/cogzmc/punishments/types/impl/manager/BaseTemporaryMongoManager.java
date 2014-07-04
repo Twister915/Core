@@ -54,6 +54,7 @@ abstract class BaseTemporaryMongoManager<T extends MongoTemporaryPunishment> ext
         DBObject dbObject = convertToDBObject(newPunishment);
         newPunishment.setMongoId((ObjectId) dbObject.get("_id"));
         collection.save(dbObject);
+        if (target instanceof CPlayer) onPunish((CPlayer) target, newPunishment);
         return newPunishment;
     }
 
