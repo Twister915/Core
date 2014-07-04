@@ -32,7 +32,7 @@ public final class TemporaryBanManager extends BaseTemporaryMongoManager<Tempora
                 new String[]{"<type>", activePunishmentFor.getClass().getSimpleName()},
                 new String[]{"<reason>", activePunishmentFor.getMessage()},
                 new String[]{"<issuer>", activePunishmentFor.getIssuer().getName()},
-                new String[]{"<date-issued>", formatter.format(activePunishmentFor.getDateIssued())},
+                new String[]{"<issued>", formatter.format(activePunishmentFor.getDateIssued())},
                 new String[]{"<expires>", "in " + formatter.format(new Date(activePunishmentFor.getDateIssued().getTime() + (activePunishmentFor.getLengthInSeconds() * 1000)))}
         ));
     }
