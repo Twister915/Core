@@ -26,5 +26,6 @@ public final class PermissionsManager extends ModularPlugin {
             permissionsManager.saveGroup(defaultGroup);
         }
         registerCommand(new PermissionsCommand());
+        Core.getNetworkManager().registerNetCommandHandler(new PermissionsReloadNetCommandHandler(), PermissionsReloadNetCommand.class);
     }
 }
