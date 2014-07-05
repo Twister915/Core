@@ -64,9 +64,7 @@ public final class PermissionsCommand extends ModuleCommand {
 
     @Override
     protected List<String> handleTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (!sender.hasPermission(PERMISSION)) {
-            return Collections.emptyList();
-        }
+        if (!sender.hasPermission(PERMISSION)) return Collections.emptyList();
         //0 - noun
         //1 - noun autocomplete
         //2 - verb
@@ -75,8 +73,9 @@ public final class PermissionsCommand extends ModuleCommand {
             case 1:
                 List<String> nounNames = new ArrayList<>();
                 for (Noun<?> noun : nouns) {
+                    String s1 = args[0].toLowerCase();
                     for (String s : noun.getNames()) {
-                        if (s.toLowerCase().startsWith(args[0].toLowerCase())) nounNames.add(s);
+                        if (s.toLowerCase().startsWith(s1)) nounNames.add(s);
                     }
                 }
                 return nounNames;
@@ -89,8 +88,9 @@ public final class PermissionsCommand extends ModuleCommand {
                 if (nounFor1 == null) return Collections.emptyList();
                 List<String> strings = new ArrayList<>();
                 for (Verb<? extends CPermissible> verb : nounFor1.getVerbs()) {
+                    String s1 = args[2].toLowerCase();
                     for (String s : verb.getNames()) {
-                        if (s.toLowerCase().startsWith(args[2].toLowerCase()) && sender.hasPermission(getPermission(nounFor1, verb))) strings.add(s);
+                        if (s.toLowerCase().startsWith(s1) && sender.hasPermission(getPermission(nounFor1, verb))) strings.add(s);
                     }
                 }
                 return strings;
