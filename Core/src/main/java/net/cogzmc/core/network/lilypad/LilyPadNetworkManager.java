@@ -327,7 +327,7 @@ public final class LilyPadNetworkManager implements NetworkManager {
         //Get the sender
         NetworkServer sender = getServer(event.getSender());
         if (sender == null) return;
-        Core.logInfo(event.getMessageAsString());
+        if (Core.DEBUG) Core.logInfo(event.getMessageAsString());
         if (sender.getName().equals(connect.getSettings().getUsername())) return;
         //Get the command object (JSON) and attempt to read it
         JSONObject netCommand = (JSONObject) JSONValue.parse(event.getMessageAsString());

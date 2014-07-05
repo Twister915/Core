@@ -113,8 +113,7 @@ abstract class BaseMongoManager<T extends MongoPunishment> implements Punishment
 
     protected void throwJoinExceptionFor(T activePunishmentFor) throws CPlayerJoinException {
         PrettyTime prettyTime = new PrettyTime();
-        List<Duration> durations = prettyTime.calculatePreciseDuration(activePunishmentFor.getDateIssued());
-        String timeSince = prettyTime.format(durations);
+        String timeSince = prettyTime.format(activePunishmentFor.getDateIssued());
         String expires = (activePunishmentFor instanceof TimedPunishment) ? prettyTime.format(new Date(activePunishmentFor.getDateIssued().getTime() + (((TimedPunishment) activePunishmentFor).getLengthInSeconds() * 1000))) : "never";
         throw new CPlayerJoinException(Core.getModule(Punishments.class).getFormat("disconnect-message-perm", false,
                 new String[]{"<type>", activePunishmentFor.getClass().getSimpleName()},

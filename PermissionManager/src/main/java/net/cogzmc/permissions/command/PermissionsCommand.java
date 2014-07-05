@@ -1,12 +1,10 @@
 package net.cogzmc.permissions.command;
 
 import net.cogzmc.core.Core;
-import net.cogzmc.core.modular.command.ArgumentRequirementException;
-import net.cogzmc.core.modular.command.CommandException;
-import net.cogzmc.core.modular.command.CommandMeta;
-import net.cogzmc.core.modular.command.ModuleCommand;
+import net.cogzmc.core.modular.command.*;
 import net.cogzmc.core.player.CPermissible;
 import net.cogzmc.permissions.PermissionsReloadNetCommand;
+import net.cogzmc.permissions.command.impl.PermissionName;
 import net.cogzmc.permissions.command.impl.nouns.*;
 import net.cogzmc.permissions.command.impl.nouns.PlayerNoun;
 import net.cogzmc.util.RandomUtils;
@@ -17,6 +15,7 @@ import java.util.*;
 
 @CommandMeta(aliases = {"perm", "p"}, description = "Manages permissions for the server!")
 public final class PermissionsCommand extends ModuleCommand {
+    private static final String PERMISSION = "core.permissions.manage";
     private Set<Noun<?>> nouns = new HashSet<>();
 
     public PermissionsCommand() {
@@ -27,6 +26,7 @@ public final class PermissionsCommand extends ModuleCommand {
 
     @Override
     protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
+        if (!sender.hasPermission(PERMISSION)) throw new PermissionException("You do not have permission for this command!");
         if (args.length < 3) throw new ArgumentRequirementException("You have not specified enough arguments!");
         Noun n = getNounFor(args[0]);
         if (n == null) throw new ArgumentRequirementException("The target type you specified is invalid!");
@@ -46,6 +46,7 @@ public final class PermissionsCommand extends ModuleCommand {
            if (RandomUtils.contains(verb1.getNames(), args[2])) verb = verb1;
         }
         if (verb == null) throw new ArgumentRequirementException("The verb you specified is not valid!");
+        if (!sender.hasPermission(getPermission(n, verb))) throw new PermissionException("You do not have permission for this command!");
         if (args.length-3 < verb.getRequiredArguments()) throw new ArgumentRequirementException("You have not specified enough arguments!");
         T target = n.get(args[1]);
         String[] strings = args.length <= 3 ? new String[]{} : Arrays.copyOfRange(args, 3, args.length);
@@ -63,6 +64,9 @@ public final class PermissionsCommand extends ModuleCommand {
 
     @Override
     protected List<String> handleTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (!sender.hasPermission(PERMISSION)) {
+            return Collections.emptyList();
+        }
         //0 - noun
         //1 - noun autocomplete
         //2 - verb
@@ -86,12 +90,16 @@ public final class PermissionsCommand extends ModuleCommand {
                 List<String> strings = new ArrayList<>();
                 for (Verb<? extends CPermissible> verb : nounFor1.getVerbs()) {
                     for (String s : verb.getNames()) {
-                        if (s.toLowerCase().startsWith(args[2].toLowerCase())) strings.add(s);
+                        if (s.toLowerCase().startsWith(args[2].toLowerCase()) && sender.hasPermission(getPermission(nounFor1, verb))) strings.add(s);
                     }
                 }
                 return strings;
             default:
                 return Collections.emptyList();
         }
+    }
+
+    private String getPermission(Noun noun, Verb verb) {
+        return "core.permissions." + noun.getClass().getAnnotation(PermissionName.class).value() + "." + verb.getClass().getAnnotation(PermissionName.class).value();
     }
 }

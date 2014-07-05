@@ -10,5 +10,4 @@ public abstract class Noun<P extends CPermissible> {
     protected abstract Set<Verb<P>> getVerbs();
     protected abstract List<String> getTabCompleteFor(String arg);
     protected abstract P get(String s);
-    protected abstract Class<P> getType();
 }

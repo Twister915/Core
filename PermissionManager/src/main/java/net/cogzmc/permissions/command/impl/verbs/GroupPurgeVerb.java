@@ -6,9 +6,11 @@ import net.cogzmc.core.modular.command.CommandException;
 import net.cogzmc.core.player.CGroup;
 import net.cogzmc.core.player.DatabaseConnectException;
 import net.cogzmc.permissions.command.Verb;
+import net.cogzmc.permissions.command.impl.PermissionName;
 import org.bukkit.command.CommandSender;
 
 @Getter
+@PermissionName("purge")
 public final class GroupPurgeVerb extends Verb<CGroup> {
     private final String[] names = new String[]{"purge"};
     private final Integer requiredArguments = 0;
@@ -21,5 +23,6 @@ public final class GroupPurgeVerb extends Verb<CGroup> {
             e.printStackTrace();
             throw new CommandException("Could not execute due to error! " + e.getMessage());
         }
+        sendSuccessMessage("Deleted the " + target.getName() + " group!", sender);
     }
 }

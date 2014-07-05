@@ -5,6 +5,7 @@ import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CGroup;
 import net.cogzmc.permissions.command.Noun;
 import net.cogzmc.permissions.command.Verb;
+import net.cogzmc.permissions.command.impl.PermissionName;
 import net.cogzmc.permissions.command.impl.verbs.*;
 
 import java.util.ArrayList;
@@ -13,10 +14,10 @@ import java.util.List;
 import java.util.Set;
 
 @Getter
+@PermissionName("group")
 public final class GroupNoun extends Noun<CGroup> {
     private final Set<Verb<CGroup>> verbs = new HashSet<>();
     private final String[] names = new String[]{"group"};
-    private final Class<CGroup> type = CGroup.class;
 
     {
         verbs.add(new PermSetVerb<CGroup>());

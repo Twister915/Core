@@ -6,15 +6,16 @@ import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.permissions.command.Noun;
 import net.cogzmc.permissions.command.Verb;
+import net.cogzmc.permissions.command.impl.PermissionName;
 import net.cogzmc.permissions.command.impl.verbs.*;
 
 import java.util.*;
 
 @Getter
+@PermissionName("player")
 public final class PlayerNoun extends Noun<COfflinePlayer> {
     private final Set<Verb<COfflinePlayer>> verbs = new HashSet<>();
     private final String[] names = new String[]{"player", "user"};
-    private final Class<COfflinePlayer> type = COfflinePlayer.class;
 
     {
         verbs.add(new PermSetVerb<COfflinePlayer>());
