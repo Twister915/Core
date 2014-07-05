@@ -100,6 +100,9 @@ public final class PermissionsCommand extends ModuleCommand {
     }
 
     private String getPermission(Noun noun, Verb verb) {
-        return "core.permissions." + noun.getClass().getAnnotation(PermissionName.class).value() + "." + verb.getClass().getAnnotation(PermissionName.class).value();
+        String nounPerm = noun.getClass().getAnnotation(PermissionName.class).value();
+        String verbPerm = verb.getClass().getAnnotation(PermissionName.class).value();
+        if (nounPerm == null || verbPerm == null) throw new IllegalArgumentException("The arguments you supplied do not specify permission values!");
+        return "core.permissions." + nounPerm + "." + verbPerm;
     }
 }
