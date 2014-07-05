@@ -54,10 +54,6 @@ public final class PermissionsCommand extends ModuleCommand {
         else if (target == null) strings = new String[]{args[1]};
         verb.perform(sender, target, strings);
         Core.getPermissionsManager().save();
-        commitChanges();
-    }
-
-    private void commitChanges() {
         Core.getPermissionsManager().reloadPermissions();
         if (Core.getNetworkManager() != null) Core.getNetworkManager().sendMassNetCommand(new PermissionsReloadNetCommand());
     }
