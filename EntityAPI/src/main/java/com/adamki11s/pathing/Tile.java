@@ -110,9 +110,10 @@ public class Tile {
 				dy = abs(dy);
 				dz = abs(dz);
 
-				if (dx == 1 && dy == 1 && dz == 1) {
+                boolean b = dx == 1 || dz == 1;
+                if (dx == 1 && dy == 1 && dz == 1) {
 					gCost += 1.7;
-				} else if (((dx == 1 || dz == 1) && dy == 1) || ((dx == 1 || dz == 1) && dy == 0)) {
+				} else if ((b && dy == 1) || (b && dy == 0)) {
 					gCost += 1.4;
 				} else {
 					gCost += 1.0;
