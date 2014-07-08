@@ -10,7 +10,7 @@ import org.bukkit.block.Block;
 
 @Data
 @RequiredArgsConstructor(staticName = "of")
-public final class Point {
+public final class Point implements Cloneable{
     @NonNull private Double x;
     @NonNull private Double y;
     @NonNull private Double z;

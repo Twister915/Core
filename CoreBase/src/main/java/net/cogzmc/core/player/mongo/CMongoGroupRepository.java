@@ -40,7 +40,7 @@ public class CMongoGroupRepository implements CGroupRepository {
 
     @Override
     public CGroup getGroup(String name) {
-        return groups.get(name);
+        return groups.get(name.toLowerCase());
     }
 
     @Override
@@ -88,7 +88,7 @@ public class CMongoGroupRepository implements CGroupRepository {
         for (DBObject dbObject : groups.find()) {
             CMongoGroup groupFor = getGroupFor(dbObject);
             if (groupFor == null) continue;
-            this.groups.put(groupFor.getName(), groupFor);
+            this.groups.put(groupFor.getName().toLowerCase(), groupFor);
             if (dbObject.containsField(MongoKey.GROUPS_DEFAULT_MARKER.toString())) this.defaultGroup = groupFor;
         }
         for (CGroup cGroup : getGroups()) {

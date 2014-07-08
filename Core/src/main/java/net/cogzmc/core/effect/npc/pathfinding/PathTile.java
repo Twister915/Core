@@ -16,24 +16,23 @@ public final class PathTile {
     private Integer fScore;
     private Integer gScore;
     private Integer hScore;
+    private boolean ordinalMovement;
 
     void updateScores(PathTile start, PathTile end) {
-        PathTile current = this;
+        PathTile current = getParent();
         int gScoreCombined = 0;
         //IntelliJ thinks that it's impossible for current to != null, as it's always set, however the value of the method could be null!
         //noinspection ConstantConditions
         while (!current.equals(start) && current != null) {
-            current = current.getParent();
             gScoreCombined += current.getGScore();
+            current = current.getParent();
         }
-        if (isOrdinalMovement(parent, this)) gScore = gScoreCombined + STRAIGHT_MOVEMENT_SCORE;
+        ordinalMovement = isOrdinalMovement(parent, this);
+        if (ordinalMovement) gScore = gScoreCombined + STRAIGHT_MOVEMENT_SCORE;
         else gScore = gScoreCombined + DIAGONAL_MOVEMENT_SCORE;
 
         //hScore time!
-        Point point1 = end.getPoint();
-        Double x2End = point1.getX() - point.getX(), y2End = point1.getY() - point.getY(), z2End = point1.getZ() - point.getZ();
-        hScore = x2End.intValue() + y2End.intValue() + z2End.intValue();
-
+        hScore = ((int) Math.ceil(end.getPoint().distanceSquared(point)));
         fScore = hScore + gScore;
     }
 
@@ -45,6 +44,6 @@ public final class PathTile {
 
     //Let's us identify this tile so we don't re-create it every time we need to assess a location's tile.
     public static Double getUidFor(Point point, PathTile parent) {
-        return (point.getX() + point.getY() + point.getZ()) * (parent == null ? 0 : getUidFor(parent.getPoint(), parent.getParent()));
+        return (point.getX() + point.getY() + point.getZ()) * (parent == null ? 1 : getUidFor(parent.getPoint(), parent.getParent()));
     }
 }

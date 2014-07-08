@@ -16,6 +16,6 @@ public abstract class Verb<T extends CPermissible> {
 
     protected void sendSuccessMessage(String message, CommandSender sender) {
         if (sender instanceof Player) Core.getOnlinePlayer((Player) sender).playSoundForPlayer(Sound.NOTE_BASS);
-        PermissionsManager.getInstance().getFormat("success-message-command", new String[]{"<message>", message});
+        sender.sendMessage(PermissionsManager.getInstance().getFormat("success-message-command", new String[]{"<message>", message}));
     }
 }

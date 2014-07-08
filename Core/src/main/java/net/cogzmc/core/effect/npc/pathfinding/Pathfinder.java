@@ -28,13 +28,14 @@ public class Pathfinder {
         this.end = tileFrom(endPos);
     }
     public List<PathTile> solvePath(Integer range) throws PathfindingException {
+        tilesGenerated.clear();
         //Create our A* sets, as defined by 99% of the documentation out there.
         Set<PathTile> closedSet = new LinkedHashSet<>(); //A closed set, to represent tiles we've used
         Set<PathTile> openSet = new LinkedHashSet<>(); //An open set, to represent tiles we intend to check
         closedSet.add(start); //Start off with our starting point
         PathTile current = start; //Setup the tracked "current" or "picked" square.
         //Iterate until we've reached the destination, or when the open set becomes empty (no spaces to move to)
-        while (!current.getPoint().equals(endPos) && (openSet.size() != 0 || current == start)) { //current == start is to allow it to start with an empty open set at the start
+        while (!current.getPoint().equals(endPos)) { //current == start is to allow it to start with an empty open set at the start
             //Gets all tiles adjacent to us that we can move to.
             List<PathTile> tilesAdjacent = getTilesAdjacent(current);
             //Removes all the tiles that are already in our closedSet
@@ -91,19 +92,36 @@ public class Pathfinder {
 
     private boolean canWalk(Point current) {
         Block walkingOn = current.getLocation(world).getBlock(); //The block that is under the path, the thing we're standing on
-        if (!isSolid(walkingOn)) return false;
+        if (!canWalkOn(walkingOn)) return false;
         Block walkingThrough1 = walkingOn.getRelative(0, 1, 0), walkingThrough2 = walkingThrough1.getRelative(0, 1, 0); //Gets two blocks directly above the one we're walking on
-        return !isSolid(walkingThrough1) && !isSolid(walkingThrough2);
+        return canWalkThrough(walkingThrough1) && canWalkThrough(walkingThrough2);
     }
 
-    private static boolean isSolid(Block b) {
-        //These are non-solid blocks that you cannot stand on.
+    private static boolean canWalkThrough(Block b) {
         switch (b.getType()) {
             case AIR:
             case LAVA:
             case STATIONARY_LAVA:
             case STATIONARY_WATER:
             case WATER:
+            case PORTAL:
+                return true;
+            case IRON_DOOR:
+            case WOODEN_DOOR:
+            case WOOD_DOOR:
+            case FENCE_GATE:
+                //Fourth bit in data says that we're open or closed.
+                if ((b.getData() & 16) != 16)
+                    return true;
+            default:
+                return false;
+        }
+    }
+
+    private static boolean canWalkOn(Block b) {
+        if (canWalkThrough(b)) return false;
+        //These are non-solid blocks that you cannot stand on.
+        switch (b.getType()) {
             case LADDER:
             case WHEAT:
             case LONG_GRASS:
@@ -118,13 +136,6 @@ public class Pathfinder {
             case CAKE_BLOCK:
             case CARPET:
                 return false;
-            case IRON_DOOR:
-            case WOODEN_DOOR:
-            case WOOD_DOOR:
-            case FENCE_GATE:
-                //Fourth bit in data says that we're open or closed.
-                if ((b.getData() & (1<<0x4)) != 16)
-                    return false;
             default:
                 return true;
         }
