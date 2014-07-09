@@ -12,14 +12,14 @@
         <module>CoreBase</module>
         <module>Core</module>
         <module>CoreEssentials</module>
-        <module>Punishments</module>
-        <module>PermissionManager</module>
-        <module>Hub</module>
-        <module>EntityAPI</module>
-        <module>Chat2</module>
-        <module>GameAPI</module>
-        <module>DataServerlet</module>
-        <module>TestPlugin</module>
+        <module>CorePunishments</module>
+        <module>CorePermissions</module>
+        <module>CoreHub</module>
+        <module>CoreEntities</module>
+        <module>CoreChat</module>
+        <module>CoreGames</module>
+        <module>CoreServerlet</module>
+        <module>CoreTests</module>
     </modules>
 
     <packaging>pom</packaging>

@@ -187,6 +187,8 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
                 for (ModuleCommand moduleCommand : subCommandsForPartial) {
                     strings.add(moduleCommand.getName());
                 }
+                List<String> strings1 = handleTabComplete(sender, command, alias, args);
+                strings.addAll(strings1);
                 //And return them
                 return strings;
             }
@@ -255,6 +257,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
 
     //Default behavior if we delegate the call to the sub-class
     protected List<String> handleTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (isUsingSubCommandsOnly() || subCommands.size() > 0) return Collections.emptyList();
         List<String> ss = new ArrayList<>(); //Create a list to put possible names
         String arg = args.length > 0 ? args[args.length - 1].toLowerCase() : ""; //Get the last argument
         for (Player player : Bukkit.getOnlinePlayers()) { //Loop through all the players

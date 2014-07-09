@@ -95,6 +95,7 @@ public abstract class ModularPlugin extends JavaPlugin {
         if (formatters == null) return unFormattedString;
         for (String[] formatter : formatters) { //Iterate through the formatters
             if (formatter.length < 2) continue; //Validate the length
+            if (formatter[0] == null || formatter[1] == null) continue;
             unFormattedString = unFormattedString.replace(formatter[0], formatter[1]); //Replace all in the unformatted string
         }
         return unFormattedString; //Return

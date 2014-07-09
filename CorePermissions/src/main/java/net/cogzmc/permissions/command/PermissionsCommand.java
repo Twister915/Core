@@ -14,12 +14,12 @@ import org.bukkit.command.CommandSender;
 import java.util.*;
 
 @CommandMeta(aliases = {"perm", "p"}, description = "Manages permissions for the server!")
-public final class PermissionsCommand extends ModuleCommand {
+public final class  PermissionsCommand extends ModuleCommand {
     private static final String PERMISSION = "core.permissions.manage";
     private Set<Noun<?>> nouns = new HashSet<>();
 
     public PermissionsCommand() {
-        super("permissions");
+        super("permissions", new PermReloadCommand());
         nouns.add(new GroupNoun());
         nouns.add(new PlayerNoun());
     }
@@ -93,6 +93,11 @@ public final class PermissionsCommand extends ModuleCommand {
             default:
                 return Collections.emptyList();
         }
+    }
+
+    @Override
+    protected boolean shouldGenerateHelpCommand() {
+        return false;
     }
 
     private String getPermission(Noun noun, Verb verb) {
