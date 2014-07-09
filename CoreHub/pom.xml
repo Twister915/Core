@@ -10,7 +10,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>Hub</artifactId>
+    <artifactId>CoreHub</artifactId>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

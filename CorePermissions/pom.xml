@@ -10,7 +10,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>PermissionManager</artifactId>
+    <artifactId>CorePermissions</artifactId>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

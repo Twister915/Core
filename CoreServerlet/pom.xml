@@ -10,10 +10,10 @@
 
     <artifactId>DataServerlet</artifactId>
     <packaging>war</packaging>
-    <name>DataServerlet</name>
+    <name>CoreServerlet</name>
 
     <build>
-        <finalName>DataServerlet</finalName>
+        <finalName>CoreServerlet</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
