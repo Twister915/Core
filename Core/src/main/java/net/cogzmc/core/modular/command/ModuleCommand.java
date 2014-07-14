@@ -2,6 +2,7 @@ package net.cogzmc.core.modular.command;
 
 import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import net.cogzmc.core.Core;
@@ -32,6 +33,7 @@ import java.util.*;
  * @version 1.1
  */
 @SuppressWarnings("UnusedParameters")
+@EqualsAndHashCode
 public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
     /**
      * Holds a list of the sub-commands bound to their names used for quick access.
@@ -69,6 +71,7 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
     public final void registerSubCommand(ModuleCommand... subCommands) {
         //Toss all the sub commands in the map
         for (ModuleCommand subCommand : subCommands) {
+            if (subCommand.getSuperCommand() != null) throw new IllegalArgumentException("The command you attempted to register already has a supercommand.");
             this.subCommands.put(subCommand.getName(), subCommand);
             subCommand.setSuperCommand(this);
         }

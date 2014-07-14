@@ -25,6 +25,12 @@ public interface NetworkServer {
     Integer getOnlineCount();
 
     /**
+     * Get the maximum players permitted on the server as per the server.properties
+     * @return The maximum players allowed on the server.
+     */
+    Integer getMaximumPlayers();
+
+    /**
      * Gets a list of {@link net.cogzmc.core.player.COfflinePlayer}s that represent the players currently logged into this server.
      * @return A list of {@link net.cogzmc.core.player.COfflinePlayer}s
      */

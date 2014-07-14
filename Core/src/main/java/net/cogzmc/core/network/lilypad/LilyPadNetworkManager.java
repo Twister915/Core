@@ -28,6 +28,7 @@ public final class LilyPadNetworkManager implements NetworkManager {
     /* Constants */
     private static final String NETWORK_MANAGER_CHANNEL = "CC.LILYPAD.MANAGER";
     private static final String HEARTBEAT_PLAYERS_KEY = "PLAYERS";
+    private static final String HEARTBEAT_MAX_PLAYERS_KEY = "MAX_PLAYERS";
     private static final Integer HEARTBEAT_ATTEMPTS_MAX = 5;
     static final String NET_COMMAND_CHANNEL = "CC.LILYPAD.NETCOMMAND";
 
@@ -42,10 +43,14 @@ public final class LilyPadNetworkManager implements NetworkManager {
         connect = Core.getInstance().getServer().getServicesManager().getRegistration(Connect.class).getProvider(); //Gets the Connect plugin as per LilyPad docs.
         if (connect == null) throw new IllegalStateException("We don't have a LilyPad Connect provider");
         connect.registerEvents(this); //Register events for the messages
-        LilyPadServer thisServer = new LilyPadServer(connect.getSettings().getUsername(), this);
+        LilyPadServer thisServer = new LilyPadServer(connect.getSettings().getUsername(), getMaximumPlayers(), this);
         servers.add(thisServer);
         updateThisServer();
         scheduleHeartbeat(5l, TimeUnit.SECONDS);
+    }
+
+    private Integer getMaximumPlayers() {
+        return Bukkit.getServer().getMaxPlayers();
     }
 
     @Override
@@ -114,6 +119,7 @@ public final class LilyPadNetworkManager implements NetworkManager {
             uuids.add(onlinePlayer.getUniqueIdentifier().toString());
         }
         object.put(HEARTBEAT_PLAYERS_KEY, uuids); //and put it in the heartbeat
+        object.put(HEARTBEAT_MAX_PLAYERS_KEY, getMaximumPlayers());
         MessageRequest messageRequest;
         try {
             messageRequest = new MessageRequest(Collections.EMPTY_LIST, NETWORK_MANAGER_CHANNEL, object.toJSONString());
@@ -243,12 +249,12 @@ public final class LilyPadNetworkManager implements NetworkManager {
         return object;
     }
 
-    private void receivedUpdate(String server, List<UUID> uuids) {
+    private void receivedUpdate(String server, Integer maxPlayers, List<UUID> uuids) {
         LilyPadServer s;
         boolean shouldAdd = false; //Hold a marker if this is a new server...
         //Try and see if we already know this server, and if not create a new instance.
         if ((s = (LilyPadServer) getServer(server)) == null) {
-            s = new LilyPadServer(server, this);
+            s = new LilyPadServer(server, maxPlayers, this);
             shouldAdd = true;
         }
         //Update with the heartbeat information
@@ -309,12 +315,13 @@ public final class LilyPadNetworkManager implements NetworkManager {
             String messageAsString = event.getMessageAsString();
             JSONObject heartbeat = (JSONObject)JSONValue.parse(messageAsString); //Get the values
             JSONArray playerUUIDs = (JSONArray) heartbeat.get(HEARTBEAT_PLAYERS_KEY);
+            Integer maxPlayers = (Integer) heartbeat.get(HEARTBEAT_MAX_PLAYERS_KEY);
             List<UUID> uuids = new ArrayList<>(); //Holder for UUIDs that are converted from the strings above
             for (Object playerUUID : playerUUIDs) {
                 if (!(playerUUID instanceof String)) continue;
                 uuids.add(UUID.fromString(String.valueOf(playerUUID))); //Convert a string to UUID
             }
-            receivedUpdate(event.getSender(), uuids); //Update the server info.
+            receivedUpdate(event.getSender(), maxPlayers, uuids); //Update the server info.
         } catch (ClassCastException ex) {
             //Invalid heartbeat
             Core.logInfo("Unable to read heartbeat on channel due to a ClassCastException on line " + ex.getStackTrace()[0].getLineNumber());

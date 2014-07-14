@@ -19,6 +19,7 @@ import static net.cogzmc.core.network.lilypad.LilyPadNetworkManager.encodeNetCom
 @Data
 final class LilyPadServer implements NetworkServer {
     private final String name;
+    private final Integer maximumPlayers;
     private final LilyPadNetworkManager networkManager;
     private Date lastPing = new Date();
     private List<COfflinePlayer> players = new ArrayList<>();
