@@ -22,6 +22,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.List;
@@ -31,7 +32,7 @@ import java.util.Map;
 @ToString(of = {"username"})
 final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Getter private final String username;
-    @Getter private Player bukkitPlayer;
+    private WeakReference<Player> _bukkitPlayer;
     private PermissionAttachment permissionAttachment;
     @Getter private boolean firstJoin = false;
     @Getter private InetAddress address = null;
@@ -41,14 +42,14 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     public CMongoPlayer(Player player, COfflineMongoPlayer offlinePlayer, CMongoPlayerManager manager) {
         super(offlinePlayer, manager);
         this.username = player.getName();
-        this.bukkitPlayer = player;
+        this._bukkitPlayer = new WeakReference<>(player);
         this.scoreboardAttachment = new ScoreboardAttachment(this);
     }
 
     void onJoin(InetAddress address) throws DatabaseConnectException {
-        this.setLastKnownUsername(bukkitPlayer.getName());
+        this.setLastKnownUsername(getBukkitPlayer().getName());
         this.setLastTimeOnline(new Date());
-        addIfUnique(this.getKnownUsernames(), bukkitPlayer.getName());
+        addIfUnique(this.getKnownUsernames(), getBukkitPlayer().getName());
         this.address = address;
         logIP(address);
         if (this.getFirstTimeOnline() == null) {
@@ -77,18 +78,18 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
     @Override
     public String getName() {
-        return bukkitPlayer.getName();
+        return getBukkitPlayer().getName();
     }
 
     @Override
     public boolean isOnline() {
-        return bukkitPlayer.isOnline();
+        return getBukkitPlayer().isOnline();
     }
 
     @Override
     public void sendMessage(String... messages) {
         for (String message : messages) {
-            bukkitPlayer.sendMessage(message);
+            getBukkitPlayer().sendMessage(message);
         }
     }
 
@@ -117,26 +118,26 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
     @Override
     public boolean hasPermission(String permission) {
-        return bukkitPlayer.hasPermission(permission);
+        return getBukkitPlayer().hasPermission(permission);
     }
 
     @Override
     public void clearChatAll() {
         for (int x = 0; x < 50; x++) {
-            bukkitPlayer.sendMessage("");
+            getBukkitPlayer().sendMessage("");
         }
     }
 
     @Override
     public void clearChatVisible() {
         for (int x = 0; x < 20; x++) {
-            bukkitPlayer.sendMessage("");
+            getBukkitPlayer().sendMessage("");
         }
     }
 
     @Override
     public void playSoundForPlayer(Sound s, Float volume, Float pitch) {
-        bukkitPlayer.playSound(bukkitPlayer.getLocation(), s, volume, pitch);
+        getBukkitPlayer().playSound(getBukkitPlayer().getLocation(), s, volume, pitch);
     }
 
     @Override
@@ -156,8 +157,8 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
         if (title != null) itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&',title));
         if (lore != null) itemMeta.setLore(InventoryButton.wrapLoreText(lore));
         if (enchantments != null) stack.addUnsafeEnchantments(enchantments);
-        if (slot != null) bukkitPlayer.getInventory().setItem(slot, stack);
-        else bukkitPlayer.getInventory().addItem(stack);
+        if (slot != null) getBukkitPlayer().getInventory().setItem(slot, stack);
+        else getBukkitPlayer().getInventory().addItem(stack);
     }
 
     @Override
@@ -192,7 +193,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
     @Override
     public void addStatusEffect(PotionEffectType type, Integer level, Integer ticks, Boolean ambient) {
-        bukkitPlayer.addPotionEffect(new PotionEffect(type, ticks, Math.max(0, level-1), ambient));
+        getBukkitPlayer().addPotionEffect(new PotionEffect(type, ticks, Math.max(0, level-1), ambient));
     }
 
     @Override
@@ -212,6 +213,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
     @Override
     public void resetPlayer() {
+        Player bukkitPlayer = getBukkitPlayer();
         bukkitPlayer.getInventory().clear();
         bukkitPlayer.setAllowFlight(false);
         bukkitPlayer.setFlying(false);
@@ -232,6 +234,11 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     }
 
     @Override
+    public Player getBukkitPlayer() {
+        return _bukkitPlayer.get();
+    }
+
+    @Override
     public COfflinePlayer getOfflinePlayer() {
         return new COfflineMongoPlayer(this, playerRepository);
     }
@@ -240,7 +247,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     public void reloadPermissions() {
         super.reloadPermissions();
         if (permissionAttachment != null) permissionAttachment.remove();
-        permissionAttachment = bukkitPlayer.addAttachment(Core.getInstance());
+        permissionAttachment = getBukkitPlayer().addAttachment(Core.getInstance());
         for (Map.Entry<String, Boolean> stringBooleanEntry : getAllPermissions().entrySet()) {
             permissionAttachment.setPermission(stringBooleanEntry.getKey(), stringBooleanEntry.getValue());
         }
