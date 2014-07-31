@@ -56,11 +56,11 @@ public final class ScoreboardManager implements Listener, CPlayerConnectionListe
                 }
             }
             if (fail) continue;
-            Core.logInfo("Creating a new team for prefix " + prefix + " and suffix " + suffix);
+            Core.logDebug("Creating a new team for prefix " + prefix + " and suffix " + suffix);
             team = createTeam(identifierName);
-            Core.logInfo("Setting prefix of new team " + team.getName() + " to " + prefix);
+            Core.logDebug("Setting prefix of new team " + team.getName() + " to " + prefix);
             team.setPrefix(prefix);
-            Core.logInfo("Setting suffix of new team " + team.getName() + " to " + suffix);
+            Core.logDebug("Setting suffix of new team " + team.getName() + " to " + suffix);
             team.setSuffix(suffix);
         } while (team == null);
         return team;
@@ -86,7 +86,7 @@ public final class ScoreboardManager implements Listener, CPlayerConnectionListe
     }
 
     private void broadcastCreatePacket(ScoreboardTeam team) {
-        Core.logInfo("Creating team " + team.getName());
+        Core.logDebug("Creating team " + team.getName());
         team.getTeamPacket((byte) WrapperPlayServerScoreboardTeam.Modes.TEAM_CREATED);
     }
 

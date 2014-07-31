@@ -168,6 +168,8 @@ public class Core extends JavaPlugin {
         instance.getLogger().info(s);
     }
 
+    public static void logDebug(String s) {if (DEBUG) instance.getLogger().info(s);}
+
     public static CPlayerManager getPlayerManager() {
         return instance.playerManager;
     }

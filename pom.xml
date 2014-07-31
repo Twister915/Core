@@ -20,6 +20,7 @@
         <module>CoreGames</module>
         <module>CoreServerlet</module>
         <module>CoreTests</module>
+        <module>CoreMaps</module>
     </modules>
 
     <packaging>pom</packaging>

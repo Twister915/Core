@@ -32,4 +32,20 @@ public final class IPBanManager extends BaseMongoManager<IPBan> {
         }
         super.onPlayerLogin(player, address);
     }
+
+    @Override
+    void onPunish(CPlayer player, IPBan punishment) {
+        String message = null;
+        try {
+            throwJoinExceptionFor(punishment);
+        } catch (CPlayerJoinException e) {
+            message = e.getDisconectMessage();
+        }
+        player.getBukkitPlayer().kickPlayer(message);
+        for (CPlayer cPlayer : Core.getPlayerManager()) {
+            if (!player.equals(cPlayer) && player.getKnownIPAddresses().contains(cPlayer.getAddress().getHostAddress())) {
+                cPlayer.getBukkitPlayer().kickPlayer(message);
+            }
+        }
+    }
 }

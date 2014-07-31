@@ -155,12 +155,14 @@ class COfflineMongoPlayer implements COfflinePlayer {
 
     @Override
     public void addToGroup(CGroup group) {
+        if (this.groups.contains(group)) throw new IllegalArgumentException("This player is already a member of this group!");
         this.groupIds.add(((CMongoGroup) group).getObjectId());
         reloadPermissions();
     }
 
     @Override
     public void removeFromGroup(CGroup group) {
+        if (!this.groups.contains(group)) throw new IllegalArgumentException("This player is not a member of this group!");
         this.groupIds.remove(((CMongoGroup)group).getObjectId());
         reloadPermissions();
     }

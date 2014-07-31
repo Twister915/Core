@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.modular.ModuleMeta;
 import net.cogzmc.core.test.tests.ITest;
+import net.cogzmc.core.test.tests.mobs.CaryTest;
 import net.cogzmc.core.test.tests.pathfinding.PathfindingTest;
 
 @ModuleMeta(name = "Testing Module", description = "Allows you to test various parts of the Core engine for display!")
@@ -17,7 +18,7 @@ public final class TestModule extends ModularPlugin {
         instance = this;
         command = registerCommand(new TestsCommand());
 
-        tests = new ITest[]{new PathfindingTest()};
+        tests = new ITest[]{new PathfindingTest(), new CaryTest()};
 
         for (ITest test : tests) {
             test.onEnable();
@@ -29,6 +30,5 @@ public final class TestModule extends ModularPlugin {
         for (ITest test : tests) {
             test.onDisable();
         }
-
     }
 }

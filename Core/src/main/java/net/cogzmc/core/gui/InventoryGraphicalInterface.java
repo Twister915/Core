@@ -177,7 +177,7 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
     public void onPlayerLeave(PlayerQuitEvent event) {
         CPlayer onlinePlayer = Core.getOnlinePlayer(event.getPlayer());
         if (observers.contains(onlinePlayer)) this.observers.remove(onlinePlayer);
-        Core.logInfo("Removed observer of inventory GUI " + title + " during disconnect. Most likely a timeout!");
+        Core.logDebug("Removed observer of inventory GUI " + title + " during disconnect. Most likely a timeout!");
     }
 
     @EventHandler

@@ -1,6 +1,7 @@
 package net.cogzmc.core.util;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
@@ -10,12 +11,16 @@ import org.bukkit.block.Block;
 
 @Data
 @RequiredArgsConstructor(staticName = "of")
-public final class Point implements Cloneable{
+public final class Point implements Cloneable {
     @NonNull private Double x;
     @NonNull private Double y;
     @NonNull private Double z;
     @NonNull private Float pitch;
     @NonNull private Float yaw;
+
+    public boolean isBlock() {
+        return (pitch == 0.0f && yaw == 0.0f && y % 1 == 0 && z % 1 == 0 && x % 1 == 0);
+    }
 
     public Location getLocation(World world) {
         return new Location(world, x, y, z, pitch, yaw);
