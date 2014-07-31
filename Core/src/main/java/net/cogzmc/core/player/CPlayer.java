@@ -219,5 +219,5 @@ public interface CPlayer extends COfflinePlayer {
      * you wish to store this player without keeping a reference to the {@link org.bukkit.entity.Player}.
      * @return The {@link net.cogzmc.core.player.COfflinePlayer} representation of this player.
      */
-    COfflinePlayer getOfflinePlayer();
+    COfflinePlayer getNewOfflinePlayer();
 }

@@ -82,7 +82,7 @@ public class Game<ArenaType extends Arena> {
         assert gameAPI != null;
         prefix = getAPIFormat("prefix", false);
         for (CPlayer player : this.players) {
-            this.participants.add(player.getOfflinePlayer());
+            this.participants.add(player.getNewOfflinePlayer());
         }
         listener = new GameListener(this);
         damageTracker = new DamageTracker<>(this);
