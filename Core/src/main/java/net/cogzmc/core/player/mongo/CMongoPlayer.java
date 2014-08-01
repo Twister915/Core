@@ -44,9 +44,10 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     }
 
     void onJoin(InetAddress address) throws DatabaseConnectException {
-        this.setLastKnownUsername(getBukkitPlayer().getName());
+        Player bukkitPlayer = getBukkitPlayer();
+        this.setLastKnownUsername(bukkitPlayer.getName());
         this.setLastTimeOnline(new Date());
-        addIfUnique(this.getKnownUsernames(), getBukkitPlayer().getName());
+        addIfUnique(this.getKnownUsernames(), bukkitPlayer.getName());
         this.address = address;
         logIP(address);
         if (this.getFirstTimeOnline() == null) {
@@ -85,8 +86,9 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
     @Override
     public void sendMessage(String... messages) {
+        Player bukkitPlayer = getBukkitPlayer();
         for (String message : messages) {
-            getBukkitPlayer().sendMessage(message);
+            bukkitPlayer.sendMessage(message);
         }
     }
 
@@ -120,21 +122,24 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
     @Override
     public void clearChatAll() {
+        Player bukkitPlayer = getBukkitPlayer();
         for (int x = 0; x < 50; x++) {
-            getBukkitPlayer().sendMessage("");
+            bukkitPlayer.sendMessage("");
         }
     }
 
     @Override
     public void clearChatVisible() {
+        Player bukkitPlayer = getBukkitPlayer();
         for (int x = 0; x < 20; x++) {
-            getBukkitPlayer().sendMessage("");
+            bukkitPlayer.sendMessage("");
         }
     }
 
     @Override
     public void playSoundForPlayer(Sound s, Float volume, Float pitch) {
-        getBukkitPlayer().playSound(getBukkitPlayer().getLocation(), s, volume, pitch);
+        Player bukkitPlayer = getBukkitPlayer();
+        bukkitPlayer.playSound(bukkitPlayer.getLocation(), s, volume, pitch);
     }
 
     @Override
@@ -149,13 +154,14 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
     @Override
     public void giveItem(Material material, Integer quantity, String title, String lore, Map<Enchantment, Integer> enchantments, Integer slot) {
+        Player bukkitPlayer = getBukkitPlayer();
         ItemStack stack = new ItemStack(material, quantity);
         ItemMeta itemMeta = stack.getItemMeta();
-        if (title != null) itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&',title));
+        if (title != null) itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', title));
         if (lore != null) itemMeta.setLore(InventoryButton.wrapLoreText(lore));
         if (enchantments != null) stack.addUnsafeEnchantments(enchantments);
-        if (slot != null) getBukkitPlayer().getInventory().setItem(slot, stack);
-        else getBukkitPlayer().getInventory().addItem(stack);
+        if (slot != null) bukkitPlayer.getInventory().setItem(slot, stack);
+        else bukkitPlayer.getInventory().addItem(stack);
     }
 
     @Override
