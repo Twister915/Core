@@ -1,4 +1,4 @@
-package net.cogzmc.core.player.fancymessage;
+package net.cogzmc.core.player.message;
 
 import lombok.Getter;
 import net.cogzmc.core.player.CPlayer;
@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 @Getter
 public final class ImmutableFancyMessage implements Cloneable {
-    public ImmutableFancyMessage(FancyMessage message) {
+    ImmutableFancyMessage(FancyMessage message) {
         rawMessage = message.getRawMessage();
     }
 

@@ -1,4 +1,4 @@
-package net.cogzmc.core.player.fancymessage;
+package net.cogzmc.core.player.message;
 
 public enum FHoverActionType {
     SHOW_TEXT("show_text"),

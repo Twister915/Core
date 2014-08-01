@@ -1,4 +1,4 @@
-package net.cogzmc.core.player.fancymessage;
+package net.cogzmc.core.player.message;
 
 import lombok.*;
 import org.bukkit.ChatColor;
@@ -6,9 +6,8 @@ import org.json.simple.JSONObject;
 
 @SuppressWarnings("unchecked")
 @EqualsAndHashCode
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @ToString
-@Getter(AccessLevel.PRIVATE)
 public final class FancyMessagePart {
     @NonNull private final FancyMessage parent;
     @NonNull private final String message;
@@ -53,8 +52,14 @@ public final class FancyMessagePart {
         return this;
     }
 
-    public FHoverAction withHoverAction() {
-        return new FHoverAction(this);
+    public FancyMessagePart withHoverAction(FHoverActionType type, String value) {
+        hoverAction = new FHoverAction(type, value);
+        return this;
+    }
+
+    public FancyMessagePart withClickAction(FClickActionType type, String value) {
+        clickAction = new FClickAction(value, type);
+        return this;
     }
 
     public FancyMessage done() {
@@ -62,7 +67,7 @@ public final class FancyMessagePart {
         return parent;
     }
 
-    private JSONObject getJSONRepresentation() {
+    JSONObject getJSONRepresentation() {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(JSONKeys.MESSAGE, message);
         jsonObject.put(JSONKeys.COLOR, (color == null ? ChatColor.WHITE : color).name().toLowerCase());
