@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -93,6 +94,16 @@ public class Core extends JavaPlugin {
             //Some extras
             this.enderBarManager = new EnderBarManager();
             new SoftNPCManager();
+            File geoIPDatabase = new File(getConfig().getString("geo-ip-database"));
+            if (geoIPDatabase.exists()) {
+                try {
+                    this.playerManager.setupNewGeoIPManager(geoIPDatabase);
+                } catch (Exception e) {
+                    logInfo("Could not setup GeoIP Database!");
+                    logDebug(e.getMessage());
+                    logDebug("-------------------------------");
+                }
+            }
         } catch (Throwable t) {
             t.printStackTrace();
             Bukkit.getPluginManager().disablePlugin(this);

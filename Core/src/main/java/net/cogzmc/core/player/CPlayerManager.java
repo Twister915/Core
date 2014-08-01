@@ -4,6 +4,8 @@ import net.cogzmc.core.player.scoreboard.ScoreboardManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.List;
@@ -100,6 +102,9 @@ public interface CPlayerManager extends Iterable<CPlayer>, CPlayerRepository {
      * @param processor
      */
     void unregisterCPlayerConnectionListener(CPlayerConnectionListener processor);
+
+    GeoIPManager setupNewGeoIPManager(File dbFile) throws IOException;
+    GeoIPManager getGeoIPManager();
 
     /**
      * An unsafe accessor to the Scoreboard system. All scoreboard logic should be performed through the {@link net.cogzmc.core.player.CPlayer}'s {@link net.cogzmc.core.player.scoreboard.ScoreboardAttachment}

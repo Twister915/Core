@@ -1,3 +1,4 @@
 provider: net.cogzmc.core.DefaultProvider
 kick-message: "&cThe server is reloading!"
 lilypad-plugin: "LilyPad-Connect"
+geo-ip-database: "GeoLite2-City.mmdb"

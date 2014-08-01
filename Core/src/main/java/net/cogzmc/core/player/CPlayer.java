@@ -220,4 +220,6 @@ public interface CPlayer extends COfflinePlayer {
      * @return The {@link net.cogzmc.core.player.COfflinePlayer} representation of this player.
      */
     COfflinePlayer getNewOfflinePlayer();
+
+    GeoIPManager.GeoIPInfo getGeoIPInfo();
 }

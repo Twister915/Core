@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.ToString;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.gui.InventoryButton;
-import net.cogzmc.core.player.COfflinePlayer;
-import net.cogzmc.core.player.CPlayer;
-import net.cogzmc.core.player.CooldownManager;
-import net.cogzmc.core.player.DatabaseConnectException;
+import net.cogzmc.core.player.*;
 import net.cogzmc.core.player.scoreboard.ScoreboardAttachment;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -193,7 +190,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
     @Override
     public void addStatusEffect(PotionEffectType type, Integer level, Integer ticks, Boolean ambient) {
-        getBukkitPlayer().addPotionEffect(new PotionEffect(type, ticks, Math.max(0, level-1), ambient));
+        getBukkitPlayer().addPotionEffect(new PotionEffect(type, ticks, Math.max(0, level - 1), ambient));
     }
 
     @Override
@@ -241,6 +238,13 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Override
     public COfflinePlayer getNewOfflinePlayer() {
         return new COfflineMongoPlayer(this, playerRepository);
+    }
+
+    @Override
+    public GeoIPManager.GeoIPInfo getGeoIPInfo() {
+        GeoIPManager geoIPManager = ((CMongoPlayerManager) playerRepository).getGeoIPManager();
+        if (geoIPManager == null) return null;
+        return geoIPManager.getInfoOn(address);
     }
 
     @Override

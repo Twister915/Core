@@ -14,6 +14,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.*;
 
@@ -24,6 +26,8 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
     private List<CPlayerConnectionListener> playerConnectionListeners = new ArrayList<>();
 
     @Getter private final ScoreboardManager scoreboardManager = new ScoreboardManager();
+
+    private GeoIPManager geoIPManager;
 
     public CMongoPlayerManager(CMongoDatabase database) {
         super(database);
@@ -183,6 +187,17 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
     public void unregisterCPlayerConnectionListener(CPlayerConnectionListener processor) {
         if (!this.playerConnectionListeners.contains(processor)) return;
         this.playerConnectionListeners.remove(processor);
+    }
+
+    @Override
+    public GeoIPManager setupNewGeoIPManager(File dbFile) throws IOException {
+        geoIPManager = new GeoIPManager(dbFile);
+        return geoIPManager;
+    }
+
+    @Override
+    public GeoIPManager getGeoIPManager() {
+        return geoIPManager;
     }
 
     @Override
