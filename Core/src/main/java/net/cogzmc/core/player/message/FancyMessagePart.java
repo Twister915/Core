@@ -71,10 +71,10 @@ public final class FancyMessagePart {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(JSONKeys.MESSAGE, message);
         jsonObject.put(JSONKeys.COLOR, (color == null ? ChatColor.WHITE : color).name().toLowerCase());
-        if (bold) jsonObject.put(JSONKeys.BOLD, true);
-        if (italic) jsonObject.put(JSONKeys.ITALIC, true);
-        if (strikethrough) jsonObject.put(JSONKeys.STRIKETHROUGH, true);
-        if (obfuscated) jsonObject.put(JSONKeys.OBFUSCATED, true);
+        jsonObject.put(JSONKeys.BOLD, bold);
+        jsonObject.put(JSONKeys.ITALIC, italic);
+        jsonObject.put(JSONKeys.STRIKETHROUGH, strikethrough);
+        jsonObject.put(JSONKeys.OBFUSCATED, obfuscated);
         if (hoverAction != null) jsonObject.put(JSONKeys.HOVER_EVENT, encodeAction(hoverAction));
         if (clickAction != null) jsonObject.put(JSONKeys.CLICK_EVENT, encodeAction(clickAction));
         return jsonObject;

@@ -39,7 +39,7 @@ public class CMongoMapManager implements CMapManager {
 
     @Override
     public CMap importWorld(World world) {
-        new CMap()
+        return null;
     }
 
     @Override

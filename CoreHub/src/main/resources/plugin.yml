@@ -1,6 +1,6 @@
-name: Hub
+name: CoreHub
 version: 1.0
-authors: [Jake0oo0]
+authors: [Twister915]
 description: Hub API Plugin
 main: net.cogzmc.hub.Hub
 depend: [Core]

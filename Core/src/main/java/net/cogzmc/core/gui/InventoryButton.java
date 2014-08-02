@@ -19,7 +19,7 @@ import java.util.List;
 public abstract class InventoryButton {
     private static final Integer LORE_LINE_LENGTH = 30;
 
-    @Setter(AccessLevel.PACKAGE) @NonNull private ItemStack stack;
+    @Setter(AccessLevel.PROTECTED) @NonNull private ItemStack stack;
 
     protected InventoryButton(ItemStack stack) {
         this.stack = stack;

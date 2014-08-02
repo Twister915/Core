@@ -1,7 +1,7 @@
 package net.cogzmc.core.player.message;
 
 enum JSONKeys {
-    EXTRAS("extras"),
+    EXTRAS("extra"),
     MESSAGE("text"),
     TRANSLATE("translate"),
     WITH("with"),

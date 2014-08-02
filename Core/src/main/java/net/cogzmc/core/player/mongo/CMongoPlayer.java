@@ -43,7 +43,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
         this.scoreboardAttachment = new ScoreboardAttachment(this);
     }
 
-    void onJoin(InetAddress address) throws DatabaseConnectException {
+    void onLogin(InetAddress address) throws DatabaseConnectException {
         Player bukkitPlayer = getBukkitPlayer();
         this.setLastKnownUsername(bukkitPlayer.getName());
         this.setLastTimeOnline(new Date());

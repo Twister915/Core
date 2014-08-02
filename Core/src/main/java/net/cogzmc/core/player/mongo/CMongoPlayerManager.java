@@ -113,7 +113,7 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
         //Creates a new CMongoPlayer by passing the player, the offline player (for data), and this.
         CMongoPlayer cMongoPlayer = new CMongoPlayer(player, getOfflinePlayerByUUID(player.getUniqueId()), this);
         try {
-            cMongoPlayer.onJoin(address); //We attempt to notify the MongoPlayer that the player has joined on this InetAddress
+            cMongoPlayer.onLogin(address); //We attempt to notify the MongoPlayer that the player has joined on this InetAddress
         } catch (DatabaseConnectException | MongoException e) {
             //But in the instance when we cannot, we log a severe error.
             Core.getInstance().getLogger().severe("Could not read player from the database " + e.getMessage() + " - " + player.getName());
@@ -153,13 +153,13 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
         CMongoPlayer cPlayerForPlayer = getCPlayerForPlayer(player);
         if (cPlayerForPlayer == null) return;
         cPlayerForPlayer.updateForSaving();
+        for (CPlayerConnectionListener playerConnectionListener : playerConnectionListeners) {
+            try {playerConnectionListener.onPlayerDisconnect(cPlayerForPlayer);} catch (Exception e) {e.printStackTrace();}
+        }
         try {
             cPlayerForPlayer.saveIntoDatabase();
         } catch (DatabaseConnectException | MongoException e) {
             Core.getInstance().getLogger().severe("Could not save player into the database " + e.getMessage() + " - " + cPlayerForPlayer.getName());
-        }
-        for (CPlayerConnectionListener playerConnectionListener : playerConnectionListeners) {
-            try {playerConnectionListener.onPlayerDisconnect(cPlayerForPlayer);} catch (Exception e) {e.printStackTrace();}
         }
         this.onlinePlayerMap.remove(player.getName());
         if (Core.getNetworkManager() != null) Core.getNetworkManager().updateHeartbeat();
