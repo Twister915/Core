@@ -215,6 +215,11 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     }
 
     @Override
+    public void removeStatusEffect(PotionEffectType type) {
+        getBukkitPlayer().removePotionEffect(type);
+    }
+
+    @Override
     public void resetPlayer() {
         Player bukkitPlayer = getBukkitPlayer();
         bukkitPlayer.getInventory().clear();

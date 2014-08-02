@@ -112,7 +112,8 @@ public abstract class ModularPlugin extends JavaPlugin {
     }
 
     public final String getFormat(String key) {
-        return getFormatRaw(key);
+        //noinspection NullArgumentToVariableArgMethod
+        return getFormat(key, true, null);
     }
 
     public final boolean hasFormat(String key) {

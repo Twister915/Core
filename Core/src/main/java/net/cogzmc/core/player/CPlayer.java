@@ -194,6 +194,8 @@ public interface CPlayer extends COfflinePlayer {
      */
     void addStatusEffect(PotionEffectType type);
 
+    void removeStatusEffect(PotionEffectType type);
+
     void resetPlayer();
 
     /**
