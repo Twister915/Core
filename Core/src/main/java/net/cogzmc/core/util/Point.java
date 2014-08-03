@@ -48,4 +48,8 @@ public final class Point implements Cloneable {
     public Double distance(Point point) {
         return Math.sqrt(distanceSquared(point));
     }
+
+    public Point deepCopy() {
+        return new Point(x, y, z, pitch, yaw);
+    }
 }

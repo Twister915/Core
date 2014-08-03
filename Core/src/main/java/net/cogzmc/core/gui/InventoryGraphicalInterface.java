@@ -176,8 +176,10 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerLeave(PlayerQuitEvent event) {
         CPlayer onlinePlayer = Core.getOnlinePlayer(event.getPlayer());
-        if (observers.contains(onlinePlayer)) this.observers.remove(onlinePlayer);
-        Core.logDebug("Removed observer of inventory GUI " + title + " during disconnect. Most likely a timeout!");
+        if (observers.contains(onlinePlayer)) {
+            this.observers.remove(onlinePlayer);
+            Core.logDebug("Removed observer of inventory GUI " + title + " during disconnect. Most likely a timeout!");
+        }
     }
 
     @EventHandler
@@ -194,7 +196,9 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
         if (!(event.getInventory().equals(inventory))) return;
         CPlayer player = Core.getOnlinePlayer((Player) event.getWhoClicked());
         InventoryButton inventoryButton = inventoryButtons.get(event.getSlot());
-        if (inventoryButton == null || player == null) throw new IllegalStateException("Somehow, someone who was null clicked on a slot that was null or had no button...");
+        if (player == null)
+            throw new IllegalStateException("Somehow, someone who was null clicked on a slot that was null or had no button...");
+        if (inventoryButton == null) return;
         try {
             inventoryButton.onPlayerClick(player);
         } catch (EmptyHandlerException e) {
