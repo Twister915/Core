@@ -1,5 +1,6 @@
 package net.cogzmc.core.player.mongo;
 
+import net.cogzmc.core.Core;
 import net.cogzmc.core.player.*;
 
 import java.lang.ref.WeakReference;
@@ -51,6 +52,9 @@ public final class CMongoPermissionsManager extends CMongoGroupRepository implem
                 continue;
             }
             observer.onReloadPermissions(this);
+        }
+        for (CPlayer cPlayer : Core.getPlayerManager()) {
+            cPlayer.reloadPermissions();
         }
     }
 

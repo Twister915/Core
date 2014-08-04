@@ -1,6 +1,7 @@
 package net.cogzmc.core;
 
 import lombok.Getter;
+import lombok.NonNull;
 import net.cogzmc.core.config.YAMLConfigurationFile;
 import net.cogzmc.core.effect.enderBar.EnderBarManager;
 import net.cogzmc.core.effect.npc.SoftNPCManager;
@@ -167,7 +168,7 @@ public class Core extends JavaPlugin {
         return getPlayerManager().getOnlineCPlayerForName(name);
     }
 
-    public static CPlayer getOnlinePlayer(Player player) {
+    public static CPlayer getOnlinePlayer(@NonNull Player player) {
         return getPlayerManager().getCPlayerForPlayer(player);
     }
 

@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import net.cogzmc.core.json.PointSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -12,6 +13,8 @@ import org.bukkit.block.Block;
 @Data
 @RequiredArgsConstructor(staticName = "of")
 public final class Point implements Cloneable {
+    @Getter private final static PointSerializer serializer = new PointSerializer();
+
     @NonNull private Double x;
     @NonNull private Double y;
     @NonNull private Double z;
@@ -23,7 +26,7 @@ public final class Point implements Cloneable {
     }
 
     public Location getLocation(World world) {
-        return new Location(world, x, y, z, pitch, yaw);
+        return new Location(world, x, y, z, yaw, pitch);
     }
 
     public static Point of(Double x, Double y, Double z) {

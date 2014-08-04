@@ -1,5 +1,6 @@
 package net.cogzmc.core.player.mongo;
 
+import com.google.common.collect.ImmutableList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoException;
@@ -18,12 +19,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class CMongoPlayerManager extends CMongoPlayerRepository implements CPlayerManager {
     private CMongoDatabase database;
 
-    private Map<String, CPlayer> onlinePlayerMap = new HashMap<>();
-    private List<CPlayerConnectionListener> playerConnectionListeners = new ArrayList<>();
+    private final Map<String, CPlayer> onlinePlayerMap = new ConcurrentHashMap<>();
+    private final List<CPlayerConnectionListener> playerConnectionListeners = new ArrayList<>();
 
     @Getter private final ScoreboardManager scoreboardManager = new ScoreboardManager();
 
@@ -104,7 +106,7 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
 
     @Override
     public Collection<CPlayer> getOnlinePlayers() {
-        return this.onlinePlayerMap.values();
+        return ImmutableList.copyOf(this.onlinePlayerMap.values());
     }
 
     @Override
@@ -112,6 +114,7 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
     public void playerLoggedIn(Player player, InetAddress address) throws CPlayerJoinException {
         //Creates a new CMongoPlayer by passing the player, the offline player (for data), and this.
         CMongoPlayer cMongoPlayer = new CMongoPlayer(player, getOfflinePlayerByUUID(player.getUniqueId()), this);
+        this.onlinePlayerMap.put(player.getName(), cMongoPlayer);
         try {
             cMongoPlayer.onLogin(address); //We attempt to notify the MongoPlayer that the player has joined on this InetAddress
         } catch (DatabaseConnectException | MongoException e) {
@@ -129,7 +132,6 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
             }
         }
         //Now, let's place this player in our online player map
-        this.onlinePlayerMap.put(player.getName(), cMongoPlayer);
         if (Core.getNetworkManager() != null) Core.getNetworkManager().updateHeartbeat(); //Send out a heartbeat.
     }
 
@@ -203,6 +205,6 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
     @Override
     public Iterator<CPlayer> iterator() {
         //This needs to get all the online players as an iterator.
-        return this.onlinePlayerMap.values().iterator();
+        return getOnlinePlayers().iterator();
     }
 }

@@ -81,7 +81,8 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
     @Override
     public boolean isOnline() {
-        return getBukkitPlayer().isOnline();
+        Player bukkitPlayer = getBukkitPlayer();
+        return bukkitPlayer == null || bukkitPlayer.isOnline();
     }
 
     @Override

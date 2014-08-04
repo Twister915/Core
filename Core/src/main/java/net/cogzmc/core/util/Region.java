@@ -1,9 +1,13 @@
 package net.cogzmc.core.util;
 
+import lombok.Getter;
 import lombok.Value;
+import net.cogzmc.core.json.RegionSerializer;
 
 @Value
 public final class Region {
+    @Getter private final static RegionSerializer serializer = new RegionSerializer();
+
     private final Point min;
     private final Point max;
 
@@ -20,10 +24,8 @@ public final class Region {
     }
 
     public boolean isWithin(Point p) {
-        return !(
-                (p.getX() > max.getX() || p.getX() < min.getX()) ||
-                        (p.getY() > max.getY() || p.getY() < min.getY()) ||
-                        (p.getZ() > max.getZ() || p.getZ() < min.getZ())
-        );
+        return  p.getX() <= max.getX() && p.getX() >= min.getX() &&
+                p.getY() <= max.getY() && p.getY() >= min.getY() &&
+                p.getZ() <= max.getZ() && p.getZ() >= min.getZ();
     }
 }

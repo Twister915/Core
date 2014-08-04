@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import net.cogzmc.core.player.CPlayer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -65,8 +66,15 @@ public final class ParticleEffect {
      * Sends the particle effect you have created to the specified online player.
      * @param player The player to send the packet to.
      */
-    public void emitToPlayer(@NonNull Player player, Location location) {
-        getPacket(location).sendPacket(player);
+    public void emitToPlayer(@NonNull CPlayer player, Location location) {
+        getPacket(location).sendPacket(player.getBukkitPlayer());
+    }
+
+    public void emitToPlayers(@NonNull Iterable<CPlayer> players, Location location) {
+        WrapperPlayServerWorldParticles packet = getPacket(location);
+        for (CPlayer player : players) {
+            packet.sendPacket(player.getBukkitPlayer());
+        }
     }
 
     /**
