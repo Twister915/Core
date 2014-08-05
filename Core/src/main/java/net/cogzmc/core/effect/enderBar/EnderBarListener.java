@@ -24,11 +24,12 @@ final class EnderBarListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         CPlayer onlinePlayer = Core.getOnlinePlayer(event.getPlayer());
         MobNPCEnderDragon enderBarFor = manager.enderBars.get(onlinePlayer);
+        if (enderBarFor == null) return;
         Point current = Point.of(event.getTo());
         current.setY(HEIGHT);
         current.setPitch(0F);
         current.setYaw(0F);
-        if (enderBarFor != null && enderBarFor.isSpawned() && current.distanceSquared(enderBarFor.getLocation()) > 9) {
+        if (enderBarFor.isSpawned() && current.distanceSquared(enderBarFor.getLocation()) > 9) {
             enderBarFor.move(current);
         }
     }
