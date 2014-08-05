@@ -1,0 +1,5 @@
+name: CoreMaps
+version: 1.0
+authors: [Twister915]
+description: Loads and manages maps from a database.
+main: net.cogzmc.core.maps.CoreMaps

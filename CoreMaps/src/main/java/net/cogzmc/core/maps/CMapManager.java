@@ -10,8 +10,4 @@ public interface CMapManager {
     Set<CMap> getLoadedMaps();
     CMap getMapByID(UUID mapId);
     CMap importWorld(World world);
-    void updateMap(CMap toUpdate);
-
-    boolean canUnlock(CMap map);
-    boolean canLock(CMap map);
 }
