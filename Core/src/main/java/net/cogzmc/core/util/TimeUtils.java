@@ -68,7 +68,7 @@ public final class TimeUtils {
             builder.append(" ");
         }
         if (standardSeconds > 0) {
-            builder.append(String.format("%.1d", standardSeconds)).append(" second");
+            builder.append(String.format("%d", standardSeconds)).append(" second");
             if (standardSeconds > 1) builder.append("s");
         }
         return builder.toString().trim();

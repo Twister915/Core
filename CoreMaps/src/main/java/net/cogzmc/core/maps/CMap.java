@@ -72,7 +72,7 @@ public final class CMap {
                 delete(file1);
             }
         } else {
-            file.delete();
+            file.deleteOnExit();
         }
     }
 }
