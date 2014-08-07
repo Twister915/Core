@@ -5,10 +5,7 @@ import lombok.Getter;
 import net.cogzmc.core.player.*;
 import org.bson.types.ObjectId;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static net.cogzmc.core.player.mongo.MongoUtils.getListFor;
 import static net.cogzmc.core.player.mongo.MongoUtils.getPermissibileDataFor;
@@ -91,7 +88,14 @@ public class CMongoGroupRepository implements CGroupRepository {
             this.groups.put(groupFor.getName().toLowerCase(), groupFor);
             if (dbObject.containsField(MongoKey.GROUPS_DEFAULT_MARKER.toString())) this.defaultGroup = groupFor;
         }
-        for (CGroup cGroup : getGroups()) {
+        List<CGroup> groups1 = getGroups();
+        Collections.sort(groups1, new Comparator<CGroup>() {
+            @Override
+            public int compare(CGroup o1, CGroup o2) {
+                return o2.isParent(o1) ? -1 : 1;
+            }
+        });
+        for (CGroup cGroup : groups1) {
             cGroup.reloadPermissions();
         }
     }
@@ -107,6 +111,11 @@ public class CMongoGroupRepository implements CGroupRepository {
     @Override
     public List<CGroup> getGroups() {
         return new ArrayList<CGroup>(groups.values());
+    }
+
+    @Override
+    public boolean isDefaultGroup(CGroup group) {
+        return defaultGroup != null && defaultGroup.equals(group);
     }
 
     CMongoGroup getGroupFor(DBObject object) {

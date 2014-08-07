@@ -1,9 +1,6 @@
 package net.cogzmc.core.player.mongo;
 
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
+import com.mongodb.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
@@ -14,24 +11,32 @@ import java.net.UnknownHostException;
 
 @Data
 public final class CMongoDatabase implements CDatabase {
-    @NonNull private final String host;
-    @NonNull private final Integer port;
-    @NonNull private final String database;
-    private final String username;
-    private final String password;
+    private final MongoClientURI uri;
+
+    private final String database;
     private final String collectionPrefix;
 
     @Getter private DB mongoDatabase;
     @Getter private MongoClient client;
 
+    public CMongoDatabase(String host, Integer port, String database, String username, String password, String collectionPrefix) {
+        if (password != null && username != null) {
+            uri = new MongoClientURI("mongodb://" + username + ":" + password + "@" + host + ":"  + port + "/" + database);
+        }
+        else uri = new MongoClientURI("mongodb://" + host + ":" + port + "/" + database);
+        this.collectionPrefix = collectionPrefix;
+        this.database = database;
+    }
+
+    public CMongoDatabase(MongoClientURI uri, String collectionPrefix, String database) {
+        this.uri = uri;
+        this.collectionPrefix = collectionPrefix;
+        this.database = database;
+    }
+
     @Override
     public void connect() throws DatabaseConnectException {
         try {
-            MongoClientURI uri; //Create the URI
-            if (this.password != null && this.username != null) {
-                uri = new MongoClientURI("mongodb://" + username + ":" + password + "@" + host + ":"  + port + "/" + database);
-            }
-            else uri = new MongoClientURI("mongodb://" + host + ":" + port + "/" + database);
             this.client = new MongoClient(uri); //Connect using it
         } catch (UnknownHostException e) {
             throw new DatabaseConnectException("Could not resolve mongo hostname!", e, this); //Could not connect!

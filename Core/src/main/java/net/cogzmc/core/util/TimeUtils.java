@@ -1,5 +1,7 @@
 package net.cogzmc.core.util;
 
+import org.joda.time.Duration;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,5 +41,36 @@ public final class TimeUtils {
             seconds += time*multiplier; //And add it onto the total seconds
         }
         return seconds;
+    }
+
+    public static String formatDurationNicely(Duration duration) {
+        StringBuilder builder = new StringBuilder();
+        long standardSeconds = duration.getStandardSeconds();
+        if (standardSeconds > 86400) {
+            double days = Math.floor(standardSeconds / 86400);
+            standardSeconds = standardSeconds % 86400;
+            builder.append(days).append(" day");
+            if (days > 1) builder.append("s");
+            builder.append(" ");
+        }
+        if (standardSeconds > 3600) {
+            double hours = Math.floor(standardSeconds / 3600);
+            standardSeconds = standardSeconds % 3600;
+            builder.append(hours).append(" hour");
+            if (hours > 1) builder.append("s");
+            builder.append(" ");
+        }
+        if (standardSeconds > 60) {
+            double minutes = Math.floor(standardSeconds / 60);
+            standardSeconds = standardSeconds % 60;
+            builder.append(minutes).append(" minute");
+            if (minutes > 1) builder.append("s");
+            builder.append(" ");
+        }
+        if (standardSeconds > 0) {
+            builder.append(String.format("%.1d", standardSeconds)).append(" second");
+            if (standardSeconds > 1) builder.append("s");
+        }
+        return builder.toString().trim();
     }
 }

@@ -3,8 +3,10 @@ package net.cogzmc.core.gui;
 import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import lombok.Setter;
 import net.cogzmc.core.Core;
+import net.cogzmc.core.effect.npc.ClickAction;
 import net.cogzmc.core.modular.command.EmptyHandlerException;
 import net.cogzmc.core.player.CPlayer;
 import org.bukkit.Bukkit;
@@ -13,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -28,7 +31,7 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
     protected final List<CPlayer> observers = new LinkedList<>();
     protected final String title;
     protected Inventory inventory;
-    protected final Map<Integer, InventoryButton> inventoryButtons = new HashMap<>();
+    @Getter(AccessLevel.NONE) protected final Map<Integer, InventoryButton> inventoryButtons = new HashMap<>();
     @Setter(AccessLevel.NONE) protected Set<Integer> updatedSlots = new HashSet<>();
 
     public InventoryGraphicalInterface(Integer size, String title) {
@@ -200,10 +203,24 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
             throw new IllegalStateException("Somehow, someone who was null clicked on a slot that was null or had no button...");
         if (inventoryButton == null) return;
         try {
-            inventoryButton.onPlayerClick(player);
+            inventoryButton.onPlayerClick(player, getActionTypeFor(event.getClick()));
         } catch (EmptyHandlerException e) {
             player.playSoundForPlayer(Sound.NOTE_PLING);
         }
         event.setCancelled(true);
+    }
+
+    public ImmutableList<InventoryButton> getButtons() {
+        return ImmutableList.copyOf(inventoryButtons.values());
+    }
+
+    private static ClickAction getActionTypeFor(ClickType click) {
+        switch (click) {
+            case RIGHT:
+            case SHIFT_RIGHT:
+                return ClickAction.RIGHT_CLICK;
+            default:
+                return ClickAction.LEFT_CLICK;
+        }
     }
 }

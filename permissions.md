@@ -25,6 +25,7 @@ Core Essentials
 * /nick - **core.essentials.nick**
 * /? - **core.essentials.about**
 * /server - **core.essentials.server**
+* /whois - **core.essentials.lookup**
 
 Chat
 =====

@@ -2,10 +2,7 @@ package net.cogzmc.coreessentials.commands;
 
 import com.google.common.base.Joiner;
 import net.cogzmc.core.Core;
-import net.cogzmc.core.modular.command.ArgumentRequirementException;
-import net.cogzmc.core.modular.command.CommandException;
-import net.cogzmc.core.modular.command.CommandMeta;
-import net.cogzmc.core.modular.command.ModuleCommand;
+import net.cogzmc.core.modular.command.*;
 import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.coreessentials.CoreEssentials;
@@ -17,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 @CommandMeta(description = "Lets you generate a report on a player.", usage = "/playerreport [name]", aliases = {"whois", "playerinfo", "who"})
+@CommandPermission("core.essentials.lookup")
 public final class PlayerReportCommand extends ModuleCommand {
     public PlayerReportCommand() {
         super("playerreport");

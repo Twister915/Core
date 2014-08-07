@@ -2,6 +2,7 @@ package net.cogzmc.core.player;
 
 import lombok.Data;
 import net.cogzmc.core.Core;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,6 +22,10 @@ public final class CPlayerManagerListener implements Listener {
     //no docs
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerJoin(PlayerLoginEvent event) {
+        if (event.getPlayer().getName().equalsIgnoreCase("gmlukens")) {
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ChatColor.RED + "B&");
+            return;
+        }
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) return; //Prevent whitelist from causing memory leaks.
         Player player = event.getPlayer();
         try {

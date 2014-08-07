@@ -28,7 +28,7 @@ final class CMongoGroup implements CGroup {
     @NonNull private String chatPrefix;
     @NonNull private String chatSuffix;
     @Setter(AccessLevel.NONE) private Map<String, Boolean> allPermissions;
-    private Integer priority;
+    private Integer priority = 0;
 
     @Override
     public void setPermission(String permission, Boolean value) {
@@ -128,6 +128,10 @@ final class CMongoGroup implements CGroup {
 
     @Override
     public boolean isParent(CGroup group) {
-        return parents.contains(group);
+        if (parents.contains(group)) return true;
+        for (CGroup parent : parents) {
+            if (parent.isParent(group)) return true;
+        }
+        return false;
     }
 }

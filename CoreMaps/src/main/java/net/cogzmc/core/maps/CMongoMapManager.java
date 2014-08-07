@@ -10,6 +10,7 @@ import com.mongodb.gridfs.GridFSInputFile;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
+import net.cogzmc.core.Core;
 import net.cogzmc.core.player.mongo.CMongoDatabase;
 import net.cogzmc.core.player.mongo.MongoKey;
 import net.cogzmc.core.player.mongo.MongoUtils;
@@ -67,9 +68,10 @@ public class CMongoMapManager implements CMapManager {
     @Override
     public CMap importWorld(World world) {
         UUID uuid = UUID.randomUUID();
+        File tempFile = new File(CoreMaps.getInstance().getDataFolder(), String.valueOf(Core.getRandom().nextInt(10000)) + ".zip.tmp");
         ObjectId objectId;
         try {
-            ZipFile zipFile = new ZipFile(File.createTempFile("coreworld", "zip"));
+            ZipFile zipFile = new ZipFile(tempFile);
             ZipParameters parameters = new ZipParameters();
             parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
             parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
@@ -79,13 +81,14 @@ public class CMongoMapManager implements CMapManager {
                 else zipFile.addFile(file, parameters);
             }
             objectId = storeMap(zipFile.getFile());
-        } catch (ZipException | IOException e) {
+        } catch (ZipException e) {
             throw new RuntimeException(e);
         }
         CMap cMap = new CMap(uuid, world);
         cMap.setGridFSId(objectId);
         this.loadedMaps.add(cMap);
         database.getCollection(MAPS_COLLECTION).save(dbObjectFromMap(cMap));
+        tempFile.delete();
         return cMap;
     }
 

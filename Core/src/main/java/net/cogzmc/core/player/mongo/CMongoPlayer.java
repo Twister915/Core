@@ -7,6 +7,7 @@ import net.cogzmc.core.Core;
 import net.cogzmc.core.gui.InventoryButton;
 import net.cogzmc.core.player.*;
 import net.cogzmc.core.player.scoreboard.ScoreboardAttachment;
+import net.cogzmc.core.util.Point;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -245,6 +246,16 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Override
     public Player getBukkitPlayer() {
         return _bukkitPlayer.get();
+    }
+
+    @Override
+    public Point getPoint() {
+        return Point.of(getBukkitPlayer().getLocation());
+    }
+
+    @Override
+    public Point getBlockPoint() {
+        return Point.of(getBukkitPlayer().getLocation().getBlock());
     }
 
     @Override

@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.Setter;
+import net.cogzmc.core.effect.npc.ClickAction;
 import net.cogzmc.core.modular.command.EmptyHandlerException;
 import net.cogzmc.core.player.CPlayer;
 import org.bukkit.ChatColor;
@@ -51,5 +52,5 @@ public abstract class InventoryButton {
         return lines;
     }
 
-    protected void onPlayerClick(CPlayer player) throws EmptyHandlerException { throw new EmptyHandlerException(); }
+    protected void onPlayerClick(CPlayer player, ClickAction action) throws EmptyHandlerException { throw new EmptyHandlerException(); }
 }

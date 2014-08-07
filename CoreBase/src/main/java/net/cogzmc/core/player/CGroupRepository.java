@@ -49,6 +49,8 @@ public interface CGroupRepository {
      */
     List<CGroup> getGroups();
 
+    boolean isDefaultGroup(CGroup group);
+
     void reloadGroups();
 
     void save();

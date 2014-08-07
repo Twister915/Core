@@ -1,6 +1,7 @@
 package net.cogzmc.core.player;
 
 import net.cogzmc.core.player.scoreboard.ScoreboardAttachment;
+import net.cogzmc.core.util.Point;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
@@ -209,6 +210,9 @@ public interface CPlayer extends COfflinePlayer {
      * @return The cooldown manager.
      */
     CooldownManager getCooldownManager();
+
+    Point getPoint();
+    Point getBlockPoint();
 
     /**
      * Gets the Scoreboard Attachment used for managing prefixes, suffixes, and sidebar attributes.
