@@ -51,7 +51,11 @@ public final class CMongoPermissionsManager extends CMongoGroupRepository implem
                 iterator.remove();
                 continue;
             }
-            observer.onReloadPermissions(this);
+            try {
+                observer.onReloadPermissions(this);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         for (CPlayer cPlayer : Core.getPlayerManager()) {
             cPlayer.reloadPermissions();

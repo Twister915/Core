@@ -315,7 +315,7 @@ public final class LilyPadNetworkManager implements NetworkManager {
             String messageAsString = event.getMessageAsString();
             JSONObject heartbeat = (JSONObject)JSONValue.parse(messageAsString); //Get the values
             JSONArray playerUUIDs = (JSONArray) heartbeat.get(HEARTBEAT_PLAYERS_KEY);
-            Integer maxPlayers = (Integer) heartbeat.get(HEARTBEAT_MAX_PLAYERS_KEY);
+            Integer maxPlayers = ((Long) (heartbeat.get(HEARTBEAT_MAX_PLAYERS_KEY))).intValue();
             List<UUID> uuids = new ArrayList<>(); //Holder for UUIDs that are converted from the strings above
             for (Object playerUUID : playerUUIDs) {
                 if (!(playerUUID instanceof String)) continue;
@@ -325,6 +325,7 @@ public final class LilyPadNetworkManager implements NetworkManager {
         } catch (ClassCastException ex) {
             //Invalid heartbeat
             Core.logInfo("Unable to read heartbeat on channel due to a ClassCastException on line " + ex.getStackTrace()[0].getLineNumber());
+            if (Core.DEBUG) ex.printStackTrace();
         }
     }
 

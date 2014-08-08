@@ -110,7 +110,7 @@ public class CMongoMapManager implements CMapManager {
         GridFSDBFile one = bucket.findOne(new BasicDBObject(MongoKey.ID_KEY.toString(), MongoUtils.getValueFrom(object, GRIDFS_FILE, ObjectId.class)));
         File tempFile;
         try {
-            tempFile = File.createTempFile("coreworld", "zip");
+            tempFile = new File(CoreMaps.getInstance().getDataFolder(), Core.getRandom().nextInt(100000) + ".zip.tmp");
             one.writeTo(tempFile);
         } catch (IOException e) {
             throw new RuntimeException(e);

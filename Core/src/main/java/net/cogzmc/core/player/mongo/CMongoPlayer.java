@@ -225,6 +225,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     public void resetPlayer() {
         Player bukkitPlayer = getBukkitPlayer();
         bukkitPlayer.getInventory().clear();
+        bukkitPlayer.getInventory().setArmorContents(new ItemStack[4]);
         bukkitPlayer.setAllowFlight(false);
         bukkitPlayer.setFlying(false);
         bukkitPlayer.setFallDistance(0f);
