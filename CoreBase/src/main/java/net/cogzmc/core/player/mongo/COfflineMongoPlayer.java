@@ -23,7 +23,7 @@ import static net.cogzmc.util.RandomUtils.safeCast;
 
 @EqualsAndHashCode(of = {"uniqueIdentifier"})
 @Log
-class COfflineMongoPlayer implements COfflinePlayer {
+public class COfflineMongoPlayer implements COfflinePlayer {
     @Getter private List<String> knownUsernames;
     @Getter @Setter(AccessLevel.PROTECTED) private String lastKnownUsername;
     @Getter private UUID uniqueIdentifier;

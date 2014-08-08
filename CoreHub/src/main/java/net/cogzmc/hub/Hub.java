@@ -11,9 +11,6 @@ import net.cogzmc.hub.limitations.Limitation;
 import net.cogzmc.hub.limitations.LimitationNotRequiredException;
 import net.cogzmc.hub.limitations.impl.*;
 import net.cogzmc.hub.model.SettingsManager;
-import net.cogzmc.hub.spawn.SetSpawn;
-import net.cogzmc.hub.spawn.Spawn;
-import net.cogzmc.hub.spawn.SpawnHandler;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -32,7 +29,6 @@ import java.util.Set;
 )
 public final class Hub extends ModularPlugin {
     @Getter private static Hub instance;
-    @Getter private SpawnHandler spawnHandler;
     @Getter private HubItemsManager itemsManager;
     @Getter private SettingsManager settingsManager;
     private final Set<Limitation> limitations = new HashSet<>();
@@ -43,17 +39,11 @@ public final class Hub extends ModularPlugin {
         //Create necessary instances
         Hub.instance = this;
 
-        this.spawnHandler = new SpawnHandler();
         this.itemsManager = new HubItemsManager();
         registerListener(this.itemsManager);
         this.settingsManager = new SettingsManager();
 
-        /* commands */
-        registerCommand(new SetSpawn());
-        registerCommand(new Spawn());
-
         /* listeners */
-		registerListener(this.spawnHandler);
 		registerListener(HubItem.EventDispatcher.getInstance());
 
         /* limitations */

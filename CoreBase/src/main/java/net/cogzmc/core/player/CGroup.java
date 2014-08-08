@@ -57,4 +57,6 @@ public interface CGroup extends CPermissible {
      * @param priority
      */
     void setPriority(Integer priority);
+
+    void ensureLoaded();
 }

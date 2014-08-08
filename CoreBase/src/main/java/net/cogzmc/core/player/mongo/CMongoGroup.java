@@ -5,6 +5,7 @@ import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
 import lombok.*;
 import net.cogzmc.core.player.CGroup;
+import net.cogzmc.core.player.CGroupRepository;
 import org.bson.types.ObjectId;
 
 import java.util.*;
@@ -17,8 +18,10 @@ import static net.cogzmc.core.player.mongo.MongoUtils.getObjectForPermissible;
 final class CMongoGroup implements CGroup {
     /* Group stuff */
     @NonNull private final String name;
+    @NonNull private final CMongoGroupRepository repository;
     @NonNull @Getter(AccessLevel.NONE) private final Map<String, Boolean> declaredPermissions;
-    @NonNull private final List<CGroup> parents;
+    @NonNull private final List<CGroup> parents = new ArrayList<>();
+    @NonNull private final List<ObjectId> parentIds;
     /* Mongo stuff */
     private ObjectId objectId;
 
@@ -77,6 +80,13 @@ final class CMongoGroup implements CGroup {
     public void reloadPermissions() {
         allPermissions = new HashMap<>(declaredPermissions);
 
+        parents.clear();
+        for (ObjectId parentId : parentIds) {
+            CGroup groupByObjectId = repository.getGroupByObjectId(parentId);
+            if (groupByObjectId == null) continue;
+            parents.add(groupByObjectId);
+        }
+
         Collections.sort(parents, new Comparator<CGroup>() {
             @Override
             public int compare(CGroup o1, CGroup o2) {
@@ -93,6 +103,7 @@ final class CMongoGroup implements CGroup {
 
         for (CGroup parent : parents1) {
             //get their permissions (inherited on their tree well)
+            parent.ensureLoaded();
             Map<String, Boolean> allPermissions1 = parent.getAllPermissions();
             //Iterate through them
             for (Map.Entry<String, Boolean> stringBooleanEntry : allPermissions1.entrySet()) {
@@ -109,6 +120,7 @@ final class CMongoGroup implements CGroup {
         if (group == this || group.getName().equals(getName())) throw new IllegalStateException("You cannot make this group parent itself!");
         checkForRecursiveParenthood(group);
         this.parents.add(group);
+        this.parentIds.add(((CMongoGroup) group).getObjectId());
         reloadPermissions();
     }
 
@@ -129,9 +141,16 @@ final class CMongoGroup implements CGroup {
     @Override
     public boolean isParent(CGroup group) {
         if (parents.contains(group)) return true;
+        if (parents.size() == 0) return false;
         for (CGroup parent : parents) {
+            if (parent == null) continue;
             if (parent.isParent(group)) return true;
         }
         return false;
+    }
+
+    @Override
+    public void ensureLoaded() {
+        if (allPermissions == null) reloadPermissions();
     }
 }

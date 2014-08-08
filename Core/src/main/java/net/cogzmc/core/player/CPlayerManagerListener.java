@@ -26,6 +26,12 @@ public final class CPlayerManagerListener implements Listener {
             event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ChatColor.RED + "B&");
             return;
         }
+        for (CPlayer cPlayer : playerManager.getOnlinePlayers()) {
+            if (cPlayer.getName().equals(event.getPlayer().getName())) {
+                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "You are already on this server. Try logging in again!");
+                return;
+            }
+        }
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) return; //Prevent whitelist from causing memory leaks.
         Player player = event.getPlayer();
         try {

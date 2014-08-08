@@ -20,7 +20,7 @@ public final class VoidLimitation extends Limitation {
         if (shouldIgnoreLimitation(event)) return;
         event.setCancelled(true);
         Player player = event.getPlayer();
-        player.teleport(Hub.getInstance().getSpawnHandler().getSpawn());
+        player.teleport(event.getTo().getWorld().getSpawnLocation());
         player.setFallDistance(0f);
         Core.getOnlinePlayer(player).playSoundForPlayer(Sound.CHICKEN_EGG_POP); //A bit intensive but such an exclusive case it doesn't matter.
     }
