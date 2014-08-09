@@ -5,6 +5,7 @@ import net.cogzmc.core.player.CPlayer;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * This interface is used to represent a single server on the network that this server is connected to.
@@ -34,7 +35,7 @@ public interface NetworkServer {
      * Gets a list of {@link net.cogzmc.core.player.COfflinePlayer}s that represent the players currently logged into this server.
      * @return A list of {@link net.cogzmc.core.player.COfflinePlayer}s
      */
-    List<COfflinePlayer> getPlayers();
+    List<UUID> getPlayers();
 
     /**
      * Transfers a player to this server.

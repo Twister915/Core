@@ -4,6 +4,7 @@ import net.cogzmc.core.player.COfflinePlayer;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -61,7 +62,7 @@ public interface NetworkManager {
      * Gets an {@link java.util.List} of {@link net.cogzmc.core.player.COfflinePlayer} objects for all players online on the network globally (including this server).
      * @return The players online globally.
      */
-    List<COfflinePlayer> getTotalPlayersOnline();
+    List<UUID> getTotalPlayersOnline();
 
     /**
      * Gets the number of players online for each {@link net.cogzmc.core.network.NetworkServer} that we are aware of.

@@ -13,6 +13,7 @@ import net.cogzmc.core.player.CPlayer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import static net.cogzmc.core.network.lilypad.LilyPadNetworkManager.encodeNetCommand;
 
@@ -22,7 +23,7 @@ final class LilyPadServer implements NetworkServer {
     private final Integer maximumPlayers;
     private final LilyPadNetworkManager networkManager;
     private Date lastPing = new Date();
-    private List<COfflinePlayer> players = new ArrayList<>();
+    private List<UUID> players;
 
     @Override
     @SneakyThrows
