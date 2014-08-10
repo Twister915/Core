@@ -1,0 +1,80 @@
+package net.cogzmc.bungee;
+
+import lombok.Getter;
+import lombok.Setter;
+import net.cogzmc.core.player.CGroupRepository;
+import net.cogzmc.core.player.CPlayerRepository;
+import net.cogzmc.core.player.mongo.CMongoDatabase;
+import net.cogzmc.core.player.mongo.CMongoGroupRepository;
+import net.cogzmc.core.player.mongo.CMongoPlayerRepository;
+import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
+public final class CoreBungeeDriver extends Plugin {
+    private JedisPool jedisPool;
+    @Getter private CPlayerRepository playerRepository;
+    @Getter private CGroupRepository groupRepository;
+    @Getter private static CoreBungeeDriver instance;
+    @Getter @Setter private Controller controller;
+    @Getter private ServerManager serverManager;
+
+    @Override
+    public void onEnable() {
+        try {
+            if (!getDataFolder().exists() && !getDataFolder().mkdir()) throw new IOException("Could not create the data directory!");
+            File file = new File(getDataFolder(), "database.yml");
+            if (!file.exists()) {
+                Files.copy(getResourceAsStream("database.yml"), file.toPath());
+            }
+            Configuration dbConfig = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
+            Configuration redis = dbConfig.getSection("redis");
+            jedisPool = new JedisPool(new JedisPoolConfig(), redis.getString("host"), redis.getInt("port"), 5);
+            Jedis resource = jedisPool.getResource();
+            resource.connect();
+            if (!resource.isConnected()) throw new IllegalStateException("Jedis is not connected!");
+            jedisPool.returnResource(resource);
+
+            //player repo
+            if (dbConfig.getKeys().contains("mongo")) {
+                Configuration mongo = dbConfig.getSection("mongo");
+                CMongoDatabase cMongoDatabase = new CMongoDatabase(
+                        mongo.getString("host", "127.0.0.1"),
+                        mongo.getInt("port", 27017),
+                        mongo.getString("database", "core"),
+                        mongo.getString("username", null),
+                        mongo.getString("password", null),
+                        mongo.getString("prefix", null)
+                );
+                cMongoDatabase.connect();
+                CMongoPlayerRepository cMongoPlayerRepository = new CMongoPlayerRepository(cMongoDatabase);
+                playerRepository = cMongoPlayerRepository;
+                CMongoGroupRepository groupRepository1 = new CMongoGroupRepository(cMongoDatabase, cMongoPlayerRepository);
+                cMongoPlayerRepository.setGroupRepository(groupRepository1);
+                groupRepository = groupRepository1;
+
+                ServerLinkingHandler.enable();
+                serverManager = ServerManager.enable();
+                DriverListener.enable();
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not enable CoreBungeeDriver", e);
+        }
+    }
+
+    public Jedis getJedisClient() {
+        return jedisPool.getResource();
+    }
+
+    public void returnJedis(Jedis jedis) {
+        jedisPool.returnResource(jedis);
+    }
+}

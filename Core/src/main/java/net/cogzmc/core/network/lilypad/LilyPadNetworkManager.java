@@ -10,6 +10,7 @@ import lombok.SneakyThrows;
 import lombok.Synchronized;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.network.*;
+import net.cogzmc.core.network.heartbeat.HeartbeatHandler;
 import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
 import org.bukkit.Bukkit;
@@ -19,18 +20,17 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-public final class LilyPadNetworkManager implements NetworkManager {
+public final class LilyPadNetworkManager implements NetworkManager, HeartbeatHandler {
     /* Constants */
-    private static final String NETWORK_MANAGER_CHANNEL = "CC.LILYPAD.MANAGER";
+    private static final String NETWORK_MANAGER_CHANNEL = "CORE.LILYPAD.MANAGER";
     private static final String HEARTBEAT_PLAYERS_KEY = "PLAYERS";
     private static final String HEARTBEAT_MAX_PLAYERS_KEY = "MAX_PLAYERS";
     private static final Integer HEARTBEAT_ATTEMPTS_MAX = 5;
-    static final String NET_COMMAND_CHANNEL = "CC.LILYPAD.NETCOMMAND";
+    static final String NET_COMMAND_CHANNEL = "CORE.LILYPAD.NETCOMMAND";
 
     private final List<NetworkServer> servers = new ArrayList<>();
     private final List<NetworkServerDiscoverObserver> discoverObservers = new ArrayList<>();
@@ -206,7 +206,7 @@ public final class LilyPadNetworkManager implements NetworkManager {
     @SneakyThrows
     public void sendMassNetCommand(NetCommand command) {
         //Create a new message request, destination: Empty_List (aka all servers) on the net command channel with the text from the encodeNetCommand method.
-        connect.request(new MessageRequest(Collections.EMPTY_LIST, NET_COMMAND_CHANNEL, encodeNetCommand(command).toJSONString()));
+        connect.request(new MessageRequest(Collections.EMPTY_LIST, NET_COMMAND_CHANNEL, NetworkUtils.encodeNetCommand(command).toJSONString()));
     }
 
     @Override
@@ -219,37 +219,13 @@ public final class LilyPadNetworkManager implements NetworkManager {
         if (discoverObservers.contains(observer)) discoverObservers.remove(observer);
     }
 
-    @SuppressWarnings("unchecked")
-    @SneakyThrows
-    static JSONObject encodeNetCommand(NetCommand command) {
-        JSONObject object = new JSONObject(); //Create a holder for this NetCommand
-        Class<? extends NetCommand> commandType = command.getClass(); //Command type
-        object.put(LilyPadKeys.NET_COMMAND_CLASS_NAME.getValue(), commandType.getName()); //Put the class name
-        //Find the objects and values
-        JSONObject arguments = new JSONObject();
-        boolean allFields = commandType.isAnnotationPresent(NetCommandField.class); //Denotes if we should assume all fields have NetCommandField
-        //Gets all the fields
-        for (Field field : commandType.getDeclaredFields()) {
-            boolean annotationPresent = field.isAnnotationPresent(NetCommandField.class);
-            /*
-             * this is short for short for (annotationPresent && allFields) || (!annotationPresent && !allFields)
-             *
-             * If the annotation is present on a field and on the type (annotationPresent && allFields) then we ignore the field
-             * If the annotation is present on neither the field or type (!annotationPresent && !allFields) then we also ignore the field
-             *
-             * In any case where one of these did not agree, true/false or false/true true && false || true && false would be false, so it only works when false/false or true/true
-             * True always equals true and false always equals false, thus this statement works.
-             */
-            if (allFields == annotationPresent) continue;
-            //And adds them when they have a NetCommandField annotation.
-            arguments.put(field.getName(), field.get(command));
-        }
-        object.put(LilyPadKeys.NET_COMMAND_ARGUMENTS.getValue(), arguments);
-        object.put(LilyPadKeys.NET_COMMAND_TIME.getValue(), new Date().getTime());
-        return object;
+    @Override
+    public void onDisable() {
+
     }
 
-    private void receivedUpdate(String server, Integer maxPlayers, List<UUID> uuids) {
+    @Override
+    public void handleHeartbeatData(String server, Integer maxPlayers, List<UUID> uuids) {
         LilyPadServer s;
         boolean shouldAdd = false; //Hold a marker if this is a new server...
         //Try and see if we already know this server, and if not create a new instance.
@@ -306,7 +282,7 @@ public final class LilyPadNetworkManager implements NetworkManager {
                 if (!(playerUUID instanceof String)) continue;
                 uuids.add(UUID.fromString(String.valueOf(playerUUID))); //Convert a string to UUID
             }
-            receivedUpdate(event.getSender(), maxPlayers, uuids); //Update the server info.
+            handleHeartbeatData(event.getSender(), maxPlayers, uuids); //Update the server info.
         } catch (ClassCastException ex) {
             //Invalid heartbeat
             Core.logInfo("Unable to read heartbeat on channel due to a ClassCastException on line " + ex.getStackTrace()[0].getLineNumber());
@@ -324,29 +300,14 @@ public final class LilyPadNetworkManager implements NetworkManager {
         if (sender.getName().equals(connect.getSettings().getUsername())) return;
         //Get the command object (JSON) and attempt to read it
         JSONObject netCommand = (JSONObject) JSONValue.parse(event.getMessageAsString());
-        //Get the class
-        Class netCommandType;
-        try {
-            netCommandType = Class.forName((String) netCommand.get(LilyPadKeys.NET_COMMAND_CLASS_NAME.getValue()));
-        } catch (ClassNotFoundException ex) {
-            return;
-        }
-        //Create a new instance of the NetCommand class that we found. THIS REQUIRES A NO ARGS CONSTRUCTOR TO BE PRESENT.
-        Object netCommand1 = netCommandType.newInstance();
-        if (!(netCommand1 instanceof NetCommand)) return;
-        JSONObject arguments = (JSONObject)netCommand.get(LilyPadKeys.NET_COMMAND_ARGUMENTS.getValue()); //Get the arguments
-        boolean allFields = netCommandType.isAnnotationPresent(NetCommandField.class);
-        for (Field field : netCommandType.getDeclaredFields()) { //And set the values in the class by
-            if (!allFields && !field.isAnnotationPresent(NetCommandField.class)) continue; //Finding fields with this annotation
-            field.setAccessible(true); //setting them accessible
-            field.set(netCommand1, field.getType().cast(arguments.get(field.getName()))); //and setting their value
-        }
+        NetCommand netCommand1 = NetworkUtils.decodeNetCommand(netCommand);
         //Now let's call the handlers
-        List<NetCommandHandler> netCommandHandlers1 = netCommandHandlers.get(netCommandType);
+        List<NetCommandHandler> netCommandHandlers1 = netCommandHandlers.get(netCommand1.getClass());
         if (netCommandHandlers1 == null) return; //if there are no handlers, we don't need to do anything more.
         for (NetCommandHandler netCommandHandler : netCommandHandlers1) {
-            netCommandHandler.handleNetCommand(sender, (NetCommand) netCommand1); //"Yo dude... we got a NetCommand being sent by sender, check out netCommand1 param."
+            netCommandHandler.handleNetCommand(sender, netCommand1); //"Yo dude... we got a NetCommand being sent by sender, check out netCommand1 param."
         }
+
     }
 
     private void scheduleHeartbeat(Long time, TimeUnit unit) {

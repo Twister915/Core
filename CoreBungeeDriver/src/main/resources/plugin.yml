@@ -1,0 +1,4 @@
+name: CoreBungeeDriver
+main: net.cogzmc.bungee.CoreBungeeDriver
+version: 1.0
+author: Twister915

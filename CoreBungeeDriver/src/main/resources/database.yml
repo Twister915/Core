@@ -1,0 +1,10 @@
+redis:
+  host: 127.0.0.1
+  port: 6379
+mongo:
+  host: 127.0.0.1
+  port: 27017
+  database: core
+  #username: username
+  #password: password
+  #prefix: prefix

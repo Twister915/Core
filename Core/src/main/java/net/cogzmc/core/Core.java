@@ -125,6 +125,7 @@ public class Core extends JavaPlugin {
         try {
             if (this.playerManager != null) this.playerManager.onDisable();
             if (this.cDatabase != null) cDatabase.disconnect();
+            if (this.networkManager != null) this.networkManager.onDisable();
         } catch (Throwable t) {
             t.printStackTrace();
         }

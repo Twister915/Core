@@ -1,9 +1,11 @@
 package net.cogzmc.core;
 
+import net.cogzmc.core.config.YAMLConfigurationFile;
 import net.cogzmc.core.model.ModelManager;
 import net.cogzmc.core.model.mongo.MongoModelManager;
 import net.cogzmc.core.netfiles.NetFileManager;
 import net.cogzmc.core.network.NetworkManager;
+import net.cogzmc.core.network.bungee.BungeeCordNetworkManager;
 import net.cogzmc.core.network.lilypad.LilyPadNetworkManager;
 import net.cogzmc.core.player.CDatabase;
 import net.cogzmc.core.player.CPermissionsManager;
@@ -39,6 +41,12 @@ final class DefaultProvider implements Provider {
     public NetworkManager getNewNetworkManager(Core core) {
         if (core.getServer().getPluginManager().getPlugin(core.getConfig().getString("lilypad-plugin")) != null)
             return new LilyPadNetworkManager();
+        else if (core.getConfig().getBoolean("use-bungeecord")) {
+            YAMLConfigurationFile bungeeConfig = new YAMLConfigurationFile(core, "bungee.yml");
+            bungeeConfig.reloadConfig();
+            bungeeConfig.saveDefaultConfig();
+            return new BungeeCordNetworkManager(bungeeConfig);
+        }
         core.getLogger().severe("COULD NOT FIND A NETWORK PLUGIN TO CONNECT TO!");
         return null;
     }

@@ -104,4 +104,6 @@ public interface NetworkManager {
 
     void registerNetworkServerDiscoverObserver(NetworkServerDiscoverObserver observer);
     void unregisterNetworkServerDiscoverObserver(NetworkServerDiscoverObserver observer);
+
+    void onDisable();
 }

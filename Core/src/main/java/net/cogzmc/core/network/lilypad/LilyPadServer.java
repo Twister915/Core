@@ -7,15 +7,12 @@ import lombok.SneakyThrows;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.network.NetCommand;
 import net.cogzmc.core.network.NetworkServer;
-import net.cogzmc.core.player.COfflinePlayer;
+import net.cogzmc.core.network.NetworkUtils;
 import net.cogzmc.core.player.CPlayer;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
-import static net.cogzmc.core.network.lilypad.LilyPadNetworkManager.encodeNetCommand;
 
 @Data
 final class LilyPadServer implements NetworkServer {
@@ -47,6 +44,6 @@ final class LilyPadServer implements NetworkServer {
             Core.getInstance().getLogger().severe("LILYPAD CONNECT IS NOT CONNECTED TO THE CLOUD. Unable to send a netcommand.");
             return;
         }
-        networkManager.getConnect().request(new MessageRequest(name, LilyPadNetworkManager.NET_COMMAND_CHANNEL, encodeNetCommand(command).toJSONString()));
+        networkManager.getConnect().request(new MessageRequest(name, LilyPadNetworkManager.NET_COMMAND_CHANNEL, NetworkUtils.encodeNetCommand(command).toJSONString()));
     }
 }

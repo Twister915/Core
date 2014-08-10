@@ -21,6 +21,7 @@
         <module>CoreServerlet</module>
         <module>CoreTests</module>
         <module>CoreMaps</module>
+        <module>CoreBungeeDriver</module>
     </modules>
 
     <packaging>pom</packaging>
