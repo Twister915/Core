@@ -1,13 +1,13 @@
 package net.cogzmc.bungee;
 
+import lombok.Getter;
 import redis.clients.jedis.JedisPubSub;
 
 public abstract class BasePubSub extends JedisPubSub {
-    private final String channel;
+    @Getter private final String channel;
 
     protected BasePubSub(String chan) {
         this.channel = chan;
-        CoreBungeeDriver.getInstance().getJedisClient().subscribe(this, chan);
     }
 
     @Override

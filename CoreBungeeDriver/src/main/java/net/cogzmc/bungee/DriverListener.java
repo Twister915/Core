@@ -1,6 +1,8 @@
 package net.cogzmc.bungee;
 
+import lombok.extern.java.Log;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -11,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@Log
 public final class DriverListener implements Listener {
     private final Set<UUID> connectedPlayers = new HashSet<>();
 
@@ -18,7 +21,8 @@ public final class DriverListener implements Listener {
     public void onPlayerConnect(ServerConnectEvent event) {
         if (CoreBungeeDriver.getInstance().getController() == null) return;
         if (!connectedPlayers.contains(event.getPlayer().getUniqueId())) {
-            event.setTarget(CoreBungeeDriver.getInstance().getController().getConnectServer(event.getPlayer()));
+            ServerInfo connectServer = CoreBungeeDriver.getInstance().getController().getConnectServer(event.getPlayer());
+            event.setTarget(connectServer);
         }
         connectedPlayers.add(event.getPlayer().getUniqueId());
     }
@@ -30,7 +34,7 @@ public final class DriverListener implements Listener {
 
     @EventHandler
     public void onPlayerQuery(ProxyPingEvent event) {
-        event.getResponse().getPlayers().setOnline(CoreBungeeDriver.getInstance().getServerManager().getOnlineCount());
+        event.getResponse().getPlayers().setOnline(CoreBungeeDriver.getInstance().getServerReaper().getOnlineCount());
     }
 
     public static void enable() {

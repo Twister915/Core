@@ -38,7 +38,7 @@ final class DefaultProvider implements Provider {
     }
 
     @Override
-    public NetworkManager getNewNetworkManager(Core core) {
+    public NetworkManager getNewNetworkManager(Core core) throws Exception{
         if (core.getServer().getPluginManager().getPlugin(core.getConfig().getString("lilypad-plugin")) != null)
             return new LilyPadNetworkManager();
         else if (core.getConfig().getBoolean("use-bungeecord")) {

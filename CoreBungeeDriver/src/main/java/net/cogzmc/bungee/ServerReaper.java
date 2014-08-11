@@ -1,25 +1,31 @@
 package net.cogzmc.bungee;
 
+import lombok.extern.java.Log;
 import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.config.ServerInfo;
 import redis.clients.jedis.Jedis;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public final class ServerManager extends BasePubSub implements Runnable {
+@Log
+public final class ServerReaper extends BasePubSub implements Runnable {
     private static final String REAP_CHANNEL = "CORE.BUNGEE.REAP";
 
     private Integer playerCount = 0;
     private Integer lastLength = 0;
 
-    private volatile Map<ServerInfo, Integer> playerCounts = new HashMap<>();
+    private volatile Map<String, Integer> playerCounts = new HashMap<>();
+    private final Collection<ServerInfo> preserve;
 
-    protected ServerManager() {
+
+    protected ServerReaper(Collection<ServerInfo> preserve) {
         super(REAP_CHANNEL);
+        this.preserve = preserve;
     }
 
     @Override
@@ -29,12 +35,14 @@ public final class ServerManager extends BasePubSub implements Runnable {
                 @Override
                 public void done(ServerPing serverPing, Throwable throwable) {
                     if (throwable != null) {
+                        if (preserve.contains(serverInfo)) return;
                         Jedis jedisClient = CoreBungeeDriver.getInstance().getJedisClient();
                         jedisClient.publish(REAP_CHANNEL,serverInfo.getName());
                         CoreBungeeDriver.getInstance().returnJedis(jedisClient);
-                        playerCounts.remove(serverInfo);
+                        playerCounts.remove(serverInfo.getName());
+                        log.info("Server was non-responsive, and removed " + serverInfo.getName());
                     } else {
-                        playerCounts.put(serverInfo, serverPing.getPlayers().getOnline());
+                        playerCounts.put(serverInfo.getName(), serverPing.getPlayers().getOnline());
                     }
                 }
             });
@@ -75,11 +83,10 @@ public final class ServerManager extends BasePubSub implements Runnable {
         }
     }
 
-    public static ServerManager enable() {
-        ServerManager serverManager = new ServerManager();
-        serverManager.schedule(2);
-        Jedis jedisClient = CoreBungeeDriver.getInstance().getJedisClient();
-        jedisClient.subscribe(serverManager, REAP_CHANNEL);
-        return serverManager;
+    public static ServerReaper enable() {
+        ServerReaper serverReaper = new ServerReaper(ProxyServer.getInstance().getServers().values());
+        serverReaper.schedule(2);
+        new PubSubThread(serverReaper).start();
+        return serverReaper;
     }
 }

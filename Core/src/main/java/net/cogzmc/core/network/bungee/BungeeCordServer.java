@@ -36,10 +36,9 @@ final class BungeeCordServer implements NetworkServer {
 
     @Override
     public void sendPlayerToServer(CPlayer player) {
-        ByteArrayDataOutput data = ByteStreams.newDataOutput();
-        data.writeUTF("Connect");
-        data.writeUTF(name);
-        player.getBukkitPlayer().sendPluginMessage(Core.getInstance(), "BungeeCord", data.toByteArray());
+        Jedis resource = networkManager.getJedisPool().getResource();
+        resource.publish(BungeeCordNetworkManager.TELEPORT, player.getUniqueIdentifier() + "|" + name);
+        resource.close();
     }
 
     @Override
@@ -51,6 +50,6 @@ final class BungeeCordServer implements NetworkServer {
         sendObject.put("net_command", jsonObject);
         Jedis resource = networkManager.getJedisPool().getResource();
         resource.publish(BungeeCordNetworkManager.NET_COMMAND_CHANNEL, sendObject.toJSONString());
-        networkManager.getJedisPool().returnResource(resource);
+        resource.close();
     }
 }

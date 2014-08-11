@@ -4,6 +4,7 @@ import com.google.api.client.repackaged.com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Synchronized;
 import lombok.ToString;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.config.YAMLConfigurationFile;
@@ -19,6 +20,9 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisPubSub;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -31,8 +35,9 @@ public final class BungeeCordNetworkManager implements NetworkManager {
     private static final String LINK_CHANNEL = "CORE.BUNGEE.LINK";
     private static final String REAPCHANNEL = "CORE.BUNGEE.REAP";
     private static final String HEARTBEAT_CHAN = "CORE.BUNGEE.HEARTBEAT";
+    static final String TELEPORT = "CORE.BUNGEE.TELEPORT";
 
-    private final Set<BungeeCordServer> servers = new HashSet<>();
+    private final Map<String, BungeeCordServer> servers = new HashMap<>();
     @Getter private final BungeeCordServer thisServer;
     @Getter private final JedisPool jedisPool;
 
@@ -40,20 +45,37 @@ public final class BungeeCordNetworkManager implements NetworkManager {
     private final List<NetworkServerDiscoverObserver> discoverObservers = new ArrayList<>();
 
     private BukkitTask heartbeatScheduled;
+    private final FileConfiguration bungeeYAML;
+    private final String ip;
 
-    public BungeeCordNetworkManager(YAMLConfigurationFile config) {
-        FileConfiguration bungeeYAML = config.getConfig();
+    public BungeeCordNetworkManager(YAMLConfigurationFile config) throws SocketException {
+        bungeeYAML = config.getConfig();
         this.jedisPool = new JedisPool(new JedisPoolConfig(), bungeeYAML.getString("redis.host"), bungeeYAML.getInt("redis.port"));
         this.thisServer = new BungeeCordServer(bungeeYAML.getString("name"), Bukkit.getMaxPlayers(), this);
         updateThisServer();
-        this.jedisPool.getResource().subscribe(new JedisListener(), NET_COMMAND_CHANNEL, LINK_CHANNEL, REAPCHANNEL, HEARTBEAT_CHAN);
+        new Thread(new JedisListener()).start();
         scheduleHeartbeat(5l, TimeUnit.SECONDS);
+        Enumeration<InetAddress> inetAddresses = NetworkInterface.getByName(bungeeYAML.getString("network-interface")).getInetAddresses();
+        InetAddress address = null;
+        //noinspection StatementWithEmptyBody
+        while (inetAddresses.hasMoreElements() && !(address = inetAddresses.nextElement()).getHostAddress().matches("^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$")) {
+        }
+        if (address == null) throw new IllegalStateException("No IP could be found!");
+        ip = address.getHostAddress();
+        linkServer();
+        Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(Core.getInstance(), "BungeeCord");
+    }
+
+    private void linkServer() {
+        Jedis resource = jedisPool.getResource();
+        resource.publish(LINK_CHANNEL, "LINK;" + thisServer.getName() + ";" + ip + ":" + Bukkit.getPort());
+        resource.close();
     }
 
     @Override
     public List<NetworkServer> getServers() {
         ArrayList<NetworkServer> bungeeCordServers = new ArrayList<>();
-        bungeeCordServers.addAll(servers);
+        bungeeCordServers.addAll(servers.values());
         bungeeCordServers.add(thisServer);
         return ImmutableList.copyOf(bungeeCordServers);
     }
@@ -64,7 +86,7 @@ public final class BungeeCordNetworkManager implements NetworkManager {
         for (NetworkServer server : getServers()) {
             if (regex.matcher(server.getName()).matches()) servers.add(server);
         }
-        return ImmutableList.copyOf(servers);
+        return servers;
     }
 
     @Override
@@ -74,24 +96,35 @@ public final class BungeeCordNetworkManager implements NetworkManager {
 
     @Override
     public NetworkServer getServer(String name) {
-        for (BungeeCordServer server : servers) {
-            if (server.getName().equalsIgnoreCase(name)) return server;
-        }
-        return null;
+        if (thisServer.getName().equals(name)) return thisServer;
+        return servers.get(name);
     }
 
     @Override
+    @Synchronized
     public void updateHeartbeat() {
+        Iterator<BungeeCordServer> iterator = servers.values().iterator();
+        Long time = System.currentTimeMillis();
+        while (iterator.hasNext()) {
+            BungeeCordServer next = iterator.next();
+            if (time - next.getLastPing().getTime() > 10000) {
+                for (NetworkServerDiscoverObserver discoverObserver : discoverObservers) {
+                    discoverObserver.onNetworkServerRemove(next);
+                }
+                iterator.remove();
+            }
+        }
         updateThisServer();
         String[] heartbeat = new String[3];
         heartbeat[0] = getThisServer().getName();
-        heartbeat[1] = Joiner.on(',').join(getThisServer().getPlayers());
+        heartbeat[1] = getThisServer().getPlayers().size() == 0 ? "NONE" : Joiner.on(',').join(getThisServer().getPlayers());
         heartbeat[2] = String.valueOf(getThisServer().getMaximumPlayers());
         String join = Joiner.on(';').join(heartbeat);
         Jedis resource = jedisPool.getResource();
         resource.publish(HEARTBEAT_CHAN, join);
-        jedisPool.returnResource(resource);
-        resetHeartbeat(5l, TimeUnit.SECONDS);
+        resource.close();
+        linkServer();
+        resetHeartbeat(5L, TimeUnit.SECONDS);
     }
 
     private void updateThisServer() {
@@ -174,26 +207,28 @@ public final class BungeeCordNetworkManager implements NetworkManager {
     public void onDisable() {
         Jedis resource = jedisPool.getResource();
         resource.publish(LINK_CHANNEL, "UNLINK;" + getThisServer().getName());
+        resource.close();
     }
 
     private void removeServer(NetworkServer server) {
-        servers.remove(server);
+        servers.remove(server.getName());
         for (NetworkServerDiscoverObserver discoverObserver : discoverObservers) {
             discoverObserver.onNetworkServerRemove(server);
         }
     }
 
     private void addServer(BungeeCordServer server) {
-        servers.add(server);
+        servers.put(server.getName(), server);
         for (NetworkServerDiscoverObserver discoverObserver : discoverObservers) {
             discoverObserver.onNetworkServerDiscover(server);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private class JedisListener extends JedisPubSub {
+    private class JedisListener extends JedisPubSub implements Runnable {
         @Override
         public void onMessage(String chan, String message) {
+            Core.logDebug(chan + ":" + message + "; BG CORD");
             switch (chan) {
                 case REAPCHANNEL: {
                     NetworkServer server = getServer(message);
@@ -202,6 +237,10 @@ public final class BungeeCordNetworkManager implements NetworkManager {
                     break;
                 }
                 case LINK_CHANNEL: {
+                    if (message.equals("BUNGEE_START")) {
+                        linkServer();
+                        return;
+                    }
                     String[] split = message.split(";");
                     if (split.length == 1) return;
                     String cmd = split[0];
@@ -217,6 +256,7 @@ public final class BungeeCordNetworkManager implements NetworkManager {
                     String[] split = message.split(";");
                     if (split.length != 3) return;
                     String name = split[0];
+                    if (name.equals(thisServer.getName())) return;
                     String uuids = split[1];
                     Integer maxPlayers = Integer.parseInt(split[2]);
                     BungeeCordServer server = (BungeeCordServer) getServer(name);
@@ -225,8 +265,10 @@ public final class BungeeCordNetworkManager implements NetworkManager {
                         addServer(server);
                     }
                     server.getUuids().clear();
-                    for (String s : uuids.split(",")) {
-                        server.getUuids().add(UUID.fromString(s));
+                    if (!uuids.equals("NONE")) {
+                        for (String s : uuids.split(",")) {
+                            server.getUuids().add(UUID.fromString(s));
+                        }
                     }
                     server.setLastPing(new Date());
                     break;
@@ -255,6 +297,12 @@ public final class BungeeCordNetworkManager implements NetworkManager {
         @Override public void onUnsubscribe(String s, int i) {}
         @Override public void onPUnsubscribe(String s, int i) {}
         @Override public void onPSubscribe(String s, int i) {}
+
+        @Override
+        public void run() {
+            Jedis resource = BungeeCordNetworkManager.this.jedisPool.getResource();
+            resource.subscribe(this, NET_COMMAND_CHANNEL, LINK_CHANNEL, REAPCHANNEL, HEARTBEAT_CHAN);
+        }
     }
 
     private void scheduleHeartbeat(Long time, TimeUnit unit) {

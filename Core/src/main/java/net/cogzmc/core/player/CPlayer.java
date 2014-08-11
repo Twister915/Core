@@ -228,4 +228,5 @@ public interface CPlayer extends COfflinePlayer {
     COfflinePlayer getNewOfflinePlayer();
 
     GeoIPManager.GeoIPInfo getGeoIPInfo();
+    void onJoin();
 }

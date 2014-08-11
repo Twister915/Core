@@ -3,6 +3,8 @@ package net.cogzmc.core.player.mongo;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import me.libraryaddict.disguise.DisguiseAPI;
+import me.libraryaddict.disguise.disguisetypes.PlayerDisguise;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.gui.InventoryButton;
 import net.cogzmc.core.player.*;
@@ -36,6 +38,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Getter private InetAddress address = null;
     @Getter private final CooldownManager cooldownManager = new CooldownManager();
     @Getter private final ScoreboardAttachment scoreboardAttachment;
+    private PlayerDisguise nickDisguise;
 
     public CMongoPlayer(Player player, COfflineMongoPlayer offlinePlayer, CMongoPlayerManager manager) {
         super(offlinePlayer, manager);
@@ -269,6 +272,28 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
         GeoIPManager geoIPManager = ((CMongoPlayerManager) playerRepository).getGeoIPManager();
         if (geoIPManager == null) return null;
         return geoIPManager.getInfoOn(address);
+    }
+
+    @Override
+    public void onJoin() {
+        updatePlayerDisguise();
+    }
+
+    @Override
+    public void setDisplayName(String string) {
+        super.setDisplayName(string);
+        updatePlayerDisguise();
+    }
+
+    void updatePlayerDisguise() {
+        if (!isOnline()) return;
+        if (getDisplayName().equals(getName())) return;
+        Player bukkitPlayer = getBukkitPlayer();
+        if (DisguiseAPI.getDisguise(bukkitPlayer) != null) {
+            DisguiseAPI.undisguiseToAll(bukkitPlayer);
+        }
+        nickDisguise = new PlayerDisguise(getDisplayName());
+        DisguiseAPI.disguiseToAll(bukkitPlayer, nickDisguise);
     }
 
     @Override
