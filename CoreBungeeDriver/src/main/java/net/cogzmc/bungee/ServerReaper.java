@@ -19,7 +19,7 @@ public final class ServerReaper extends BasePubSub implements Runnable {
     private Integer playerCount = 0;
     private Integer lastLength = 0;
 
-    private volatile Map<String, Integer> playerCounts = new HashMap<>();
+    volatile Map<String, Integer> playerCounts = new HashMap<>();
     private final Collection<ServerInfo> preserve;
 
 
@@ -30,40 +30,34 @@ public final class ServerReaper extends BasePubSub implements Runnable {
 
     @Override
     public void run() {
-        for (final ServerInfo serverInfo : ProxyServer.getInstance().getServers().values()) {
-            serverInfo.ping(new Callback<ServerPing>() {
-                @Override
-                public void done(ServerPing serverPing, Throwable throwable) {
-                    if (throwable != null) {
-                        if (preserve.contains(serverInfo)) return;
-                        Jedis jedisClient = CoreBungeeDriver.getInstance().getJedisClient();
-                        jedisClient.publish(REAP_CHANNEL,serverInfo.getName());
-                        CoreBungeeDriver.getInstance().returnJedis(jedisClient);
-                        playerCounts.remove(serverInfo.getName());
-                        log.info("Server was non-responsive, and removed " + serverInfo.getName());
-                    } else {
-                        playerCounts.put(serverInfo.getName(), serverPing.getPlayers().getOnline());
+        synchronized (ProxyServer.getInstance().getServers()) {
+            for (final ServerInfo serverInfo : ProxyServer.getInstance().getServers().values()) {
+                serverInfo.ping(new Callback<ServerPing>() {
+                    @Override
+                    public void done(ServerPing serverPing, Throwable throwable) {
+                        if (throwable != null) {
+                            if (preserve.contains(serverInfo)) return;
+                            Jedis jedisClient = CoreBungeeDriver.getInstance().getJedisClient();
+                            jedisClient.publish(REAP_CHANNEL,serverInfo.getName());
+                            CoreBungeeDriver.getInstance().returnJedis(jedisClient);
+                            playerCounts.remove(serverInfo.getName());
+                            log.info("Server was non-responsive, and removed " + serverInfo.getName());
+                        } else {
+                            playerCounts.put(serverInfo.getName(), serverPing.getPlayers().getOnline());
+                        }
                     }
-                }
-            });
+                });
+            }
         }
-        updatePlayerCount();
         schedule(lastLength);
     }
 
-    private void updatePlayerCount() {
-        synchronized (this) {
-            playerCount = 0;
-            for (Integer integer : playerCounts.values()) {
-                playerCount += integer;
-            }
-        }
-    }
-
     public Integer getOnlineCount() {
-        synchronized (this) {
-            return playerCount;
+        Integer sum = 0;
+        for (Integer integer : playerCounts.values()) {
+            sum += integer;
         }
+        return sum;
     }
 
     private synchronized void schedule(Integer length) {
@@ -78,7 +72,7 @@ public final class ServerReaper extends BasePubSub implements Runnable {
         synchronized (ProxyServer.getInstance().getServers()) {
             ProxyServer.getInstance().getServers().remove(serverInfo.getName());
             synchronized (this) {
-                playerCounts.remove(serverInfo);
+                playerCounts.remove(serverInfo.getName());
             }
         }
     }

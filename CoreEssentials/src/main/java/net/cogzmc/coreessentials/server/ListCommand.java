@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 final class ListCommand extends ModuleCommand {
@@ -24,8 +25,8 @@ final class ListCommand extends ModuleCommand {
     @Override
     protected void handleCommandUnspecific(CommandSender sender, String[] args) throws CommandException {
         List<String> playerNames = new ArrayList<>();
-        for (COfflinePlayer cOfflinePlayer : server.getPlayers()) {
-            playerNames.add(cOfflinePlayer.getDisplayName());
+        for (UUID offlinePlayer : server.getPlayers()) {
+            playerNames.add(Core.getOfflinePlayerByUUID(offlinePlayer).getDisplayName());
         }
         String playerList = Joiner.on(" ").skipNulls().join(playerNames);
         CoreEssentials coreEssentials = Core.getInstance().getModuleProvider(CoreEssentials.class);

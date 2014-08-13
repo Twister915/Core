@@ -55,4 +55,23 @@ public final class Point implements Cloneable {
     public Point deepCopy() {
         return new Point(x, y, z, pitch, yaw);
     }
+
+    public Point add(Double x, Double y, Double z) {
+        this.x += x;
+        this.y += y;
+        this.z += z;
+        return this;
+    }
+
+    public Point subtract(Double x, Double y, Double z) {
+        return add(-1*x, -1*y, -1*z);
+    }
+
+    public Point add(Point point) {
+        return add(point.getX(), point.getY(), point.getZ());
+    }
+
+    public Point subtract(Point point) {
+        return subtract(point.getX(), point.getY(), point.getZ());
+    }
 }

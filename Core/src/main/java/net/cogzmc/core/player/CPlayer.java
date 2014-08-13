@@ -229,4 +229,27 @@ public interface CPlayer extends COfflinePlayer {
 
     GeoIPManager.GeoIPInfo getGeoIPInfo();
     void onJoin();
+
+    /**
+     * Sets the name above a players head to a specific value. This will not be stored in the database. {@code null} will reset this value.
+     * @param tagName The tag name
+     */
+    void setTagName(String tagName);
+
+    /**
+     * By default this is the players username, unless set manually by {@link #setTagName(String)}.
+     * @return The player's tag name
+     */
+    String getTagName();
+
+    /**
+     * Removes a player's tag name.
+     */
+    void removeTagName();
+
+    /**
+     * returns if a player has a different tab name than their actual name.
+     * @return If the player has a tag name.
+     */
+    boolean hasTagName();
 }

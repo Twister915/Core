@@ -76,6 +76,7 @@ public class COfflineMongoPlayer implements COfflinePlayer {
         updateFromDBObject(otherCPlayer.getObjectForPlayer());
     }
 
+    @Synchronized
     final DBObject getObjectForPlayer() {
         BasicDBObjectBuilder objectBuilder = new BasicDBObjectBuilder();
         if (this.objectId != null) objectBuilder.add(MongoKey.ID_KEY.toString(), this.objectId);
@@ -177,6 +178,7 @@ public class COfflineMongoPlayer implements COfflinePlayer {
         this.uniqueIdentifier = UUID.fromString(getValueFrom(player, MongoKey.UUID_KEY, String.class));
         this.displayName = getValueFrom(player, MongoKey.DISPLAY_NAME, String.class);
         if (this.displayName != null) this.displayName = ColorSupplements.translateAlternateColorCodes('&', this.displayName);
+        else this.displayName = null;
         this.firstTimeOnline = getValueFrom(player, MongoKey.FIRST_JOIN_KEY, Date.class);
         this.lastTimeOnline = getValueFrom(player, MongoKey.LAST_SEEN_KEY, Date.class);
         Long time_online = getValueFrom(player, MongoKey.TIME_ONLINE_KEY, Long.class);
@@ -313,6 +315,11 @@ public class COfflineMongoPlayer implements COfflinePlayer {
             return;
         }
         this.displayName = ColorSupplements.translateAlternateColorCodes('&', string);
+    }
+
+    @Override
+    public boolean hasDisplayName() {
+        return displayName != null && !displayName.equals("");
     }
 
     @Override

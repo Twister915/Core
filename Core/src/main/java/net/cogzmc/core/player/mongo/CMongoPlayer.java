@@ -3,8 +3,6 @@ package net.cogzmc.core.player.mongo;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import me.libraryaddict.disguise.DisguiseAPI;
-import me.libraryaddict.disguise.disguisetypes.PlayerDisguise;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.gui.InventoryButton;
 import net.cogzmc.core.player.*;
@@ -21,6 +19,7 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import org.kitteh.tag.TagAPI;
 
 import java.lang.ref.WeakReference;
 import java.net.InetAddress;
@@ -38,7 +37,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Getter private InetAddress address = null;
     @Getter private final CooldownManager cooldownManager = new CooldownManager();
     @Getter private final ScoreboardAttachment scoreboardAttachment;
-    private PlayerDisguise nickDisguise;
+    private String tagName;
 
     public CMongoPlayer(Player player, COfflineMongoPlayer offlinePlayer, CMongoPlayerManager manager) {
         super(offlinePlayer, manager);
@@ -276,24 +275,33 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
     @Override
     public void onJoin() {
-        updatePlayerDisguise();
+        if (hasDisplayName() || hasTagName()) updateTag();
     }
 
     @Override
-    public void setDisplayName(String string) {
-        super.setDisplayName(string);
-        updatePlayerDisguise();
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
+        updateTag();
     }
 
-    void updatePlayerDisguise() {
-        if (!isOnline()) return;
-        if (getDisplayName().equals(getName())) return;
-        Player bukkitPlayer = getBukkitPlayer();
-        if (DisguiseAPI.getDisguise(bukkitPlayer) != null) {
-            DisguiseAPI.undisguiseToAll(bukkitPlayer);
-        }
-        nickDisguise = new PlayerDisguise(getDisplayName());
-        DisguiseAPI.disguiseToAll(bukkitPlayer, nickDisguise);
+    @Override
+    public String getTagName() {
+        return tagName == null ? getDisplayName() : tagName;
+    }
+
+
+    @Override
+    public void removeTagName() {
+        setTagName(null);
+    }
+
+    @Override
+    public boolean hasTagName() {
+        return tagName != null || hasDisplayName();
+    }
+
+    private void updateTag() {
+        TagAPI.refreshPlayer(getBukkitPlayer());
     }
 
     @Override

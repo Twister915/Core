@@ -1,8 +1,8 @@
 name: Core
 soft-depend: [LilyPad-Connect]
-depend: [ProtocolLib, LibsDisguises]
+depend: [ProtocolLib, iTag]
 main: net.cogzmc.core.Core
 version: 1.0
 description: Core.
-authors: [Twister915, pokuit]
-website: http://urbismc.com
+authors: [Twister915]
+website: http://twister915.me

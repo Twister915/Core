@@ -186,6 +186,8 @@ public interface COfflinePlayer extends CPermissible {
      */
     void setDisplayName(String string);
 
+    boolean hasDisplayName();
+
     /**
      * Forces an IP to be logged for the player without auto-detection. Use this if you are using a voting site, want to force a logged IP from a web API, or do anything else relating to this.
      * @param address The {@link java.net.InetAddress} to log.

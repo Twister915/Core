@@ -18,7 +18,7 @@ public final class TabColorManager implements Listener, GroupReloadObserver {
 
     void updatePlayerListName(CPlayer player) {
         String tablistColor = player.getTablistColor() == null ? player.getPrimaryGroup().getTablistColor() : player.getTablistColor();
-        String s = (tablistColor == null ? "" : tablistColor) + player.getDisplayName();
+        String s = (tablistColor == null || player.hasDisplayName() ? Core.getPermissionsManager().getDefaultGroup().getTablistColor() : tablistColor) + player.getDisplayName();
         s = s.substring(0, Math.min(16, s.length()));
         player.getBukkitPlayer().setPlayerListName(ChatColor.translateAlternateColorCodes('&', s));
     }

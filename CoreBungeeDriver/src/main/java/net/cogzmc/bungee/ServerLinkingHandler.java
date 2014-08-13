@@ -45,6 +45,7 @@ public final class ServerLinkingHandler extends BasePubSub {
                 proxiedPlayer.connect(CoreBungeeDriver.getInstance().getController().getFallbackServer(proxiedPlayer));
             }
             ProxyServer.getInstance().getServers().remove(name);
+            CoreBungeeDriver.getInstance().getServerReaper().playerCounts.remove(name);
             log.info("Removed server gracefully " + name);
         }
     }

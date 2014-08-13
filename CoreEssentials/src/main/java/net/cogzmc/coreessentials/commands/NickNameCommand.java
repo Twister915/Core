@@ -31,6 +31,7 @@ public final class NickNameCommand extends ModuleCommand {
             nick = null;
         }
         target.setDisplayName(nick);
+        target.setTagName(nick);
         String coloredNick = ChatColor.translateAlternateColorCodes('&', nick == null ? target.getName() : nick);
         CoreEssentials coreEssentials = Core.getInstance().getModuleProvider(CoreEssentials.class);
         target.sendMessage(coreEssentials.getFormat("nickname-changed", new String[]{"<name>", coloredNick}));
