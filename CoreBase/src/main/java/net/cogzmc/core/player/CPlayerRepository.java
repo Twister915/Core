@@ -47,4 +47,6 @@ public interface CPlayerRepository {
      * @param player The {@link net.cogzmc.core.player.COfflinePlayer} to delete from the database.
      */
     void deletePlayerRecords(COfflinePlayer player) throws IllegalArgumentException;
+
+    Long getPlayerCount();
 }

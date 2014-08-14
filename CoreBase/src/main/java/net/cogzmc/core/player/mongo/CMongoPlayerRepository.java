@@ -106,6 +106,11 @@ public class CMongoPlayerRepository implements CPlayerRepository {
         database.getCollection(MongoKey.USERS_COLLETION.toString()).remove(new BasicDBObject(MongoKey.ID_KEY.toString(), ((COfflineMongoPlayer) player).getObjectId()));
     }
 
+    @Override
+    public Long getPlayerCount() {
+        return database.getCollection(MongoKey.USERS_COLLETION.toString()).count();
+    }
+
     public COfflinePlayer getOfflinePlayerByObjectId(ObjectId id) {
         //Find the player doc by the ID from the users collection
         DBObject one = database.getCollection(MongoKey.USERS_COLLETION.toString()).findOne(new BasicDBObject(MongoKey.ID_KEY.toString(), id));
