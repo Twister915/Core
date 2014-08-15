@@ -62,7 +62,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     }
 
     public AbstractMobNPC(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
-        this.location = location;
+        this.location = location.deepCopy();
         this.world = world;
         this.viewers = new HashSet<>();
         if (observers != null) this.viewers.addAll(observers);

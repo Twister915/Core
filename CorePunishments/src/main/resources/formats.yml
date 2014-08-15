@@ -1,6 +1,6 @@
 disconnect-message-perm: "&ePunishment Type: &a<type>&e for &a<reason>\n&eIssued:&a <issued> by <issuer>\n&eExpires:&a <expires>"
 kick: "&3Punishments\n&cKicked by &a<issuer>&c for &a<reason>"
-muted: "&cYou have an active mute which expires <exires>"
+muted: "&cYou have an active mute which expires <expires>"
 new-mute: "&cYou have been muted for &a<reason>&c by &a<issuer>&c which expires &a<expires>"
 prefix: "&3[&ePunishments&3]"
 warned: "&cYou have been warned by &a<issuer>&c for &a<message>"
