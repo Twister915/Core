@@ -25,7 +25,7 @@ public final class PlayerReportCommand extends ModuleCommand {
         if (args.length < 1) throw new ArgumentRequirementException("You must specify a player!");
         COfflinePlayer targetedPlayer = getTargetedPlayer(args[0]);
         if (targetedPlayer == null) throw new ArgumentRequirementException("The player you specified does not exist or is not specific enough!");
-        sender.sendMessage(CoreEssentials.getInstance().getFormat("lookup-header", false, new String[]{"<name>"}));
+        sender.sendMessage(CoreEssentials.getInstance().getFormat("lookup-header", false, new String[]{"<name>", targetedPlayer.getDisplayName()}));
         PrettyTime prettyTime = new PrettyTime();
         sender.sendMessage(getFormattedStat("UUID", targetedPlayer.getUniqueIdentifier().toString()));
         sender.sendMessage(getFormattedStat("IPs", Joiner.on(", ").join(targetedPlayer.getKnownIPAddresses())));
