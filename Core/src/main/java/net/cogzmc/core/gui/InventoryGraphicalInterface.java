@@ -53,6 +53,7 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
         if (!observers.contains(player)) throw new IllegalStateException("This player does not currently have the GUI open!");
         observers.remove(player);
         player.getBukkitPlayer().closeInventory();
+        onClose(player);
     }
 
     @Override
@@ -145,6 +146,9 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
         markForUpdate(slot);
     }
 
+    public void onClose(CPlayer onlinePlayer) {}
+
+    public boolean isFilled(Integer slot) {return inventoryButtons.containsKey(slot);}
     /**
      *
      */
@@ -190,7 +194,9 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
         if (!(event.getPlayer() instanceof Player)) return;
         if (!event.getInventory().equals(inventory)) return;
         Player player = (Player) event.getPlayer();
-        this.observers.remove(Core.getOnlinePlayer(player));
+        CPlayer onlinePlayer = Core.getOnlinePlayer(player);
+        this.observers.remove(onlinePlayer);
+        onClose(onlinePlayer);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
