@@ -50,12 +50,8 @@ public enum ParticleEffectType {
         return name;
     }
 
-    public static String customBlockCrack(Material block, Short data) {
-        return "blockcrack_" + block.getId() + "_" + data;
-    }
-
-    public static String customBlockDust(Material block, Short data) {
-        return "blockdust_" + block.getId() + " _" + data;
+    public static String customTileCrack(Material block, Short data) {
+        return "tilecrack_" + block.getId() + "_" + data;
     }
 
     public static String customIconCrack(Material item) {

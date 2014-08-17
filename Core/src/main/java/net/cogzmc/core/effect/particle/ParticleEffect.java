@@ -50,6 +50,15 @@ public final class ParticleEffect {
      */
     private String customParticle = null;
 
+    public ParticleEffect(String s) {
+        this.type = null;
+        this.customParticle = s;
+    }
+
+    public ParticleEffect(@NonNull ParticleEffectType type) {
+        this.type = type;
+    }
+
     private WrapperPlayServerWorldParticles getPacket(Location location) {
         WrapperPlayServerWorldParticles packet = new WrapperPlayServerWorldParticles();
         packet.setLocation(location);
