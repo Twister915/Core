@@ -15,7 +15,6 @@
         <module>CorePunishments</module>
         <module>CorePermissions</module>
         <module>CoreHub</module>
-        <module>CoreEntities</module>
         <module>CoreChat</module>
         <module>CoreGames</module>
         <module>CoreServerlet</module>
