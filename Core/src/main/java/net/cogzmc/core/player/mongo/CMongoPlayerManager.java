@@ -80,7 +80,9 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
 
     @Override
     public CPlayer getOnlineCPlayerForUUID(UUID uuid) {
-        return getCPlayerForPlayer(Bukkit.getPlayer(uuid));
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null) return null;
+        return getCPlayerForPlayer(player);
     }
 
     @Override

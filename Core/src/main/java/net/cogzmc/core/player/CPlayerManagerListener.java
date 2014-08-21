@@ -65,6 +65,7 @@ public final class CPlayerManagerListener implements Listener {
     @EventHandler
     public void onPlayerTagEvent(AsyncPlayerReceiveNameTagEvent event) {
         CPlayer onlinePlayer = Core.getOnlinePlayer(event.getNamedPlayer());
+        if (onlinePlayer == null) return;
         if (onlinePlayer.hasTagName()) event.setTag(onlinePlayer.getTagName());
         else if (onlinePlayer.hasDisplayName()) event.setTag(onlinePlayer.getDisplayName());
     }

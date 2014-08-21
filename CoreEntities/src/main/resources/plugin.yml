@@ -1,6 +1,0 @@
-name: EntityAPI
-depend: [Core]
-main: net.cogzmc.entityapi.EntityAPI
-version: 1.0
-description: Entity API
-authors: [pokuit]

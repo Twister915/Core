@@ -58,7 +58,7 @@ public abstract class ModularPlugin extends JavaPlugin {
     }
 
     /* Delegated Methods */
-    protected void onModuleEnable() throws Exception{}
+    protected void onModuleEnable() throws Exception{getLogger().warning(getName() + " did not run any code on enable!");}
     protected void onModuleDisable() throws Exception{}
     protected void onFailureToEnable() {}
     protected void onFailureToDisable() {}

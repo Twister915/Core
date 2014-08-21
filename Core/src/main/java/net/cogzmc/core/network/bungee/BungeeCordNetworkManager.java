@@ -50,7 +50,14 @@ public final class BungeeCordNetworkManager implements NetworkManager {
 
     public BungeeCordNetworkManager(YAMLConfigurationFile config) throws SocketException {
         bungeeYAML = config.getConfig();
-        this.jedisPool = new JedisPool(new JedisPoolConfig(), bungeeYAML.getString("redis.host"), bungeeYAML.getInt("redis.port"));
+        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+        jedisPoolConfig.setMinIdle(10);
+        jedisPoolConfig.setMaxTotal(50);
+        jedisPoolConfig.setMaxWaitMillis(100);
+        jedisPoolConfig.setBlockWhenExhausted(false);
+        jedisPoolConfig.setTestOnBorrow(true);
+        jedisPoolConfig.setTestOnReturn(true);
+        this.jedisPool = new JedisPool(jedisPoolConfig, bungeeYAML.getString("redis.host"), bungeeYAML.getInt("redis.port"));
         this.thisServer = new BungeeCordServer(bungeeYAML.getString("name"), Bukkit.getMaxPlayers(), this);
         updateThisServer();
         new Thread(new JedisListener()).start();
@@ -69,7 +76,7 @@ public final class BungeeCordNetworkManager implements NetworkManager {
     private void linkServer() {
         Jedis resource = jedisPool.getResource();
         resource.publish(LINK_CHANNEL, "LINK;" + thisServer.getName() + ";" + ip + ":" + Bukkit.getPort());
-        resource.close();
+        jedisPool.returnResource(resource);
     }
 
     @Override
@@ -119,10 +126,15 @@ public final class BungeeCordNetworkManager implements NetworkManager {
         heartbeat[0] = getThisServer().getName();
         heartbeat[1] = getThisServer().getPlayers().size() == 0 ? "NONE" : Joiner.on(',').join(getThisServer().getPlayers());
         heartbeat[2] = String.valueOf(getThisServer().getMaximumPlayers());
-        String join = Joiner.on(';').join(heartbeat);
-        Jedis resource = jedisPool.getResource();
-        resource.publish(HEARTBEAT_CHAN, join);
-        resource.close();
+        final String join = Joiner.on(';').join(heartbeat);
+        Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                Jedis resource = jedisPool.getResource();
+                resource.publish(HEARTBEAT_CHAN, join);
+                jedisPool.returnResource(resource);
+            }
+        });
         linkServer();
         resetHeartbeat(5L, TimeUnit.SECONDS);
     }
@@ -207,7 +219,7 @@ public final class BungeeCordNetworkManager implements NetworkManager {
     public void onDisable() {
         Jedis resource = jedisPool.getResource();
         resource.publish(LINK_CHANNEL, "UNLINK;" + getThisServer().getName());
-        resource.close();
+        jedisPool.returnResource(resource);
     }
 
     private void removeServer(NetworkServer server) {
