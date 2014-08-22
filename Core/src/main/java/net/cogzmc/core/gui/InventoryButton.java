@@ -35,6 +35,7 @@ public abstract class InventoryButton {
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(title);
         meta.setLore(wrapLoreText(lore));
+        stack.setItemMeta(meta);
     }
 
     public static List<String> wrapLoreText(String string) {

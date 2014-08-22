@@ -32,10 +32,6 @@ public final class DriverListener implements Listener {
         connectedPlayers.remove(event.getPlayer().getUniqueId());
     }
 
-    @EventHandler
-    public void onPlayerQuery(ProxyPingEvent event) {
-        event.getResponse().getPlayers().setOnline(CoreBungeeDriver.getInstance().getServerReaper().getOnlineCount());
-    }
 
     public static void enable() {
         ProxyServer.getInstance().getPluginManager().registerListener(CoreBungeeDriver.getInstance(), new DriverListener());
