@@ -252,4 +252,10 @@ public interface CPlayer extends COfflinePlayer {
      * @return If the player has a tag name.
      */
     boolean hasTagName();
+
+    /**
+     * Forces the player to disconnect from the server. You are encouraged to use this method over the {@link org.bukkit.entity.Player#kickPlayer(String)} method.
+     * @param message
+     */
+    void kickPlayer(String message);
 }

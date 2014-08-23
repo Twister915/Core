@@ -36,6 +36,7 @@ public final class BungeeCordNetworkManager implements NetworkManager {
     private static final String REAPCHANNEL = "CORE.BUNGEE.REAP";
     private static final String HEARTBEAT_CHAN = "CORE.BUNGEE.HEARTBEAT";
     static final String TELEPORT = "CORE.BUNGEE.TELEPORT";
+    private static final String KICK = "CORE.BUNGEE.KICK";
 
     private final Map<String, BungeeCordServer> servers = new HashMap<>();
     @Getter private final BungeeCordServer thisServer;
@@ -220,6 +221,14 @@ public final class BungeeCordNetworkManager implements NetworkManager {
         Jedis resource = jedisPool.getResource();
         resource.publish(LINK_CHANNEL, "UNLINK;" + getThisServer().getName());
         jedisPool.returnResource(resource);
+    }
+
+    @Override
+    public boolean kickViaNetworkManager(String message, CPlayer player) {
+        Jedis resource = jedisPool.getResource();
+        resource.publish(KICK, player.getUniqueIdentifier().toString() + ";" + message);
+        jedisPool.returnResource(resource);
+        return true;
     }
 
     private void removeServer(NetworkServer server) {

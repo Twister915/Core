@@ -300,6 +300,14 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
         return tagName != null || hasDisplayName();
     }
 
+    @Override
+    public void kickPlayer(String message) {
+        if (Core.getNetworkManager() != null) {
+            if (Core.getNetworkManager().kickViaNetworkManager(message, this)) return;
+        }
+        getBukkitPlayer().kickPlayer(message);
+    }
+
     private void updateTag() {
         TagAPI.refreshPlayer(getBukkitPlayer());
     }

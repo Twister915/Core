@@ -28,7 +28,7 @@ public final class TemporaryBanManager extends BaseTemporaryMongoManager<Tempora
     @Override
     void onPunish(CPlayer player, TemporaryBan activePunishmentFor) {
         PrettyTime formatter = new PrettyTime();
-        player.getBukkitPlayer().kickPlayer(Core.getModule(Punishments.class).getFormat("disconnect-message-perm", false,
+        player.kickPlayer(Core.getModule(Punishments.class).getFormat("disconnect-message-perm", false,
                 new String[]{"<type>", activePunishmentFor.getClass().getSimpleName()},
                 new String[]{"<reason>", activePunishmentFor.getMessage()},
                 new String[]{"<issuer>", activePunishmentFor.getIssuer().getName()},

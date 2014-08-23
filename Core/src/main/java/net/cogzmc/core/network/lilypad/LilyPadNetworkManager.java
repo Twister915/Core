@@ -225,6 +225,11 @@ public final class LilyPadNetworkManager implements NetworkManager, HeartbeatHan
     }
 
     @Override
+    public boolean kickViaNetworkManager(String message, CPlayer player) {
+        return false;
+    }
+
+    @Override
     public void handleHeartbeatData(String server, Integer maxPlayers, List<UUID> uuids) {
         LilyPadServer s;
         boolean shouldAdd = false; //Hold a marker if this is a new server...

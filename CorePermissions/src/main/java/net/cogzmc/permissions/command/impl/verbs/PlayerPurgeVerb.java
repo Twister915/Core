@@ -19,7 +19,7 @@ public final class PlayerPurgeVerb extends Verb<COfflinePlayer> {
     @Override
     protected void perform(CommandSender sender, COfflinePlayer target, String[] args) throws CommandException {
         if (target instanceof CPlayer) {
-            ((CPlayer) target).getBukkitPlayer().kickPlayer(ChatColor.RED + "Your Core data is being purged!");
+            ((CPlayer) target).kickPlayer(ChatColor.RED + "Your Core data is being purged!");
             target = Core.getOfflinePlayerByUUID(target.getUniqueIdentifier());
         }
         Core.getPlayerManager().deletePlayerRecords(target);

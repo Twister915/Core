@@ -1,5 +1,7 @@
 package net.cogzmc.core.network;
 
+import net.cogzmc.core.player.CPlayer;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -104,4 +106,6 @@ public interface NetworkManager {
     void unregisterNetworkServerDiscoverObserver(NetworkServerDiscoverObserver observer);
 
     void onDisable();
+
+    boolean kickViaNetworkManager(String message, CPlayer player);
 }

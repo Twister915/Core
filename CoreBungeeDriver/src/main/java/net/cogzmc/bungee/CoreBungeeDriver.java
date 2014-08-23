@@ -44,7 +44,13 @@ public final class CoreBungeeDriver extends Plugin {
                 public void run() {
                     Configuration dbConfig = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
                     Configuration redis = dbConfig.getSection("redis");
-                    jedisPool = new JedisPool(new JedisPoolConfig(), redis.getString("host"), redis.getInt("port"), 5);
+                    JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+                    jedisPoolConfig.setMinIdle(10);
+                    jedisPoolConfig.setMaxTotal(50);
+                    jedisPoolConfig.setTestOnBorrow(true);
+                    jedisPoolConfig.setBlockWhenExhausted(false);
+                    jedisPoolConfig.setTestOnReturn(true);
+                    jedisPool = new JedisPool(jedisPoolConfig, redis.getString("host"), redis.getInt("port"), 5);
                     Jedis resource = jedisPool.getResource();
                     resource.connect();
                     if (!resource.isConnected()) throw new IllegalStateException("Jedis is not connected!");
@@ -66,11 +72,14 @@ public final class CoreBungeeDriver extends Plugin {
                         CMongoGroupRepository groupRepository1 = new CMongoGroupRepository(cMongoDatabase, cMongoPlayerRepository);
                         cMongoPlayerRepository.setGroupRepository(groupRepository1);
                         groupRepository = groupRepository1;
+                        groupRepository1.reloadGroups();
 
                         ServerLinkingHandler.enable();
                         serverReaper = ServerReaper.enable();
                         DriverListener.enable();
                         Teleporter.enable();
+                        PermissionsHandler.enable();
+                        PlayerKickManager.enable();
                     }
                 }
             });

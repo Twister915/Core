@@ -41,10 +41,10 @@ public final class IPBanManager extends BaseMongoManager<IPBan> {
         } catch (CPlayerJoinException e) {
             message = e.getDisconectMessage();
         }
-        player.getBukkitPlayer().kickPlayer(message);
+        player.kickPlayer(message);
         for (CPlayer cPlayer : Core.getPlayerManager()) {
             if (!player.equals(cPlayer) && player.getKnownIPAddresses().contains(cPlayer.getAddress().getHostAddress())) {
-                cPlayer.getBukkitPlayer().kickPlayer(message);
+                cPlayer.kickPlayer(message);
             }
         }
     }

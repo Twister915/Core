@@ -31,6 +31,6 @@ public final class KickManager extends BaseMongoManager<Kick> {
 
     @Override
     void onPunish(CPlayer player, Kick punishment) {
-        player.getBukkitPlayer().kickPlayer(Core.getModule(Punishments.class).getFormat("kick", false, new String[]{"<issuer>", punishment.getIssuer().getName()}, new String[]{"<reason>", punishment.getMessage()}));
+        player.kickPlayer(Core.getModule(Punishments.class).getFormat("kick", false, new String[]{"<issuer>", punishment.getIssuer().getName()}, new String[]{"<reason>", punishment.getMessage()}));
     }
 }
