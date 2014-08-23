@@ -127,7 +127,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Override
     public void clearChatAll() {
         Player bukkitPlayer = getBukkitPlayer();
-        for (int x = 0; x < 50; x++) {
+        for (int x = 0; x < 200; x++) {
             bukkitPlayer.sendMessage("");
         }
     }
