@@ -1,6 +1,5 @@
 package net.cogzmc.core.player;
 
-import net.cogzmc.core.player.scoreboard.ScoreboardAttachment;
 import net.cogzmc.core.util.Point;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -195,8 +194,15 @@ public interface CPlayer extends COfflinePlayer {
      */
     void addStatusEffect(PotionEffectType type);
 
+    /**
+     * Removes a status effect from the player.
+     * @param type The {@link org.bukkit.potion.PotionEffectType} to remove from the player.
+     */
     void removeStatusEffect(PotionEffectType type);
 
+    /**
+     * Resets the state of the player.
+     */
     void resetPlayer();
 
     /**
@@ -211,14 +217,17 @@ public interface CPlayer extends COfflinePlayer {
      */
     CooldownManager getCooldownManager();
 
+    /**
+     * Returns where the player is currently standing, based off Bukkit's getLocation value.
+     * @return A point representing where the player is currently standing.
+     */
     Point getPoint();
-    Point getBlockPoint();
 
     /**
-     * Gets the Scoreboard Attachment used for managing prefixes, suffixes, and sidebar attributes.
-     * @return {@link net.cogzmc.core.player.scoreboard.ScoreboardAttachment} for the player.
+     * Gets the point of the block where the player is currently standing. Returns whole numbers for all dimensions, and lacks a pitch and yaw (set to 0)
+     * @return A point object representing the player's current block location.
      */
-    ScoreboardAttachment getScoreboardAttachment();
+    Point getBlockPoint();
 
     /**
      * Creates a <b>new</b> {@link net.cogzmc.core.player.COfflinePlayer} to represent this player in the event that
@@ -227,7 +236,15 @@ public interface CPlayer extends COfflinePlayer {
      */
     COfflinePlayer getNewOfflinePlayer();
 
+    /**
+     * Gets an object which can be used to determine where a player is located (based off the maximind database)
+     * @return The {@link net.cogzmc.core.player.GeoIPManager.GeoIPInfo} object.
+     */
     GeoIPManager.GeoIPInfo getGeoIPInfo();
+
+    /**
+     * Do not call this method, it will invoke code intended for player's who have just joined the server.
+     */
     void onJoin();
 
     /**
@@ -255,7 +272,7 @@ public interface CPlayer extends COfflinePlayer {
 
     /**
      * Forces the player to disconnect from the server. You are encouraged to use this method over the {@link org.bukkit.entity.Player#kickPlayer(String)} method.
-     * @param message
+     * @param message The message to appear for the the player whom is being disconnected.
      */
     void kickPlayer(String message);
 }

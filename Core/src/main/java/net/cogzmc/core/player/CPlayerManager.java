@@ -1,6 +1,5 @@
 package net.cogzmc.core.player;
 
-import net.cogzmc.core.player.scoreboard.ScoreboardManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -105,11 +104,4 @@ public interface CPlayerManager extends Iterable<CPlayer>, CPlayerRepository {
 
     GeoIPManager setupNewGeoIPManager(File dbFile) throws IOException;
     GeoIPManager getGeoIPManager();
-
-    /**
-     * An unsafe accessor to the Scoreboard system. All scoreboard logic should be performed through the {@link net.cogzmc.core.player.CPlayer}'s {@link net.cogzmc.core.player.scoreboard.ScoreboardAttachment}
-     * @return The scoreboard manager.
-     */
-    @Deprecated
-    ScoreboardManager getScoreboardManager();
 }

@@ -4,12 +4,10 @@ import com.google.common.collect.ImmutableList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoException;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.Synchronized;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.*;
-import net.cogzmc.core.player.scoreboard.ScoreboardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -26,8 +24,6 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
 
     private final Map<String, CPlayer> onlinePlayerMap = new ConcurrentHashMap<>();
     private final List<CPlayerConnectionListener> playerConnectionListeners = new ArrayList<>();
-
-    @Getter private final ScoreboardManager scoreboardManager = new ScoreboardManager();
 
     private GeoIPManager geoIPManager;
 
@@ -50,7 +46,6 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
                 player.kickPlayer(ChatColor.RED + "Unable to reload player!");
             }
         }
-        registerCPlayerConnectionListener(scoreboardManager);
     }
 
     @Override

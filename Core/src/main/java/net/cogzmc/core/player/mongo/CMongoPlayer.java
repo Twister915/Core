@@ -6,7 +6,6 @@ import lombok.ToString;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.gui.InventoryButton;
 import net.cogzmc.core.player.*;
-import net.cogzmc.core.player.scoreboard.ScoreboardAttachment;
 import net.cogzmc.core.util.Point;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -36,14 +35,12 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Getter private boolean firstJoin = false;
     @Getter private InetAddress address = null;
     @Getter private final CooldownManager cooldownManager = new CooldownManager();
-    @Getter private final ScoreboardAttachment scoreboardAttachment;
     private String tagName;
 
     public CMongoPlayer(Player player, COfflineMongoPlayer offlinePlayer, CMongoPlayerManager manager) {
         super(offlinePlayer, manager);
         this.username = player.getName();
         this._bukkitPlayer = new WeakReference<>(player);
-        this.scoreboardAttachment = new ScoreboardAttachment(this);
     }
 
     void onLogin(InetAddress address) throws DatabaseConnectException {
