@@ -1,11 +1,11 @@
-package net.cogzmc.core.player.mongo;
+package net.cogzmc.core.player;
 
+import lombok.Delegate;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.gui.InventoryButton;
-import net.cogzmc.core.player.*;
 import net.cogzmc.core.player.scoreboard.ScoreboardAttachment;
 import net.cogzmc.core.util.Point;
 import org.bukkit.ChatColor;
@@ -27,46 +27,52 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@EqualsAndHashCode(callSuper = true, of = {"username"})
+@EqualsAndHashCode(of = {"username"})
 @ToString(of = {"username"})
-final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
+public final class CSimplePlayer implements CPlayer {
     @Getter private final String username;
     private WeakReference<Player> _bukkitPlayer;
+    @Delegate(excludes = LombokExcludeDelegationOfflinePlayer.class)
+      @Getter
+      private final COfflinePlayer handle;
+    @Getter private final CooldownManager cooldownManager = new CooldownManager();
+    @Getter private final ScoreboardAttachment scoreboardAttachment;
+    private final CPlayerManager playerRepository;
+
     private PermissionAttachment permissionAttachment;
     @Getter private boolean firstJoin = false;
     @Getter private InetAddress address = null;
-    @Getter private final CooldownManager cooldownManager = new CooldownManager();
-    @Getter private final ScoreboardAttachment scoreboardAttachment;
     private String tagName;
 
-    public CMongoPlayer(Player player, COfflineMongoPlayer offlinePlayer, CMongoPlayerManager manager) {
-        super(offlinePlayer, manager);
+    public CSimplePlayer(Player player, COfflinePlayer offlinePlayer, CPlayerManager manager) {
+        this.handle = offlinePlayer;
         this.username = player.getName();
         this._bukkitPlayer = new WeakReference<>(player);
         this.scoreboardAttachment = new ScoreboardAttachment(this);
+        this.playerRepository = manager;
     }
 
-    void onLogin(InetAddress address) throws DatabaseConnectException {
+    public void onLogin(InetAddress address) throws DatabaseConnectException {
         Player bukkitPlayer = getBukkitPlayer();
-        this.setLastKnownUsername(bukkitPlayer.getName());
-        this.setLastTimeOnline(new Date());
+        handle.setLastKnownUsername(bukkitPlayer.getName());
+        handle.setLastTimeOnline(new Date());
         addIfUnique(this.getKnownUsernames(), bukkitPlayer.getName());
         this.address = address;
         logIP(address);
         if (this.getFirstTimeOnline() == null) {
-            this.setFirstTimeOnline(new Date());
+            handle.setFirstTimeOnline(new Date());
             this.firstJoin = true;
         }
         saveIntoDatabase();
         reloadPermissions();
     }
 
-    void updateForSaving() {
+    public void updateForSaving() {
         Date leaveTime = new Date();
         //                                                         Current time (ex: 1000) minus the time you joined last (ex 50) (result 950 millis online)
         //                         current online time          +  The amount of time spent online this time -> milliseconds
-        this.setMillisecondsOnline(this.getMillisecondsOnline() + (leaveTime.getTime()-this.getLastTimeOnline().getTime()));
-        this.setLastTimeOnline(leaveTime);
+        handle.setMillisecondsOnline(this.getMillisecondsOnline() + (leaveTime.getTime()-this.getLastTimeOnline().getTime()));
+        handle.setLastTimeOnline(leaveTime);
     }
 
     private static <T> void addIfUnique(List<T> list, T object) {
@@ -77,7 +83,6 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
         list.add(object);
     }
 
-    @Override
     public String getName() {
         return getBukkitPlayer().getName();
     }
@@ -263,12 +268,12 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
     @Override
     public COfflinePlayer getNewOfflinePlayer() {
-        return new COfflineMongoPlayer(this, playerRepository);
+        return handle.produceClone();
     }
 
     @Override
     public GeoIPManager.GeoIPInfo getGeoIPInfo() {
-        GeoIPManager geoIPManager = ((CMongoPlayerManager) playerRepository).getGeoIPManager();
+        GeoIPManager geoIPManager = playerRepository.getGeoIPManager();
         if (geoIPManager == null) return null;
         return geoIPManager.getInfoOn(address);
     }
@@ -312,14 +317,20 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
         TagAPI.refreshPlayer(getBukkitPlayer());
     }
 
-    @Override
     public void reloadPermissions() {
-        super.reloadPermissions();
+        handle.reloadPermissions();
         if (permissionAttachment != null) permissionAttachment.remove();
         permissionAttachment = getBukkitPlayer().addAttachment(Core.getInstance());
         for (Map.Entry<String, Boolean> stringBooleanEntry : getAllPermissions().entrySet()) {
             permissionAttachment.setPermission(stringBooleanEntry.getKey(), stringBooleanEntry.getValue());
         }
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    private interface LombokExcludeDelegationOfflinePlayer {
+        void reloadPermissions();
+        boolean hasPermission(String permission);
+        String getName();
     }
 
 }

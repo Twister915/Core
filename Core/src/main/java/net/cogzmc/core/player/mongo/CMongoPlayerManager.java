@@ -56,7 +56,7 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
     @Override
     public COfflineMongoPlayer getOfflinePlayerByUUID(UUID uuid) {
         for (CPlayer player : this) {
-            if (player.getUniqueIdentifier().equals(uuid)) return (CMongoPlayer) player;
+            if (player.getUniqueIdentifier().equals(uuid)) return (COfflineMongoPlayer) ((CSimplePlayer) player).getHandle();
         }
         return super.getOfflinePlayerByUUID(uuid);
     }
@@ -74,8 +74,8 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
     }
 
     @Override
-    public CMongoPlayer getCPlayerForPlayer(@NonNull Player player) {
-        return (CMongoPlayer) this.onlinePlayerMap.get(player.getName());
+    public CPlayer getCPlayerForPlayer(@NonNull Player player) {
+        return this.onlinePlayerMap.get(player.getName());
     }
 
     @Override
@@ -101,7 +101,7 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
     }
 
     @Override
-    public COfflineMongoPlayer getCOfflinePlayerForOfflinePlayer(OfflinePlayer player) {
+    public COfflinePlayer getCOfflinePlayerForOfflinePlayer(OfflinePlayer player) {
         if (player instanceof Player) return getCPlayerForPlayer((Player) player);
         return getOfflinePlayerByUUID(player.getUniqueId());
     }
@@ -114,11 +114,11 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
     @Override
     @Synchronized
     public void playerLoggedIn(Player player, InetAddress address) throws CPlayerJoinException {
-        //Creates a new CMongoPlayer by passing the player, the offline player (for data), and this.
-        CMongoPlayer cMongoPlayer = new CMongoPlayer(player, getOfflinePlayerByUUID(player.getUniqueId()), this);
-        this.onlinePlayerMap.put(player.getName(), cMongoPlayer);
+        //Creates a new CSimplePlayer by passing the player, the offline player (for data), and this.
+        CSimplePlayer cSimplePlayer = new CSimplePlayer(player, getOfflinePlayerByUUID(player.getUniqueId()), this);
+        this.onlinePlayerMap.put(player.getName(), cSimplePlayer);
         try {
-            cMongoPlayer.onLogin(address); //We attempt to notify the MongoPlayer that the player has joined on this InetAddress
+            cSimplePlayer.onLogin(address); //We attempt to notify the MongoPlayer that the player has joined on this InetAddress
         } catch (DatabaseConnectException | MongoException e) {
             //But in the instance when we cannot, we log a severe error.
             Core.getInstance().getLogger().severe("Could not read player from the database " + e.getMessage() + " - " + player.getName());
@@ -126,7 +126,7 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
         }
         for (CPlayerConnectionListener playerConnectionListener : playerConnectionListeners) {
             try {
-                playerConnectionListener.onPlayerLogin(cMongoPlayer, address);
+                playerConnectionListener.onPlayerLogin(cSimplePlayer, address);
             } catch (CPlayerJoinException e) {
                 throw e;
             } catch (Exception e) {
@@ -140,21 +140,21 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
     @Override
     @Synchronized
     public void deletePlayerRecords(COfflinePlayer player) throws IllegalArgumentException {
-        if (player instanceof CMongoPlayer || !(player instanceof COfflineMongoPlayer))
+        if (player instanceof CSimplePlayer || !(player instanceof COfflineMongoPlayer))
             throw new IllegalArgumentException("The argument you passed is not an instance of the correct object!");
         super.deletePlayerRecords(player);
     }
 
     @Override
     public void savePlayerData(COfflinePlayer player) throws DatabaseConnectException {
-        if (player instanceof CMongoPlayer) ((CMongoPlayer)player).updateForSaving();
+        if (player instanceof CSimplePlayer) ((CSimplePlayer)player).updateForSaving();
         super.savePlayerData(player);
     }
 
     @Override
     @Synchronized
     public void playerLoggedOut(Player player) {
-        CMongoPlayer cPlayerForPlayer = getCPlayerForPlayer(player);
+        CSimplePlayer cPlayerForPlayer = (CSimplePlayer) getCPlayerForPlayer(player);
         if (cPlayerForPlayer == null) return;
         cPlayerForPlayer.updateForSaving();
         for (CPlayerConnectionListener playerConnectionListener : playerConnectionListeners) {

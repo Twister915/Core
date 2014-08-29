@@ -327,4 +327,9 @@ public class COfflineMongoPlayer implements COfflinePlayer {
         String hostAddress = address.getHostAddress();
         if (!knownIPAddresses.contains(hostAddress)) knownIPAddresses.add(hostAddress);
     }
+
+    @Override
+    public COfflinePlayer produceClone() {
+        return new COfflineMongoPlayer(this, playerRepository);
+    }
 }

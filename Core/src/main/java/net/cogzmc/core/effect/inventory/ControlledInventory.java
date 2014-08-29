@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("deprecation")
 @Data
 public abstract class ControlledInventory implements Listener, CPlayerConnectionListener {
     private final Map<Integer, ControlledInventoryButton> buttons = new HashMap<>();

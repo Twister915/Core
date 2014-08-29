@@ -193,4 +193,14 @@ public interface COfflinePlayer extends CPermissible {
      * @param address The {@link java.net.InetAddress} to log.
      */
     void logIP(InetAddress address);
+
+    COfflinePlayer produceClone();
+
+    void setLastKnownUsername(String name);
+
+    void setLastTimeOnline(Date date);
+
+    void setFirstTimeOnline(Date date);
+
+    void setMillisecondsOnline(long l);
 }
