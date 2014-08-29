@@ -31,7 +31,8 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
         super(database);
         this.database = database;
         Core.getInstance().registerListener(new CPlayerManagerListener(this));
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new CPlayerManagerSaveTask(this), 1200, 1200);
+        Integer saveFrequency = Core.getInstance().getSaveFrequency()*20;
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), new CPlayerManagerSaveTask(this), saveFrequency, saveFrequency);
         DBCollection users = database.getCollection(MongoKey.USERS_COLLETION.toString());
         if (users.count() == 0) { //Looks like a new collection to me
             //Need to setup the index

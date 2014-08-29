@@ -56,6 +56,7 @@ public class Core extends JavaPlugin {
     private EnderBarManager enderBarManager;
 
     @Getter private YAMLConfigurationFile databaseConfiguration;
+    @Getter private Integer saveFrequency;
 
     @Override
     public final void onEnable() {
@@ -78,6 +79,9 @@ public class Core extends JavaPlugin {
             } catch (Exception e) {
                 provider = new DefaultProvider();
             }
+
+            //read some settings
+            this.saveFrequency = getConfig().getInt("save-frequency", 60);
 
             //Setup everything.
             this.cDatabase = provider.getNewDatabase(this);

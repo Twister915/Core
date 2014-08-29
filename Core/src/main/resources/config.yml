@@ -3,3 +3,4 @@ kick-message: "&cThe server is reloading!"
 lilypad-plugin: "LilyPad-Connect"
 geo-ip-database: "GeoLite2-City.mmdb"
 use-bungee: true
+save-frequency: 60
