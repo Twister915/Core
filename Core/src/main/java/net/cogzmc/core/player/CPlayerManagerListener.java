@@ -20,10 +20,6 @@ public final class CPlayerManagerListener implements Listener {
     //no docs
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerJoin(PlayerLoginEvent event) {
-        if (event.getPlayer().getName().equalsIgnoreCase("gmlukens")) {
-            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ChatColor.RED + "B&");
-            return;
-        }
         for (CPlayer cPlayer : playerManager.getOnlinePlayers()) {
             if (cPlayer.getName().equals(event.getPlayer().getName())) {
                 event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "You are already on this server. Try logging in again!");
