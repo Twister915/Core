@@ -1,13 +1,10 @@
 package net.cogzmc.core.modular;
 
 import lombok.Getter;
-import lombok.experimental.Accessors;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.config.YAMLConfigurationFile;
-import net.cogzmc.core.model.ModelManager;
 import net.cogzmc.core.modular.command.ModuleCommand;
 import net.cogzmc.core.modular.command.ModuleCommandMap;
-import net.cogzmc.core.netfiles.NetFileManager;
 import net.cogzmc.core.network.NetworkManager;
 import net.cogzmc.core.player.CPermissionsManager;
 import net.cogzmc.core.player.CPlayerManager;
@@ -130,13 +127,5 @@ public abstract class ModularPlugin extends JavaPlugin {
 
     public final CPermissionsManager getPermissionsManager() {
         return Core.getPermissionsManager();
-    }
-
-    public final ModelManager getModelManager() {
-        return Core.getModelManager();
-    }
-
-    public final NetFileManager getNetFileManager() {
-        return Core.getNetFileManager();
     }
 }

@@ -1,7 +1,6 @@
-package net.cogzmc.hub.limitations;
+package net.cogzmc.hub;
 
 import lombok.*;
-import net.cogzmc.hub.Hub;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerEvent;

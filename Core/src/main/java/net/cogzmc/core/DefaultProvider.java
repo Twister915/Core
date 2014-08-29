@@ -1,9 +1,6 @@
 package net.cogzmc.core;
 
 import net.cogzmc.core.config.YAMLConfigurationFile;
-import net.cogzmc.core.model.ModelManager;
-import net.cogzmc.core.model.mongo.MongoModelManager;
-import net.cogzmc.core.netfiles.NetFileManager;
 import net.cogzmc.core.network.NetworkManager;
 import net.cogzmc.core.network.bungee.BungeeCordNetworkManager;
 import net.cogzmc.core.network.lilypad.LilyPadNetworkManager;
@@ -57,15 +54,5 @@ final class DefaultProvider implements Provider {
         CMongoPermissionsManager cMongoPermissionsManager = new CMongoPermissionsManager((CMongoDatabase) core.getCDatabase(), playerManager1);
         playerManager1.setGroupRepository(cMongoPermissionsManager);
         return cMongoPermissionsManager;
-    }
-
-    @Override
-    public NetFileManager getNewNetFileManager(Core core) {
-        return null;
-    }
-
-    @Override
-    public ModelManager getNewModelManager(Core core) {
-        return new MongoModelManager((CMongoDatabase)core.getCDatabase());
     }
 }

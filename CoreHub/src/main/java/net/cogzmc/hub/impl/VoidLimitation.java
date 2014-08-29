@@ -1,8 +1,7 @@
-package net.cogzmc.hub.limitations.impl;
+package net.cogzmc.hub.impl;
 
 import net.cogzmc.core.Core;
-import net.cogzmc.hub.Hub;
-import net.cogzmc.hub.limitations.Limitation;
+import net.cogzmc.hub.Limitation;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

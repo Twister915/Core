@@ -5,14 +5,11 @@ import lombok.NonNull;
 import net.cogzmc.core.config.YAMLConfigurationFile;
 import net.cogzmc.core.effect.enderBar.EnderBarManager;
 import net.cogzmc.core.effect.npc.SoftNPCManager;
-import net.cogzmc.core.model.ModelManager;
 import net.cogzmc.core.modular.ModularPlugin;
-import net.cogzmc.core.netfiles.NetFileManager;
 import net.cogzmc.core.network.NetworkManager;
 import net.cogzmc.core.player.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -56,8 +53,6 @@ public class Core extends JavaPlugin {
     private CPlayerManager playerManager;
     private CPermissionsManager permissionsManager;
     private NetworkManager networkManager;
-    private NetFileManager netFileManager;
-    private ModelManager modelManager;
     private EnderBarManager enderBarManager;
 
     @Getter private YAMLConfigurationFile databaseConfiguration;
@@ -90,8 +85,6 @@ public class Core extends JavaPlugin {
             this.playerManager = provider.getNewPlayerManager(this);
             this.networkManager = provider.getNewNetworkManager(this);
             this.permissionsManager = provider.getNewPermissionsManager(this, this.playerManager);
-            this.netFileManager = provider.getNewNetFileManager(this);
-            this.modelManager = provider.getNewModelManager(this);
 
             //Some extras
             this.enderBarManager = new EnderBarManager();
@@ -195,10 +188,6 @@ public class Core extends JavaPlugin {
     public static CPermissionsManager getPermissionsManager() {
         return instance.permissionsManager;
     }
-
-    public static NetFileManager getNetFileManager() {return instance.netFileManager;}
-
-    public static ModelManager getModelManager() {return instance.modelManager;}
 
     public static EnderBarManager getEnderBarManager() {return instance.enderBarManager;}
 }

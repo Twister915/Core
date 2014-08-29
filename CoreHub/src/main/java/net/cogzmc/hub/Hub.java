@@ -5,23 +5,13 @@ import com.google.common.collect.ImmutableSet;
 import lombok.Getter;
 import net.cogzmc.core.modular.ModularPlugin;
 import net.cogzmc.core.modular.ModuleMeta;
-import net.cogzmc.hub.items.HubItem;
-import net.cogzmc.hub.items.HubItemsManager;
-import net.cogzmc.hub.limitations.Limitation;
-import net.cogzmc.hub.limitations.LimitationNotRequiredException;
-import net.cogzmc.hub.limitations.impl.*;
-import net.cogzmc.hub.model.SettingsManager;
+import net.cogzmc.hub.impl.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * <p>
- * Latest Change:
- * <p>
  *
- * @author Jake
- * @since 5/21/2014
  */
 @ModuleMeta(
         name = "Hub",
@@ -29,8 +19,6 @@ import java.util.Set;
 )
 public final class Hub extends ModularPlugin {
     @Getter private static Hub instance;
-    @Getter private HubItemsManager itemsManager;
-    @Getter private SettingsManager settingsManager;
     private final Set<Limitation> limitations = new HashSet<>();
     private Integer attemptedModuleEnables = 0;
 
@@ -38,13 +26,6 @@ public final class Hub extends ModularPlugin {
     protected void onModuleEnable() {
         //Create necessary instances
         Hub.instance = this;
-
-        this.itemsManager = new HubItemsManager();
-        registerListener(this.itemsManager);
-        this.settingsManager = new SettingsManager();
-
-        /* listeners */
-		registerListener(HubItem.EventDispatcher.getInstance());
 
         /* limitations */
         registerLimitation(new BuildLimitation());
@@ -78,10 +59,5 @@ public final class Hub extends ModularPlugin {
 
     public ImmutableSet<Limitation> getEnabledLimitations() {
         return ImmutableSet.copyOf(limitations);
-    }
-
-    @Override
-    public void onModuleDisable() {
-        this.settingsManager.save();
     }
 }
