@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-public final class LilyPadNetworkManager implements NetworkManager, HeartbeatHandler {
+public class LilyPadNetworkManager implements NetworkManager, HeartbeatHandler {
     /* Constants */
     private static final String NETWORK_MANAGER_CHANNEL = "CORE.LILYPAD.MANAGER";
     private static final String HEARTBEAT_PLAYERS_KEY = "PLAYERS";
@@ -324,5 +324,10 @@ public final class LilyPadNetworkManager implements NetworkManager, HeartbeatHan
     private void resetHeartbeat(Long time, TimeUnit unit) {
         this.heartbeatScheduled.cancel();
         scheduleHeartbeat(time, unit);
+    }
+
+    @Override
+    public Iterator<NetworkServer> iterator() {
+        return getServers().iterator();
     }
 }

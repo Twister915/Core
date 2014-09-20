@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-final class LilyPadServer implements NetworkServer {
+public class LilyPadServer implements NetworkServer {
     private final String name;
     private final Integer maximumPlayers;
     private final LilyPadNetworkManager networkManager;

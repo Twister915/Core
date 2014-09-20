@@ -77,6 +77,8 @@ public class Core extends JavaPlugin {
             try {
                 provider = (Provider) Class.forName(getConfig().getString("provider")).newInstance();
             } catch (Exception e) {
+                Core.logInfo("We were unable to load your custom provider. " + e.getMessage());
+                if (DEBUG) e.printStackTrace();
                 provider = new DefaultProvider();
             }
 
@@ -99,7 +101,7 @@ public class Core extends JavaPlugin {
                     this.playerManager.setupNewGeoIPManager(geoIPDatabase);
                 } catch (Exception e) {
                     logInfo("Could not setup GeoIP Database!");
-                    logDebug(e.getMessage());
+                    if (DEBUG) e.printStackTrace();
                     logDebug("-------------------------------");
                 }
             }

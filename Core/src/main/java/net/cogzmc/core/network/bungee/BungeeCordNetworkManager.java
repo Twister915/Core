@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings({"SuspiciousMethodCalls", "unchecked"})
 @EqualsAndHashCode
 @ToString
-public final class BungeeCordNetworkManager implements NetworkManager {
+public class BungeeCordNetworkManager implements NetworkManager {
     static final String NET_COMMAND_CHANNEL = "CORE.BUNGEE.NETCOMMAND";
     private static final String LINK_CHANNEL = "CORE.BUNGEE.LINK";
     private static final String REAPCHANNEL = "CORE.BUNGEE.REAP";
@@ -243,6 +243,11 @@ public final class BungeeCordNetworkManager implements NetworkManager {
         for (NetworkServerDiscoverObserver discoverObserver : discoverObservers) {
             discoverObserver.onNetworkServerDiscover(server);
         }
+    }
+
+    @Override
+    public Iterator<NetworkServer> iterator() {
+        return getServers().iterator();
     }
 
     @SuppressWarnings("unchecked")

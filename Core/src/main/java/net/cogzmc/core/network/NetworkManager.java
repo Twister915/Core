@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 /**
  * Server information master controller. This class gives you access to server information, allows you to search for servers, list all servers, and so on.
  */
-public interface NetworkManager {
+public interface NetworkManager extends Iterable<NetworkServer> {
     /**
      * Gives you all known {@link net.cogzmc.core.network.NetworkServer}s on the network. Not all {@link net.cogzmc.core.network.NetworkServer}s may have been discovered since the server turned on.
      *

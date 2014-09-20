@@ -18,7 +18,7 @@ import java.util.*;
 @SuppressWarnings("unchecked")
 @Data
 @EqualsAndHashCode(of = {"name", "uuids", "lastPing", "maximumPlayers"})
-final class BungeeCordServer implements NetworkServer {
+public class BungeeCordServer implements NetworkServer {
     private final String name;
     private final Set<UUID> uuids = new HashSet<>();
     private final Integer maximumPlayers;
