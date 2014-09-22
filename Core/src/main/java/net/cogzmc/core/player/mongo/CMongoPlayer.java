@@ -2,6 +2,7 @@ package net.cogzmc.core.player.mongo;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.ToString;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.gui.InventoryButton;
@@ -17,6 +18,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 import org.kitteh.tag.TagAPI;
 
@@ -36,6 +39,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Getter private InetAddress address = null;
     @Getter private final CooldownManager cooldownManager = new CooldownManager();
     private String tagName;
+    private String currentPrefix = null;
 
     public CMongoPlayer(Player player, COfflineMongoPlayer offlinePlayer, CMongoPlayerManager manager) {
         super(offlinePlayer, manager);
@@ -295,6 +299,68 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Override
     public boolean hasTagName() {
         return tagName != null || hasDisplayName();
+    }
+
+    @Override
+    public void setTagPrefix(String tagPrefix) {
+        if(currentPrefix != null){
+            for(CPlayer p : Core.getOnlinePlayers()){
+                Player pl = p.getBukkitPlayer();
+                if(pl != null){
+                    Team t = pl.getScoreboard().getPlayerTeam(getBukkitPlayer());
+                    if(t != null){
+                        t.removePlayer(getBukkitPlayer());
+                        if(t.getPlayers().isEmpty()){
+                            t.unregister();
+                        }
+                    }
+                }
+            }
+        }
+        currentPrefix = tagPrefix;
+        if(currentPrefix != null){
+            for(CPlayer p : Core.getOnlinePlayers()){   //For each online player
+                Player pl = p.getBukkitPlayer();    //Retrieve the bukkit instance of the player
+                if(pl != null){                     //If they are still allocated
+                    Team t = pl.getScoreboard().getTeam(tagPrefix); //Retrieve the team this player would be put into
+                    if(t == null){                                  //Need to allocate a new team to this scoreboard
+                        t = pl.getScoreboard().registerNewTeam(tagPrefix); //Register the new team with the prefix name for easy recovery
+                        t.setAllowFriendlyFire(true);
+                        t.setCanSeeFriendlyInvisibles(false);
+                        t.setPrefix(tagPrefix);
+                    }
+                    t.addPlayer(getBukkitPlayer()); // Add me
+                }
+            }
+        }
+    }
+
+    @Override
+    public String getTagPrefix() {
+        return currentPrefix;
+    }
+
+    @Override
+    public void setScoreboard(@NonNull Scoreboard sb) {
+        getBukkitPlayer().setScoreboard(sb);
+        for(CPlayer p : Core.getOnlinePlayers()){
+            String prefix = p.getTagPrefix();
+            if(prefix != null){
+                Team t = sb.getTeam(prefix);
+                if(t == null){
+                    t = sb.registerNewTeam(prefix);
+                    t.setAllowFriendlyFire(true);
+                    t.setCanSeeFriendlyInvisibles(false);
+                    t.setPrefix(prefix);
+                }
+                t.addPlayer(p.getBukkitPlayer());
+            }
+        }
+    }
+
+    @Override
+    public Scoreboard getScoreboard() {
+        return getBukkitPlayer().getScoreboard();
     }
 
     @Override

@@ -105,6 +105,8 @@ public class Core extends JavaPlugin {
                     logDebug("-------------------------------");
                 }
             }
+
+            Bukkit.getPluginManager().registerEvents(new CPlayerJoinPrefixTagListener(),this);
         } catch (Throwable t) {
             t.printStackTrace();
             Bukkit.getPluginManager().disablePlugin(this);

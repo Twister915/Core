@@ -65,7 +65,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         this.location = location.deepCopy();
         this.world = world;
         this.viewers = new HashSet<>();
-        if (observers != null) this.viewers.addAll(observers);
+        if (observers != null) this.viewers.addAll(observers);  //TODO: In our interest of making our own Game Engine, possibly create some sort of Location based mask for where entities are?
         this.dataWatcher = new WrappedDataWatcher();
         this.observers = new HashSet<>();
         this.spawned = false;

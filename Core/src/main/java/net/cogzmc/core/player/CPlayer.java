@@ -6,6 +6,7 @@ import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.net.InetAddress;
 import java.util.Map;
@@ -269,6 +270,31 @@ public interface CPlayer extends COfflinePlayer {
      * @return If the player has a tag name.
      */
     boolean hasTagName();
+
+    /**
+     * Sets a tag prefix for above their head.
+     * @param tagPrefix Tag prefix to set
+     */
+    void setTagPrefix(String tagPrefix);
+
+
+    /**
+     * Returns the currently assigned tag prefix
+     * @return  Current tag prefix
+     */
+    String getTagPrefix();
+
+    /**
+     * Sets a new scoreboard to this CPlayer safely, while preserving everyones tag prefix
+     * @param sb    Scoreboard to set
+     */
+    void setScoreboard(Scoreboard sb);
+
+    /**
+     * Current scoreboard that is assigned to this player
+     * @return  Current scoreboard
+     */
+    Scoreboard getScoreboard();
 
     /**
      * Forces the player to disconnect from the server. You are encouraged to use this method over the {@link org.bukkit.entity.Player#kickPlayer(String)} method.
