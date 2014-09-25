@@ -38,6 +38,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Getter private boolean firstJoin = false;
     @Getter private InetAddress address = null;
     @Getter private final CooldownManager cooldownManager = new CooldownManager();
+    private final CMongoPlayerScoreboardManager scoreboardManager = new CMongoPlayerScoreboardManager(this);
     private String tagName;
     private String currentPrefix = null;
 
@@ -361,6 +362,11 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Override
     public Scoreboard getScoreboard() {
         return getBukkitPlayer().getScoreboard();
+    }
+
+    @Override
+    public CPlayerScoreboardManager getScoreboardManager() {
+        return scoreboardManager;
     }
 
     @Override

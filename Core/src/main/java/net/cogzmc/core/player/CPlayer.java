@@ -288,13 +288,22 @@ public interface CPlayer extends COfflinePlayer {
      * Sets a new scoreboard to this CPlayer safely, while preserving everyones tag prefix
      * @param sb    Scoreboard to set
      */
+    @Deprecated
     void setScoreboard(Scoreboard sb);
 
     /**
      * Current scoreboard that is assigned to this player
      * @return  Current scoreboard
      */
+    @Deprecated
     Scoreboard getScoreboard();
+
+
+    /**
+     * Retrieves the scoreboard manager linked with this player
+     * @return  Scoreboard manager for this player
+     */
+    public CPlayerScoreboardManager getScoreboardManager();
 
     /**
      * Forces the player to disconnect from the server. You are encouraged to use this method over the {@link org.bukkit.entity.Player#kickPlayer(String)} method.
