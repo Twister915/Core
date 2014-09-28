@@ -44,12 +44,13 @@ public final class CMongoPlayerScoreboardManager implements CPlayerScoreboardMan
     @Override
     public void setTitle(String title) {
         Objective objective = player.getBukkitPlayer().getScoreboard().getObjective(objectiveName);
-        if (objective != null) {
-            objective.unregister();
+        if (objective == null) {
+            String subTitle = title.length() <= 16 ? title : title.substring(0,15);
+            objectiveName = subTitle;
+            objective = player.getBukkitPlayer().getScoreboard().registerNewObjective(subTitle,subTitle);
+            objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         }
-        objective = player.getBukkitPlayer().getScoreboard().registerNewObjective(title,title);
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        objectiveName = title;
+        objective.setDisplayName(title);
         fillOutScoreboard();
     }
 
