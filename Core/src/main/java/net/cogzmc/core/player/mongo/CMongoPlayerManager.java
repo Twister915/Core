@@ -199,6 +199,7 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
     @Override
     public GeoIPManager setupNewGeoIPManager(File dbFile) throws IOException {
         geoIPManager = new GeoIPManager(dbFile);
+        Core.logInfo("Setup GeoIP database!");
         return geoIPManager;
     }
 

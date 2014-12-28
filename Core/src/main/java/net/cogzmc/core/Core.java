@@ -96,7 +96,7 @@ public class Core extends JavaPlugin {
             //Some extras
             this.enderBarManager = new EnderBarManager();
             new SoftNPCManager();
-            File geoIPDatabase = new File(getConfig().getString("geo-ip-database"));
+            File geoIPDatabase = new File(getDataFolder(), getConfig().getString("geo-ip-database"));
             if (geoIPDatabase.exists()) {
                 try {
                     this.playerManager.setupNewGeoIPManager(geoIPDatabase);
