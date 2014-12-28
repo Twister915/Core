@@ -17,5 +17,6 @@ public final class PermPrefixVerb<T extends CPermissible> extends Verb<T> {
     @Override
     protected void perform(CommandSender sender, T target, String[] args) throws CommandException {
         target.setChatPrefix(Joiner.on(' ').join(args));
+        sendSuccessMessage("Changed prefix to " + target.getChatPrefix() + "!", sender);
     }
 }

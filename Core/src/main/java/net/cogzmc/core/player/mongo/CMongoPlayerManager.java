@@ -87,6 +87,13 @@ public final class CMongoPlayerManager extends CMongoPlayerRepository implements
     }
 
     @Override
+    public CPlayer getFirstOnlineCPlayerForStartOfName(String partial) {
+        List<CPlayer> cPlayerByStartOfName = getCPlayerByStartOfName(partial);
+        if (cPlayerByStartOfName.size() == 0) return null;
+        return cPlayerByStartOfName.get(0);
+    }
+
+    @Override
     public List<CPlayer> getCPlayerByStartOfName(String name) {
         List<CPlayer> cPlayers = new ArrayList<>();
         String lowerCaseName = name.toLowerCase();

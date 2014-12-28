@@ -65,6 +65,13 @@ public interface CPlayerManager extends Iterable<CPlayer>, CPlayerRepository {
     CPlayer getOnlineCPlayerForName(String name);
 
     /**
+     * Returns the first player who matches the name.
+     * @param partial The part of the name to math.
+     * @return A {@link net.cogzmc.core.player.CPlayer} or {@code null}
+     */
+    CPlayer getFirstOnlineCPlayerForStartOfName(String partial);
+
+    /**
      * This will allow you to get a {@link java.util.List} of {@link net.cogzmc.core.player.CPlayer}s by simply sending the start of a person's name.
      * @param name The name of the player that you wish to autocomplete.
      * @return A {@link java.util.List} of {@link net.cogzmc.core.player.CPlayer} objects for this name.
