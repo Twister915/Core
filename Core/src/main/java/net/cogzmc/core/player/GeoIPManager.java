@@ -26,7 +26,7 @@ public final class GeoIPManager {
         try {
             city = this.databaseReader.city(address);
         } catch (GeoIp2Exception | IOException e) {
-            return null;
+            throw new RuntimeException("Error gathering GeoIP data", e);
         }
         return new GeoIPInfo(address, city);
     }

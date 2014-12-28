@@ -1,10 +1,12 @@
 package net.cogzmc.coreessentials.commands;
 
 import com.google.common.base.Joiner;
+import com.maxmind.geoip2.model.CityResponse;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.modular.command.*;
 import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
+import net.cogzmc.core.player.GeoIPManager;
 import net.cogzmc.coreessentials.CoreEssentials;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -29,6 +31,15 @@ public final class PlayerReportCommand extends ModuleCommand {
         PrettyTime prettyTime = new PrettyTime();
         sender.sendMessage(getFormattedStat("UUID", targetedPlayer.getUniqueIdentifier().toString()));
         sender.sendMessage(getFormattedStat("IPs", Joiner.on(", ").join(targetedPlayer.getKnownIPAddresses())));
+        if (Core.getPlayerManager().getGeoIPManager() != null && targetedPlayer instanceof CPlayer) {
+            try {
+                CityResponse geoIPInfo = ((CPlayer) targetedPlayer).getGeoIPInfo().getResponse();
+                sender.sendMessage(getFormattedStat("Location", geoIPInfo.getCity().getName() + ", " + geoIPInfo.getMostSpecificSubdivision().getName() + ", " + geoIPInfo.getCountry().getName()));
+            } catch (Exception e) {
+                sender.sendMessage(getFormattedStat("Location", "ERROR"));
+                e.printStackTrace();
+            }
+        }
         sender.sendMessage(getFormattedStat("Usernames", Joiner.on(", ").join(targetedPlayer.getKnownUsernames())));
         sender.sendMessage(getFormattedStat("Last Time Seen", prettyTime.format(targetedPlayer.getLastTimeOnline())));
         sender.sendMessage(getFormattedStat("First Time Joined", prettyTime.format(targetedPlayer.getFirstTimeOnline())));
