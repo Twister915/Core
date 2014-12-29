@@ -1,2 +1,3 @@
 prefix: "&6[&aPermissions&6] "
 success-message-command: "&a<message>"
+permissions-reload: "&aPermissions reloaded!"

@@ -31,6 +31,7 @@ public final class GroupNoun extends Noun<CGroup> {
         verbs.add(new GroupSetParentVerb());
         verbs.add(new GroupRemoveParentVerb());
         verbs.add(new GroupSetPriorityVerb());
+        verbs.add(new GroupSetDefaultVerb());
     }
 
     @Override

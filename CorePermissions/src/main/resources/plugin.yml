@@ -1,4 +1,4 @@
-name: PermissionsManager
+name: CorePermissions
 main: net.cogzmc.permissions.PermissionsManager
 depend: [Core]
 version: 1.0

@@ -19,6 +19,6 @@ public final class PermSetVerb<T extends CPermissible> extends Verb<T> {
         if (args.length < 1) throw new ArgumentRequirementException("You have not specified a permission to set!");
         boolean value = args.length == 1 || !args[1].equalsIgnoreCase("false");
         target.setPermission(args[0], value);
-        sendSuccessMessage("Set permission " + args[0] + " to " + (value ? "true" : "false") + "for " + target.getName(), sender);
+        sendSuccessMessage("Set permission " + args[0] + " to " + (value ? "true" : "false") + " for " + target.getName(), sender);
     }
 }

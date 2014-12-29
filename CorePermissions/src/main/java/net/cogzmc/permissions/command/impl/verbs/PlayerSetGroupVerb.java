@@ -24,6 +24,6 @@ public final class PlayerSetGroupVerb extends Verb<COfflinePlayer> {
             target.removeFromGroup(cGroup);
         }
         target.addToGroup(group);
-        sendSuccessMessage("Set " + target.getName() +" 's only group to " + group.getName(), sender);
+        sendSuccessMessage("Set " + target.getName() +"'s only group to " + group.getName(), sender);
     }
 }
