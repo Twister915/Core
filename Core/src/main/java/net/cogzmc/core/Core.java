@@ -64,6 +64,11 @@ public class Core extends JavaPlugin {
         instance = this;
         try {
             saveDefaultConfig();
+            //Kick any online players
+            String kickMessage = ChatColor.translateAlternateColorCodes('&',getConfig().getString("kick-message"));
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.kickPlayer(kickMessage);
+            }
             //Connect to the cDatabase
             databaseConfiguration = new YAMLConfigurationFile(this, "database.yml");
             databaseConfiguration.reloadConfig();
@@ -120,11 +125,6 @@ public class Core extends JavaPlugin {
     @Override
     public final void onDisable() {
         try {
-            //Kick any online players
-            String kickMessage = ChatColor.translateAlternateColorCodes('&',getConfig().getString("kick-message"));
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                player.kickPlayer(kickMessage);
-            }
             if (this.playerManager != null) this.playerManager.onDisable();
             if (this.cDatabase != null) cDatabase.disconnect();
             if (this.networkManager != null) this.networkManager.onDisable();
