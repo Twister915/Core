@@ -172,6 +172,11 @@ public abstract class ModuleCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public final List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        //Security for tab complete
+        if (getClass().isAnnotationPresent(CommandPermission.class)) {
+            CommandPermission annotation = getClass().getAnnotation(CommandPermission.class);
+            if (!sender.hasPermission(annotation.value()) && !(sender.isOp() && annotation.isOpExempt())) return Collections.emptyList();
+        }
         //Step one, check if we have to go a level deeper in the sub command system:
         if (args.length > 1) {
             //If so, check if there's an actual match for the sub-command to delegate to.
