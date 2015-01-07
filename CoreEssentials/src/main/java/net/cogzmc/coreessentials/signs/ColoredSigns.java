@@ -16,7 +16,7 @@ import org.bukkit.event.block.SignChangeEvent;
 public class ColoredSigns implements Listener {
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
-        if (!event.getPlayer().hasPermission("gearz.coloredsigns")) return;
+        if (!event.getPlayer().hasPermission("core.coloredsigns")) return;
         for (int x = 0, l = event.getLines().length; x < l; x++) {
             event.setLine(x, ChatColor.translateAlternateColorCodes('&', event.getLine(x)));
         }
