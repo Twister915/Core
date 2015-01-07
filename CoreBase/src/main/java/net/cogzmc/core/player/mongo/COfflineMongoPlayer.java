@@ -1,5 +1,6 @@
 package net.cogzmc.core.player.mongo;
 
+import com.google.common.base.Joiner;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
@@ -229,7 +230,11 @@ public class COfflineMongoPlayer implements COfflinePlayer {
 
     @Override
     public boolean hasPermission(String permission) {
-        return allPermissions.containsKey(permission) && allPermissions.get(permission);
+        if (allPermissions.containsKey(permission) && allPermissions.get(permission))
+            return true;
+        //wildcard support
+        String[] parts = permission.split(".");
+        return parts.length > 1 && hasPermission(Joiner.on('.').join(Arrays.copyOfRange(parts, 0, parts.length - 2)) + ".*");
     }
 
     @Override

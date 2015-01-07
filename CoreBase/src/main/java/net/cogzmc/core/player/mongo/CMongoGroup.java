@@ -1,5 +1,6 @@
 package net.cogzmc.core.player.mongo;
 
+import com.google.common.base.Joiner;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
@@ -47,7 +48,11 @@ final class CMongoGroup implements CGroup {
 
     @Override
     public boolean hasPermission(String permission) {
-        return this.allPermissions.containsKey(permission) && this.allPermissions.get(permission);
+        if (allPermissions.containsKey(permission) && allPermissions.get(permission))
+            return true;
+        //wildcard support
+        String[] parts = permission.split(".");
+        return parts.length > 1 && hasPermission(Joiner.on('.').join(Arrays.copyOfRange(parts, 0, parts.length - 2)) + ".*");
     }
 
     @Override
