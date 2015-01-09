@@ -5,7 +5,7 @@
     <parent>
         <artifactId>CogzBase</artifactId>
         <groupId>net.cogzmc</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>net.cogzmc</groupId>
             <artifactId>CoreBase</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>redis.clients</groupId>
