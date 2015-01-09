@@ -294,7 +294,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         if (Core.DEBUG) log.info("Update for datawatcher called on " + getClass().getSimpleName() + " #" + id + "!");
         dataWatcher.setObject(6, getHealth()); //Health
         if (showingNametag) dataWatcher.setObject(3, (byte)1); //Always show nametag
-        else if (dataWatcher.getObject(11) != null) dataWatcher.removeObject(11);
+        else if (dataWatcher.getObject(3) != null) dataWatcher.removeObject(3);
         if (customName != null) dataWatcher.setObject(10, customName.substring(0, Math.min(customName.length(), 64))); //Nametag value
         else if (dataWatcher.getObject(10) != null) dataWatcher.removeObject(10);
         if (customName != null) dataWatcher.setObject(2, customName.substring(0, Math.min(customName.length(), 64))); //Nametag value
