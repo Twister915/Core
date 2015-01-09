@@ -5,7 +5,7 @@
     <parent>
         <artifactId>CogzBase</artifactId>
         <groupId>net.cogzmc</groupId>
-        <version>1.0</version>
+        <version>1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,7 +15,7 @@
         <dependency>
             <groupId>net.cogzmc</groupId>
             <artifactId>Core</artifactId>
-            <version>1.0</version>
+            <version>1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.lingala.zip4j</groupId>
