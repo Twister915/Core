@@ -74,39 +74,39 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     }
 
     @Override
-    public void registerObserver(NPCObserver observer) {
+    public final void registerObserver(NPCObserver observer) {
         this.observers.add(observer);
     }
 
     @Override
-    public void unregisterObserver(NPCObserver observer) {
+    public final void unregisterObserver(NPCObserver observer) {
         this.observers.remove(observer);
     }
 
     @Override
-    public ImmutableSet<NPCObserver> getObservers() {
+    public final ImmutableSet<NPCObserver> getObservers() {
         return ImmutableSet.copyOf(observers);
     }
 
-    public void addViewer(CPlayer player) {
+    public final void addViewer(CPlayer player) {
         this.viewers.add(player);
         if (this.isSpawned()) forceSpawn(player.getBukkitPlayer());
     }
 
-    public void removeViewer(CPlayer player) {
+    public final void removeViewer(CPlayer player) {
         this.viewers.remove(player);
         if (this.isSpawned()) forceDespawn(player.getBukkitPlayer());
     }
 
-    public void makeGlobal() {
+    public final void makeGlobal() {
         this.viewers.clear();
     }
 
-    public Float getHealth() {
+    public final Float getHealth() {
         return health == null ? getMaximumHealth() : Math.min(getMaximumHealth(), health);
     }
 
-    protected Player[] getTargets() {
+    protected final Player[] getTargets() {
         CPlayer[] cPlayers = (this.viewers.size() == 0 ? Core.getPlayerManager().getOnlinePlayers() : this.viewers).
                 toArray(new CPlayer[this.viewers.size()]);
         Player[] players = new Player[cPlayers.length];
@@ -119,7 +119,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         return players;
     }
 
-    public void spawn() {
+    public final void spawn() {
         if (spawned) throw new IllegalStateException("This NPC is already spawned!");
         ProtocolLibrary.getProtocolManager().addPacketListener(createNewInteractWatcher());
         WrapperPlayServerSpawnEntityLiving packet = getSpawnPacket();
@@ -136,7 +136,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         return packet;
     }
 
-    public void despawn() {
+    public final void despawn() {
         if (!spawned) throw new IllegalStateException("You cannot despawn something that you have not spawned!");
         WrapperPlayServerEntityDestroy packet = getDespawnPacket();
         for (Player player : getTargets()) {
@@ -148,15 +148,15 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         if (Core.DEBUG) log.info("Despawned #" + id + " " + getClass().getSimpleName());
     }
 
-    public void forceDespawn(Player bukkitPlayer) {
+    public final void forceDespawn(Player bukkitPlayer) {
         getDespawnPacket().sendPacket(bukkitPlayer);
     }
 
-    public void forceSpawn(Player player) {
+    public final void forceSpawn(Player player) {
         getSpawnPacket().sendPacket(player);
     }
 
-    protected WrapperPlayServerSpawnEntityLiving getSpawnPacket() {
+    protected final WrapperPlayServerSpawnEntityLiving getSpawnPacket() {
         WrapperPlayServerSpawnEntityLiving packet = new WrapperPlayServerSpawnEntityLiving();
         packet.setEntityID(id);
         packet.setX(location.getX());
@@ -177,7 +177,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         return packet;
     }
 
-    protected void playStatus(Set<CPlayer> players, Integer status) {
+    protected final void playStatus(Set<CPlayer> players, Integer status) {
         WrapperPlayServerEntityStatus packet = getStatusPacket(status);
         Player[] targets = getTargets();
         for (CPlayer player : players) {
@@ -186,29 +186,28 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         }
     }
 
-    protected void playStatus(Integer status) {
+    protected final void playStatus(Integer status) {
         WrapperPlayServerEntityStatus packet = getStatusPacket(status);
         for (Player player : getTargets()) {
             packet.sendPacket(player);
         }
     }
 
-    public void playHurtAnimation() {
+    public final void playHurtAnimation() {
         playStatus(2);
     }
-
-    public void playDeadAnimation() {
+    public final void playDeadAnimation() {
         playStatus(3);
     }
-    public void playHurtAnimation(Set<CPlayer> players) {
+
+    public final void playHurtAnimation(Set<CPlayer> players) {
         playStatus(players, 2);
     }
-
-    public void playDeadAnimation(Set<CPlayer> players) {
+    public final void playDeadAnimation(Set<CPlayer> players) {
         playStatus(players, 3);
     }
 
-    public void update() {
+    public final void update() {
         if (!spawned) spawn();
         updateDataWatcher(); //Send a call to update the datawatcher
         WrapperPlayServerEntityMetadata packet = new WrapperPlayServerEntityMetadata();
@@ -235,7 +234,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         onUpdate();
     }
 
-    public void move(Point point) {
+    public final void move(Point point) {
         if (!spawned) throw new IllegalStateException("You cannot teleport something that has yet to spawn!");
         final Point location1 = this.location;
         this.location = point;
@@ -268,7 +267,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         }
     }
 
-    public void addVelocity(Vector vector) {
+    public final void addVelocity(Vector vector) {
         WrapperPlayServerEntityVelocity packet = new WrapperPlayServerEntityVelocity();
         packet.setEntityId(id);
         packet.setVelocityX(vector.getX());
@@ -279,7 +278,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         }
     }
 
-    public void moveHead(byte parts) {
+    public final void moveHead(byte parts) {
         if (!spawned) throw new IllegalStateException("You cannot modify the rotation of the head of a non-spawned entity!");
         headYaw = headYaw + parts;
         WrapperPlayServerEntityHeadRotation packet = new WrapperPlayServerEntityHeadRotation();
@@ -290,7 +289,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         }
     }
 
-    protected void updateDataWatcher() {
+    protected final void updateDataWatcher() {
         if (Core.DEBUG) log.info("Update for datawatcher called on " + getClass().getSimpleName() + " #" + id + "!");
         dataWatcher.setObject(6, getHealth()); //Health
         if (showingNametag) dataWatcher.setObject(3, (byte)1); //Always show nametag
@@ -310,7 +309,7 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
         onDataWatcherUpdate();
     }
 
-    public ImmutableSet<CPlayer> getViewers() {
+    public final ImmutableSet<CPlayer> getViewers() {
         return ImmutableSet.copyOf(viewers);
     }
 
