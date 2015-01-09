@@ -26,7 +26,7 @@ public class MobNPCWitch extends AbstractMobNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         return 26F;
     }
 

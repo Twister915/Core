@@ -24,7 +24,7 @@ public final class MobNPCEnderDragon extends AbstractMobNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         return 200F;
     }
 }

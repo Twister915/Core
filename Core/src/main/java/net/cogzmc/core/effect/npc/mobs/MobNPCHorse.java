@@ -47,7 +47,7 @@ public final class MobNPCHorse extends AbstractAgeableMobNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         return 30f;
     }
 

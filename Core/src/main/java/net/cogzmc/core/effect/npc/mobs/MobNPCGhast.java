@@ -26,7 +26,7 @@ public final class MobNPCGhast extends AbstractMobNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         return 10F;
     }
 

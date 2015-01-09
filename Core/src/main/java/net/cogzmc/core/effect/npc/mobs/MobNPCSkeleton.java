@@ -26,7 +26,7 @@ public final class MobNPCSkeleton extends AbstractGearMobNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         return 20F;
     }
 

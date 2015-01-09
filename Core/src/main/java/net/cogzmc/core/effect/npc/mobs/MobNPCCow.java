@@ -24,7 +24,7 @@ public final class MobNPCCow extends AbstractAnimalNNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         return 10f;
     }
 }

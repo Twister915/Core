@@ -24,7 +24,7 @@ public final class MobNPCMooshroom extends AbstractAnimalNNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         return 10F;
     }
 }

@@ -24,7 +24,7 @@ public final class MobNPCSquid extends AbstractMobNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         return 10F;
     }
 }

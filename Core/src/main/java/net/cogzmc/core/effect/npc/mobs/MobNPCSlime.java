@@ -32,7 +32,7 @@ public class MobNPCSlime extends AbstractMobNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         switch (size) {
             case 1:
                 return 1f;

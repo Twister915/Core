@@ -28,7 +28,7 @@ public class MobNPCZombie extends AbstractGearMobNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         return 20F;
     }
 

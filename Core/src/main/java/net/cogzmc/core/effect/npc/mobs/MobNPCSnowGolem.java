@@ -24,7 +24,7 @@ public final class MobNPCSnowGolem extends AbstractMobNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         return 4F;
     }
 }

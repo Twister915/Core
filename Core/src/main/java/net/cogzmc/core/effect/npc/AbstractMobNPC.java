@@ -44,16 +44,11 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     private InteractWatcher listener;
 
     @Getter @Setter private String customName;
-    @Getter @Setter private boolean showingNametag = true;
     @Setter private Float health = null;
-    @Getter @Setter private boolean onFire;
-    @Getter @Setter private boolean crouched;
-    @Getter @Setter private boolean sprinting;
-    @Getter @Setter private boolean blocking;
-    @Getter @Setter private boolean invisible;
+    @Getter @Setter private boolean onFire, crouched, sprinting, blocking, invisible, showingNametag = true;
 
     protected abstract EntityType getEntityType();
-    protected abstract Float getMaximumHealth();
+    public abstract Float getMaximumHealth();
     protected void onUpdate() {}
     protected void onDataWatcherUpdate() {}
 
@@ -298,10 +293,12 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     protected void updateDataWatcher() {
         if (Core.DEBUG) log.info("Update for datawatcher called on " + getClass().getSimpleName() + " #" + id + "!");
         dataWatcher.setObject(6, getHealth()); //Health
-        if (showingNametag) dataWatcher.setObject(11, (byte)1); //Always show nametag
+        if (showingNametag) dataWatcher.setObject(3, (byte)1); //Always show nametag
         else if (dataWatcher.getObject(11) != null) dataWatcher.removeObject(11);
         if (customName != null) dataWatcher.setObject(10, customName.substring(0, Math.min(customName.length(), 64))); //Nametag value
         else if (dataWatcher.getObject(10) != null) dataWatcher.removeObject(10);
+        if (customName != null) dataWatcher.setObject(2, customName.substring(0, Math.min(customName.length(), 64))); //Nametag value
+        else if (dataWatcher.getObject(10) != null) dataWatcher.removeObject(2);
         //Others
         byte zeroByte = 0;
         if (onFire) zeroByte |= 0x01;

@@ -29,7 +29,7 @@ public final class MobNPCWolf extends AbstractTameableMobNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         return isTame() ? 20f : 8f;
     }
 

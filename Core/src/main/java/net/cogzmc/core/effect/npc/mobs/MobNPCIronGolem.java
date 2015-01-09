@@ -26,7 +26,7 @@ public final class MobNPCIronGolem extends AbstractMobNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         return 100F;
     }
 

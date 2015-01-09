@@ -1,11 +1,12 @@
 package net.cogzmc.core.effect.enderBar;
 
 import net.cogzmc.core.Core;
-import net.cogzmc.core.effect.npc.mobs.MobNPCEnderDragon;
+import net.cogzmc.core.effect.npc.mobs.MobNPCWither;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerConnectionListener;
 import net.cogzmc.core.player.CPlayerJoinException;
 import net.cogzmc.core.util.Point;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.net.InetAddress;
@@ -18,8 +19,7 @@ import java.util.Map;
  */
 @SuppressWarnings("UnusedDeclaration")
 public final class EnderBarManager implements CPlayerConnectionListener {
-    final Map<CPlayer, MobNPCEnderDragon> enderBars = new HashMap<>();
-    final static Double HEIGHT = -300D;
+    final Map<CPlayer, MobNPCWither> witherBar = new HashMap<>();
 
     /**
      * Creates a manager for the EnderBar system.
@@ -36,9 +36,9 @@ public final class EnderBarManager implements CPlayerConnectionListener {
      */
     public void setTextFor(CPlayer player, String text) {
         createIfDoesNotExist(player);
-        MobNPCEnderDragon mobNPCEnderDragon = enderBars.get(player);
-        mobNPCEnderDragon.setCustomName(text);
-        mobNPCEnderDragon.update();
+        MobNPCWither mobNPCWither = witherBar.get(player);
+        mobNPCWither.setCustomName(text);
+        mobNPCWither.update();
     }
 
     /**
@@ -48,9 +48,9 @@ public final class EnderBarManager implements CPlayerConnectionListener {
      */
     public void setHealthPercentageFor(CPlayer player, Float health) {
         createIfDoesNotExist(player);
-        MobNPCEnderDragon mobNPCEnderDragon = enderBars.get(player);
-        mobNPCEnderDragon.setHealth(health * 200F);
-        mobNPCEnderDragon.update();
+        MobNPCWither mobNPCWither = witherBar.get(player);
+        mobNPCWither.setHealth(health * mobNPCWither.getMaximumHealth());
+        mobNPCWither.update();
     }
 
     /**
@@ -58,9 +58,9 @@ public final class EnderBarManager implements CPlayerConnectionListener {
      * @param player The {@link net.cogzmc.core.player.CPlayer} to hide the bar for.
      */
     public void hideBarFor(CPlayer player) {
-        if (!enderBars.containsKey(player)) return;
-        MobNPCEnderDragon enderBar = enderBars.get(player);
-        if (enderBar.isSpawned()) enderBar.despawn();
+        if (!witherBar.containsKey(player)) return;
+        MobNPCWither witherBar = this.witherBar.get(player);
+        if (witherBar.isSpawned()) witherBar.despawn();
     }
 
     /**
@@ -68,22 +68,29 @@ public final class EnderBarManager implements CPlayerConnectionListener {
      * @param player The {@link net.cogzmc.core.player.CPlayer} to show the ender bar for.
      */
     public void showBarFor(CPlayer player) {
-        MobNPCEnderDragon enderBar = enderBars.get(player);
-        if (!createIfDoesNotExist(player) && !enderBar.isSpawned()) enderBar.spawn();
+        MobNPCWither enderBar = witherBar.get(player);
+        if (!createIfDoesNotExist(player) && !enderBar.isSpawned()) {
+            enderBar.spawn();
+        }
     }
 
     private boolean createIfDoesNotExist(CPlayer player) {
-        if (enderBars.containsKey(player)) return false;
+        if (witherBar.containsKey(player)) return false;
         Player bukkitPlayer = player.getBukkitPlayer();
         HashSet<CPlayer> cPlayers = new HashSet<>();
         cPlayers.add(player);
-        Point of = Point.of(bukkitPlayer.getLocation());
-        of.setY(HEIGHT);
-        MobNPCEnderDragon enderDragon = new MobNPCEnderDragon(of, bukkitPlayer.getWorld(), cPlayers, "Ender Dragon");
-        enderDragon.setInvisible(true);
-        enderBars.put(player, enderDragon);
-        enderDragon.spawn();
+        Point of = Point.of(getLocationFor(player));
+        MobNPCWither wither = new MobNPCWither(of, bukkitPlayer.getWorld(), cPlayers, "Boss Bar");
+        wither.setInvisible(true);
+        wither.setInculnerableTime(881);
+        witherBar.put(player, wither);
+        wither.spawn();
         return true;
+    }
+
+    public static Location getLocationFor(CPlayer player) {
+        Player bukkitPlayer = player.getBukkitPlayer();
+        return bukkitPlayer.getEyeLocation().add(bukkitPlayer.getEyeLocation().getDirection().normalize().multiply(23));
     }
 
     @Override
@@ -92,9 +99,9 @@ public final class EnderBarManager implements CPlayerConnectionListener {
 
     @Override
     public void onPlayerDisconnect(CPlayer player) {
-        if (!this.enderBars.containsKey(player)) return;
-        MobNPCEnderDragon mobNPCEnderDragon = this.enderBars.get(player);
-        if (mobNPCEnderDragon.isSpawned()) mobNPCEnderDragon.despawn();
-        this.enderBars.remove(player);
+        if (!this.witherBar.containsKey(player)) return;
+        MobNPCWither mobNPCWither = this.witherBar.get(player);
+        if (mobNPCWither.isSpawned()) mobNPCWither.despawn();
+        this.witherBar.remove(player);
     }
 }

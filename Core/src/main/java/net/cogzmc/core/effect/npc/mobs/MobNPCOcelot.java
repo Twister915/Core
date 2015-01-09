@@ -27,7 +27,7 @@ public final class MobNPCOcelot extends AbstractTameableMobNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         return 10F;
     }
 

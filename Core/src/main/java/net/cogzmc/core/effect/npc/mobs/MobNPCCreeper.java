@@ -27,7 +27,7 @@ public final class MobNPCCreeper extends AbstractAgeableMobNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         return 20F;
     }
 

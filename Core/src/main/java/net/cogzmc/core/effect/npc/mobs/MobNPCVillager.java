@@ -39,7 +39,7 @@ public final class MobNPCVillager extends AbstractMobNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         return 20F;
     }
 

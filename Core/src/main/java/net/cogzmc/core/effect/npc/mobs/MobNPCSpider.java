@@ -26,7 +26,7 @@ public class MobNPCSpider extends AbstractMobNPC {
     }
 
     @Override
-    protected Float getMaximumHealth() {
+    public Float getMaximumHealth() {
         return 16F;
     }
 
