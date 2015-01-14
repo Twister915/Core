@@ -44,14 +44,14 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
 
     @Override
     public void open(CPlayer player) {
-        if (observers.contains(player)) throw new IllegalStateException("This player already has the GUI open!");
+        if (observers.contains(player)) return;
         observers.add(player);
         player.getBukkitPlayer().openInventory(inventory);
     }
 
     @Override
     public void close(CPlayer player) {
-        if (!observers.contains(player)) throw new IllegalStateException("This player does not currently have the GUI open!");
+        if (!observers.contains(player)) return;
         observers.remove(player);
         player.getBukkitPlayer().closeInventory();
         onClose(player);

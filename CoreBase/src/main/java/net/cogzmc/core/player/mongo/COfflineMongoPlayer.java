@@ -255,7 +255,7 @@ public class COfflineMongoPlayer implements COfflinePlayer {
     }
 
     protected void reloadPermissions0() {
-        //Why do we need this? When the permissions manager reloads, it creates new instances to represent the same groups, so we need to reload our group instances.
+        //Why we need this: When the permissions manager reloads, it creates new instances to represent the same groups, so we need to reload our group instances.
         this.groups = new ArrayList<>();
         this.primaryGroup = null;
         CMongoGroupRepository groupRepository = playerRepository.groupRepository;
