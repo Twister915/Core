@@ -18,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 
@@ -213,6 +214,12 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
         } catch (EmptyHandlerException e) {
             player.playSoundForPlayer(Sound.NOTE_PLING);
         }
+        event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerInventoryMove(InventoryMoveItemEvent event) {
+        if (!event.getDestination().equals(inventory)) return;
         event.setCancelled(true);
     }
 

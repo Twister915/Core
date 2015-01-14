@@ -2,13 +2,11 @@ package net.cogzmc.core.player;
 
 import lombok.Data;
 import net.cogzmc.core.Core;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
-import org.kitteh.tag.AsyncPlayerReceiveNameTagEvent;
 
 /**
  * This will talk to any {@link net.cogzmc.core.player.CPlayerManager} and bridge communications between Bukkit and the Core.
@@ -58,11 +56,11 @@ public final class CPlayerManagerListener implements Listener {
         if (playerManager.getCPlayerForPlayer(event.getPlayer()) != null) playerManager.playerLoggedOut(event.getPlayer());
     }
 
-    @EventHandler
-    public void onPlayerTagEvent(AsyncPlayerReceiveNameTagEvent event) {
-        CPlayer onlinePlayer = Core.getOnlinePlayer(event.getNamedPlayer());
-        if (onlinePlayer == null) return;
-        if (onlinePlayer.hasTagName()) event.setTag(onlinePlayer.getTagName());
-        else if (onlinePlayer.hasDisplayName()) event.setTag(onlinePlayer.getDisplayName());
-    }
+//    @EventHandler
+//    public void onPlayerTagEvent(AsyncPlayerReceiveNameTagEvent event) {
+//        CPlayer onlinePlayer = Core.getOnlinePlayer(event.getNamedPlayer());
+//        if (onlinePlayer == null) return;
+//        if (onlinePlayer.hasTagName()) event.setTag(onlinePlayer.getTagName());
+//        else if (onlinePlayer.hasDisplayName()) event.setTag(onlinePlayer.getDisplayName());
+//    }
 }

@@ -251,25 +251,26 @@ public interface CPlayer extends COfflinePlayer {
     /**
      * Sets the name above a players head to a specific value. This will not be stored in the database. {@code null} will reset this value.
      * @param tagName The tag name
+     * @deprecated Unable to use in MC 1.8
      */
-    void setTagName(String tagName);
+    @Deprecated void setTagName(String tagName);
 
     /**
      * By default this is the players username, unless set manually by {@link #setTagName(String)}.
      * @return The player's tag name
      */
-    String getTagName();
+    @Deprecated String getTagName();
 
     /**
      * Removes a player's tag name.
      */
-    void removeTagName();
+    @Deprecated void removeTagName();
 
     /**
      * returns if a player has a different tab name than their actual name.
      * @return If the player has a tag name.
      */
-    boolean hasTagName();
+    @Deprecated boolean hasTagName();
 
     /**
      * Sets a tag prefix for above their head.

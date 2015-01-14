@@ -1,6 +1,5 @@
 package net.cogzmc.core.network;
 
-import lombok.SneakyThrows;
 import org.json.simple.JSONObject;
 
 import java.lang.reflect.Field;
