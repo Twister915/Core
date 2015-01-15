@@ -35,6 +35,7 @@ final class EnderBarListener implements Listener {
         MobNPCWither wither = manager.witherBar.get(player);
         if (wither != null) {
             wither.despawn();
+            manager.witherBar.remove(player);
         }
     }
 }

@@ -22,10 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Getter(AccessLevel.NONE)
@@ -111,12 +108,16 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
                 toArray(new CPlayer[this.viewers.size()]);
         Player[] players = new Player[cPlayers.length];
         //filter the players
-        for (int x = 0; x < cPlayers.length; x++) {
+        int x = 0;
+        for (int i = 0; i < cPlayers.length; i++) {
             Player bukkitPlayer = cPlayers[x].getBukkitPlayer();
-            if (this.world != null && !bukkitPlayer.getWorld().equals(world)) continue;
+            UUID uid = bukkitPlayer.getWorld().getUID();
+            UUID uid1 = this.world != null ? world.getUID() : null;
+            if (this.world != null && !uid.equals(uid1)) continue;
             players[x] = bukkitPlayer;
+            x++;
         }
-        return players;
+        return x == 0 ? new Player[]{} :  Arrays.copyOfRange(players, 0, x);
     }
 
     public final void spawn() {
