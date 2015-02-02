@@ -1,8 +1,20 @@
 package net.cogzmc.gameapi.model.game;
 
-import com.sun.javafx.beans.annotations.NonNull;
+import com.google.common.collect.ImmutableSet;
+import lombok.*;
+import net.cogzmc.core.Core;
+import net.cogzmc.core.effect.enderBar.EnderBarManager;
+import net.cogzmc.core.modular.ModularPlugin;
+import net.cogzmc.core.player.COfflinePlayer;
+import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.gameapi.GameAPI;
 import net.cogzmc.gameapi.model.arena.Arena;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -16,8 +28,7 @@ import java.util.Set;
 @Setter(AccessLevel.NONE)
 public class Game<ArenaType extends Arena> {
     private final ArenaType arena; //Arena this is being played in
-    @Setter @NonNull
-    private GameActionDelegate<ArenaType> actionDelegate; //Action delegate; we tell this once something happens
+    @Setter @NonNull private GameActionDelegate<ArenaType> actionDelegate; //Action delegate; we tell this once something happens
     @Setter @NonNull private GameRuleDelegate<ArenaType> ruleDelegate; //Rule delegate; we tell this before something happens
     private final ModularPlugin owner;
     private final GameMeta meta;

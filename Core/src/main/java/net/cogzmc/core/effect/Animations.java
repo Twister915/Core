@@ -1,5 +1,10 @@
 package net.cogzmc.core.effect;
 
+import com.comphenix.packetwrapper.WrapperPlayServerAnimation;
+import com.comphenix.protocol.ProtocolLibrary;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+
 public final class Animations {
     public static void redFlashEntity(LivingEntity entity) {
         sendAnimationFor(entity, WrapperPlayServerAnimation.Animations.DAMAGE_ANIMATION);

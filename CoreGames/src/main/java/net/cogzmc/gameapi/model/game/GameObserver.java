@@ -1,5 +1,17 @@
 package net.cogzmc.gameapi.model.game;
 
+import net.cogzmc.core.player.CPlayer;
+import net.cogzmc.core.util.Point;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Vehicle;
+import org.bukkit.event.block.Action;
+import org.bukkit.inventory.ItemStack;
+
+import static org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
 public interface GameObserver {
     void onGameStart();
     void onPlayerJoinGame(CPlayer player);

@@ -1,6 +1,12 @@
 package net.cogzmc.core.player;
 
 import net.cogzmc.core.util.Point;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.net.InetAddress;
 import java.util.Map;

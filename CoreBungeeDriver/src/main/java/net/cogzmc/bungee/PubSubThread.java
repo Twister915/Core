@@ -1,5 +1,8 @@
 package net.cogzmc.bungee;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 @EqualsAndHashCode(callSuper = false)
 @Data
 class PubSubThread extends Thread {

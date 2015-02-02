@@ -1,5 +1,8 @@
 package net.cogzmc.core.player.message;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 public final class FClickAction extends FAction {

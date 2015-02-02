@@ -1,5 +1,7 @@
 package net.cogzmc.core.chat.channels;
 
+import net.cogzmc.core.player.COfflinePlayer;
+
 /**
  * Implement this interface and register as an observer on the {@link net.cogzmc.core.chat.channels.IChannelManager} instance provided by {@link net.cogzmc.core.chat.CoreChat}.
  */

@@ -1,6 +1,10 @@
 package net.cogzmc.punishments.types.impl.model;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.punishments.types.TimedPunishment;
+import org.bson.types.ObjectId;
 
 import java.util.Date;
 

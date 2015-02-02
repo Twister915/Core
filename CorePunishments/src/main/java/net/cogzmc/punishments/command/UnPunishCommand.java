@@ -1,8 +1,13 @@
 package net.cogzmc.punishments.command;
 
+import net.cogzmc.core.Core;
+import net.cogzmc.core.modular.command.*;
+import net.cogzmc.core.player.COfflinePlayer;
+import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.punishments.PunishmentManager;
 import net.cogzmc.punishments.Punishments;
 import net.cogzmc.punishments.types.Punishment;
+import org.bukkit.command.CommandSender;
 
 @CommandMeta(
         description = "Un-punish the specified player!",

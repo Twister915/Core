@@ -1,5 +1,8 @@
 package net.cogzmc.core.player;
 
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;

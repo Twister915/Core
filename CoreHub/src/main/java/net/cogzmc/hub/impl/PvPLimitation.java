@@ -1,6 +1,10 @@
 package net.cogzmc.hub.impl;
 
 import net.cogzmc.hub.Limitation;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public final class PvPLimitation extends Limitation {
     public PvPLimitation() {

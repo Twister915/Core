@@ -1,5 +1,7 @@
 package net.cogzmc.core.maps;
 
+import org.bukkit.World;
+
 import java.util.Set;
 import java.util.UUID;
 

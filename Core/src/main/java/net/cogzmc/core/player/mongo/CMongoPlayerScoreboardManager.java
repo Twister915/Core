@@ -1,7 +1,14 @@
 package net.cogzmc.core.player.mongo;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerScoreboardManager;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.List;

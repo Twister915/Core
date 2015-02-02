@@ -1,6 +1,9 @@
 package net.cogzmc.core.effect.npc.pathfinding;
 
+import lombok.*;
 import net.cogzmc.core.util.Point;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 
 import java.util.*;
 

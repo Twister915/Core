@@ -1,5 +1,7 @@
 package net.cogzmc.core.effect.npc;
 
+import com.comphenix.protocol.wrappers.EnumWrappers;
+
 public enum ClickAction {
     RIGHT_CLICK,
     LEFT_CLICK;

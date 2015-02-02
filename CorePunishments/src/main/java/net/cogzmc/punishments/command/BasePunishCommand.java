@@ -1,5 +1,9 @@
 package net.cogzmc.punishments.command;
 
+import net.cogzmc.core.Core;
+import net.cogzmc.core.modular.command.CommandException;
+import net.cogzmc.core.modular.command.PermissionException;
+import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.punishments.PunishmentManager;
 import net.cogzmc.punishments.Punishments;
 import net.cogzmc.punishments.types.Punishment;

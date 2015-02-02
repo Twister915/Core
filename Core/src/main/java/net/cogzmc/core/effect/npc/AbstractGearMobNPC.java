@@ -1,7 +1,13 @@
 package net.cogzmc.core.effect.npc;
 
+import com.comphenix.packetwrapper.WrapperPlayServerEntityEquipment;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.util.Point;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.HashSet;

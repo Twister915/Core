@@ -1,5 +1,6 @@
 package net.cogzmc.core.effect.npc.pathfinding;
 
+import lombok.*;
 import net.cogzmc.core.util.Point;
 
 @Data

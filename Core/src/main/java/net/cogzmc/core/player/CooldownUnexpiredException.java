@@ -1,5 +1,7 @@
 package net.cogzmc.core.player;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import net.cogzmc.core.modular.command.CommandException;
 
 import java.util.concurrent.TimeUnit;

@@ -1,5 +1,9 @@
 package net.cogzmc.core.effect;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
+
 public final class CustomEntityIDManager {
     private static int CURRENT_INDICE = 2000;
 

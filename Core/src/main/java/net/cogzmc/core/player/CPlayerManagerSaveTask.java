@@ -1,5 +1,6 @@
 package net.cogzmc.core.player;
 
+import lombok.Data;
 import net.cogzmc.core.Core;
 
 import java.util.ArrayList;

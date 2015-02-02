@@ -2,6 +2,8 @@ package net.cogzmc.core.player;
 
 import net.cogzmc.core.player.mongo.GroupReloadObserver;
 
+import java.util.List;
+
 /**
  * The {@link net.cogzmc.core.player.CPermissionsManager} is responsible for managing groups.
  *

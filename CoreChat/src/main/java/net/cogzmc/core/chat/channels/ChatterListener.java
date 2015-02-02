@@ -1,6 +1,16 @@
 package net.cogzmc.core.chat.channels;
 
+import lombok.Data;
+import net.cogzmc.core.Core;
 import net.cogzmc.core.chat.CoreChat;
+import net.cogzmc.core.player.COfflinePlayer;
+import net.cogzmc.core.player.CPlayer;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,5 +1,6 @@
 package net.cogzmc.core.player;
 
+import lombok.NonNull;
 import net.cogzmc.core.asset.Asset;
 
 import java.net.InetAddress;

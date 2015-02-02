@@ -2,6 +2,9 @@ package net.cogzmc.core.chat.command;
 
 import net.cogzmc.core.chat.CoreChat;
 import net.cogzmc.core.chat.channels.Channel;
+import net.cogzmc.core.modular.command.CommandMeta;
+import net.cogzmc.core.modular.command.CommandPermission;
+import net.cogzmc.core.modular.command.ModuleCommand;
 
 import java.util.ArrayList;
 import java.util.List;

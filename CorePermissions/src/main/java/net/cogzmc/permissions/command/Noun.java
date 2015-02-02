@@ -1,5 +1,7 @@
 package net.cogzmc.permissions.command;
 
+import net.cogzmc.core.player.CPermissible;
+
 import java.util.List;
 import java.util.Set;
 

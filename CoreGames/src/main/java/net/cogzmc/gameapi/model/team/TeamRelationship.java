@@ -1,5 +1,10 @@
 package net.cogzmc.gameapi.model.team;
 
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
+
 @Value
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

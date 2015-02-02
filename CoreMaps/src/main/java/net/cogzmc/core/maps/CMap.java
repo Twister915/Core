@@ -1,18 +1,23 @@
 package net.cogzmc.core.maps;
 
-import com.sun.corba.se.spi.ior.ObjectId;
-import com.sun.javafx.beans.annotations.NonNull;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.Setter;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import org.bson.types.ObjectId;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 
 import java.io.File;
 import java.util.UUID;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
 
 @Data
 @Setter(AccessLevel.NONE)
 public final class CMap {
-    @NonNull
-    private final UUID mapId;
+    @NonNull private final UUID mapId;
     private World world;
     private File zipFileHandle;
     private File worldFile;
@@ -61,15 +66,13 @@ public final class CMap {
         delete(worldFile);
     }
 
-    private static void delete(@NonNull File fileToDelete) {
-        File[] paths;
-        if (fileToDelete.isDirectory()) {
-            paths = fileToDelete.listFiles();
-            for (File file : paths) {
-                delete(file);
+    private static void delete(@NonNull File file) {
+        if (file.isDirectory()) {
+            for (File file1 : file.listFiles()) {
+                delete(file1);
             }
         } else {
-            fileToDelete.deleteOnExit();
+            file.deleteOnExit();
         }
     }
 }

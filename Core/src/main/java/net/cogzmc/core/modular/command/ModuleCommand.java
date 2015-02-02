@@ -1,7 +1,16 @@
 package net.cogzmc.core.modular.command;
 
+import com.google.common.collect.ImmutableList;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CPlayer;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.*;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 

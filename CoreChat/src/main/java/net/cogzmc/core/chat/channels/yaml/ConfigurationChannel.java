@@ -1,10 +1,16 @@
 package net.cogzmc.core.chat.channels.yaml;
 
+import lombok.Getter;
 import net.cogzmc.core.chat.CoreChat;
 import net.cogzmc.core.chat.channels.Channel;
 import net.cogzmc.core.chat.channels.ChannelException;
 import net.cogzmc.core.chat.channels.MessageArgumentDelegate;
 import net.cogzmc.core.chat.channels.MessageProcessor;
+import net.cogzmc.core.player.COfflinePlayer;
+import net.cogzmc.core.player.CPlayer;
+import org.apache.commons.lang.text.StrSubstitutor;
+import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;

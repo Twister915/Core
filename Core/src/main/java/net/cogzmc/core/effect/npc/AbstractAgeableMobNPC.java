@@ -1,7 +1,12 @@
 package net.cogzmc.core.effect.npc;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.Setter;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.util.Point;
+import org.bukkit.World;
 
 import java.util.Set;
 

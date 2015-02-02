@@ -1,5 +1,9 @@
 package net.cogzmc.permissions;
 
+import net.cogzmc.core.Core;
+import net.cogzmc.core.network.NetCommandHandler;
+import net.cogzmc.core.network.NetworkServer;
+
 final class PermissionsReloadNetCommandHandler implements NetCommandHandler<PermissionsReloadNetCommand> {
     @Override
     public void handleNetCommand(NetworkServer sender, PermissionsReloadNetCommand netCommand) {

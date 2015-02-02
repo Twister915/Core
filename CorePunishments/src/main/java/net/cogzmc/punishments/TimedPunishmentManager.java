@@ -1,5 +1,6 @@
 package net.cogzmc.punishments;
 
+import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.punishments.PunishmentManager;
 import net.cogzmc.punishments.types.PunishmentException;
 import net.cogzmc.punishments.types.TimedPunishment;

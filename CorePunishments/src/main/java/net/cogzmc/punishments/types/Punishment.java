@@ -1,5 +1,7 @@
 package net.cogzmc.punishments.types;
 
+import net.cogzmc.core.player.COfflinePlayer;
+
 import java.util.Date;
 
 public interface Punishment {

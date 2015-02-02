@@ -1,5 +1,6 @@
 package net.cogzmc.core.modular;
 
+import lombok.Getter;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.config.YAMLConfigurationFile;
 import net.cogzmc.core.modular.command.ModuleCommand;
@@ -7,6 +8,10 @@ import net.cogzmc.core.modular.command.ModuleCommandMap;
 import net.cogzmc.core.network.NetworkManager;
 import net.cogzmc.core.player.CPermissionsManager;
 import net.cogzmc.core.player.CPlayerManager;
+import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class ModularPlugin extends JavaPlugin {
     private YAMLConfigurationFile formatsFile;

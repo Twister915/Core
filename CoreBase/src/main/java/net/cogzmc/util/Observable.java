@@ -1,5 +1,7 @@
 package net.cogzmc.util;
 
+import com.google.common.collect.ImmutableSet;
+
 public interface Observable<T> {
     void registerObserver(T observer);
     void unregisterObserver(T observer);

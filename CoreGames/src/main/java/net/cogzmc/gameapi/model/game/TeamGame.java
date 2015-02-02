@@ -1,5 +1,8 @@
 package net.cogzmc.gameapi.model.game;
 
+import lombok.Getter;
+import net.cogzmc.core.modular.ModularPlugin;
+import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.gameapi.model.arena.Arena;
 import net.cogzmc.gameapi.model.team.Team;
 import net.cogzmc.gameapi.model.team.TeamContext;

@@ -1,5 +1,11 @@
 package net.cogzmc.permissions;
 
+import lombok.Getter;
+import net.cogzmc.core.Core;
+import net.cogzmc.core.modular.ModularPlugin;
+import net.cogzmc.core.modular.ModuleMeta;
+import net.cogzmc.core.player.CGroup;
+import net.cogzmc.core.player.CPermissionsManager;
 import net.cogzmc.permissions.command.PermissionsCommand;
 
 @ModuleMeta(

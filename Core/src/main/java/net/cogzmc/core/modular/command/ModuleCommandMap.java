@@ -1,9 +1,16 @@
 package net.cogzmc.core.modular.command;
 
-import com.sun.browser.plugin.PluginManager;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Getter;
+import net.cogzmc.core.Core;
 import net.cogzmc.core.modular.ModularPlugin;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 
-import javax.activation.CommandMap;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -49,8 +56,7 @@ public final class ModuleCommandMap {
     private PluginCommand getCommand(String name, Plugin plugin) {
         PluginCommand command = null;
         try {
-            // You don't need an new array when it's normally varargs anyway :P
-            Constructor commandConstructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
+            Constructor commandConstructor = PluginCommand.class.getDeclaredConstructor(new Class[]{String.class, Plugin.class});
             commandConstructor.setAccessible(true);
             command = (PluginCommand) commandConstructor.newInstance(name, plugin);
         } catch (Exception ex) {

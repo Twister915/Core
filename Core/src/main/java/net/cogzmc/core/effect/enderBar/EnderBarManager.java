@@ -6,6 +6,8 @@ import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerConnectionListener;
 import net.cogzmc.core.player.CPlayerJoinException;
 import net.cogzmc.core.util.Point;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.net.InetAddress;
 import java.util.HashMap;

@@ -1,5 +1,7 @@
 package net.cogzmc.core.network;
 
+import org.json.simple.JSONObject;
+
 import java.lang.reflect.Field;
 import java.util.Date;
 

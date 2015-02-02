@@ -1,5 +1,9 @@
 package net.cogzmc.punishments.types.impl.model;
 
+import lombok.EqualsAndHashCode;
+import net.cogzmc.core.player.COfflinePlayer;
+import org.bson.types.ObjectId;
+
 import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)

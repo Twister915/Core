@@ -1,9 +1,13 @@
 package net.cogzmc.core.chat.command;
 
+import com.google.common.base.Joiner;
 import net.cogzmc.core.chat.CoreChat;
 import net.cogzmc.core.chat.channels.Channel;
 import net.cogzmc.core.chat.channels.ChannelException;
 import net.cogzmc.core.chat.channels.ChatterListener;
+import net.cogzmc.core.modular.command.CommandException;
+import net.cogzmc.core.modular.command.ModuleCommand;
+import net.cogzmc.core.player.CPlayer;
 
 public class QuickMessageCommand extends ModuleCommand {
     private final Channel channel;

@@ -4,6 +4,9 @@ import net.cogzmc.core.chat.CoreChat;
 import net.cogzmc.core.chat.channels.Channel;
 import net.cogzmc.core.chat.channels.ChannelException;
 import net.cogzmc.core.chat.channels.IChannelManager;
+import net.cogzmc.core.modular.command.CommandException;
+import net.cogzmc.core.modular.command.ModuleCommand;
+import net.cogzmc.core.player.CPlayer;
 
 class LeaveCommand extends ModuleCommand {
     private final Channel channel;

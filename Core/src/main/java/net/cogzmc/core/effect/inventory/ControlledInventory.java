@@ -1,10 +1,21 @@
 package net.cogzmc.core.effect.inventory;
 
+import lombok.Data;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerConnectionListener;
 import net.cogzmc.core.player.CPlayerJoinException;
 import net.cogzmc.core.player.CooldownUnexpiredException;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.net.InetAddress;
 import java.util.HashMap;
