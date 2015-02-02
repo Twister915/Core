@@ -1,15 +1,9 @@
 package net.cogzmc.core.effect.enderBar;
 
-import lombok.Data;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.effect.npc.mobs.MobNPCWither;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.util.Point;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 
 import static net.cogzmc.core.effect.enderBar.EnderBarManager.getLocationFor;
 

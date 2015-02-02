@@ -1,13 +1,6 @@
 package net.cogzmc.core.effect.particle;
 
-import com.comphenix.packetwrapper.WrapperPlayServerWorldParticles;
-import lombok.Data;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import net.cogzmc.core.player.CPlayer;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 /**
  * Used to represent a single particle being emitted at a location, and can be sent to many players or a single player

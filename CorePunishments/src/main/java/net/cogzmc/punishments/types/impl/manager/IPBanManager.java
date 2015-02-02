@@ -1,11 +1,6 @@
 package net.cogzmc.punishments.types.impl.manager;
 
-import net.cogzmc.core.Core;
-import net.cogzmc.core.player.COfflinePlayer;
-import net.cogzmc.core.player.CPlayer;
-import net.cogzmc.core.player.CPlayerJoinException;
 import net.cogzmc.punishments.types.impl.model.IPBan;
-import org.bson.types.ObjectId;
 
 import java.net.InetAddress;
 import java.util.Date;

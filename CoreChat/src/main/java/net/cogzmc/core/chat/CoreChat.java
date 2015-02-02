@@ -1,14 +1,9 @@
 package net.cogzmc.core.chat;
 
-import lombok.Getter;
-import net.cogzmc.core.Core;
 import net.cogzmc.core.chat.channels.*;
 import net.cogzmc.core.chat.channels.yaml.ConfigurationChannelManager;
 import net.cogzmc.core.chat.command.ChannelCommand;
 import net.cogzmc.core.chat.privatemessage.PrivateMessageCommand;
-import net.cogzmc.core.modular.ModularPlugin;
-import net.cogzmc.core.modular.ModuleMeta;
-import net.cogzmc.core.player.CPlayerConnectionListener;
 
 @ModuleMeta(
         name = "Core Chat",

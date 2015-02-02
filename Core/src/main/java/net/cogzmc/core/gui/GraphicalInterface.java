@@ -1,6 +1,5 @@
 package net.cogzmc.core.gui;
 
-import com.google.common.collect.ImmutableList;
 import net.cogzmc.core.player.CPlayer;
 
 /**

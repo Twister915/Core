@@ -1,9 +1,7 @@
 package net.cogzmc.core.json;
 
-import com.google.gson.*;
 import net.cogzmc.core.util.Point;
 import net.cogzmc.core.util.Region;
-import org.json.simple.JSONObject;
 
 import java.lang.reflect.Type;
 

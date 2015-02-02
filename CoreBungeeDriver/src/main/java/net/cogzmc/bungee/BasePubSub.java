@@ -1,8 +1,5 @@
 package net.cogzmc.bungee;
 
-import lombok.Getter;
-import redis.clients.jedis.JedisPubSub;
-
 public abstract class BasePubSub extends JedisPubSub {
     @Getter private final String channel;
 

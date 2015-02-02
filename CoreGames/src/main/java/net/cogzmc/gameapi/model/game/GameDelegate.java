@@ -1,6 +1,5 @@
 package net.cogzmc.gameapi.model.game;
 
-import lombok.Getter;
 import net.cogzmc.gameapi.model.arena.Arena;
 
 public abstract class GameDelegate<ArenaType extends Arena> {

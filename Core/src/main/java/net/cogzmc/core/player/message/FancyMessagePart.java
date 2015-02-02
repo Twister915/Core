@@ -1,9 +1,5 @@
 package net.cogzmc.core.player.message;
 
-import lombok.*;
-import org.bukkit.ChatColor;
-import org.json.simple.JSONObject;
-
 @SuppressWarnings("unchecked")
 @EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)

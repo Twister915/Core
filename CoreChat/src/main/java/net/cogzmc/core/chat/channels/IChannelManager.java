@@ -1,8 +1,5 @@
 package net.cogzmc.core.chat.channels;
 
-import com.google.common.collect.ImmutableList;
-import net.cogzmc.core.player.CPlayer;
-
 public interface IChannelManager {
     ImmutableList<Channel> getChannels();
     Channel getChannelByName(String name);

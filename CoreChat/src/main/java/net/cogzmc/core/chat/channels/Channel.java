@@ -1,8 +1,5 @@
 package net.cogzmc.core.chat.channels;
 
-import net.cogzmc.core.player.COfflinePlayer;
-import net.cogzmc.core.player.CPlayer;
-
 public interface Channel {
     String formatMessage(COfflinePlayer sender, String chatMessage);
     String getName();

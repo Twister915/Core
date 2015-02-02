@@ -1,10 +1,5 @@
 package net.cogzmc.coreessentials.signs;
 
-import org.bukkit.ChatColor;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.SignChangeEvent;
-
 /**
  * <p>
  * Latest Change:

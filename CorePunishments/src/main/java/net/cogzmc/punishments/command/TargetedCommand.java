@@ -1,10 +1,5 @@
 package net.cogzmc.punishments.command;
 
-import net.cogzmc.core.Core;
-import net.cogzmc.core.modular.command.ModuleCommand;
-import net.cogzmc.core.player.COfflinePlayer;
-import net.cogzmc.core.player.CPlayer;
-
 import java.util.List;
 import java.util.UUID;
 

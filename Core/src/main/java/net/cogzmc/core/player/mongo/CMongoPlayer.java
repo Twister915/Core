@@ -1,27 +1,9 @@
 package net.cogzmc.core.player.mongo;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.gui.InventoryButton;
 import net.cogzmc.core.player.*;
 import net.cogzmc.core.util.Point;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.permissions.PermissionAttachment;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
-import org.bukkit.util.Vector;
-import org.kitteh.tag.TagAPI;
 
 import java.lang.ref.WeakReference;
 import java.net.InetAddress;

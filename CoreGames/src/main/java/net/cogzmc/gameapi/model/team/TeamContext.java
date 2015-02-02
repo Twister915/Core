@@ -1,8 +1,5 @@
 package net.cogzmc.gameapi.model.team;
 
-import com.google.common.collect.ImmutableSet;
-import net.cogzmc.core.player.CPlayer;
-
 import java.util.*;
 
 public final class TeamContext<TeamType extends Team> {

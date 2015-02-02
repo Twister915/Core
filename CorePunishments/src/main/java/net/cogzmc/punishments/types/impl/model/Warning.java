@@ -1,10 +1,7 @@
 package net.cogzmc.punishments.types.impl.model;
 
-import lombok.EqualsAndHashCode;
-import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.punishments.types.HumanFriendlyName;
 import net.cogzmc.punishments.types.impl.TargetOnlinesOnly;
-import org.bson.types.ObjectId;
 
 import java.util.Date;
 

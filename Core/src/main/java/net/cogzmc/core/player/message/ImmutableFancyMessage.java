@@ -1,10 +1,6 @@
 package net.cogzmc.core.player.message;
 
-import com.comphenix.packetwrapper.WrapperPlayServerChat;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import lombok.Getter;
 import net.cogzmc.core.player.CPlayer;
-import org.bukkit.entity.Player;
 
 @Getter
 public final class ImmutableFancyMessage implements Cloneable {

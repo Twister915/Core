@@ -1,7 +1,5 @@
 package net.cogzmc.punishments;
 
-import net.cogzmc.core.player.COfflinePlayer;
-import net.cogzmc.core.player.CPlayerConnectionListener;
 import net.cogzmc.punishments.types.Punishment;
 import net.cogzmc.punishments.types.PunishmentException;
 

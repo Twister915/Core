@@ -1,7 +1,6 @@
 package net.cogzmc.core;
 
 import net.cogzmc.core.network.NetworkManager;
-import net.cogzmc.core.player.CDatabase;
 import net.cogzmc.core.player.CPermissionsManager;
 import net.cogzmc.core.player.CPlayerManager;
 

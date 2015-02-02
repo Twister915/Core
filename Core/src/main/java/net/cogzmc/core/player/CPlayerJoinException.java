@@ -1,8 +1,5 @@
 package net.cogzmc.core.player;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 @EqualsAndHashCode(callSuper = false)
 @Data
 /**

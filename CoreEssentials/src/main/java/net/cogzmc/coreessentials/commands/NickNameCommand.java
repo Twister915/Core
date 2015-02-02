@@ -1,10 +1,6 @@
 package net.cogzmc.coreessentials.commands;
 
-import net.cogzmc.core.Core;
-import net.cogzmc.core.modular.command.*;
-import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.coreessentials.CoreEssentials;
-import org.bukkit.ChatColor;
 
 import java.util.List;
 

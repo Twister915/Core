@@ -1,7 +1,5 @@
 package net.cogzmc.core.modular.command;
 
-import org.bukkit.ChatColor;
-
 public final class ArgumentRequirementException extends CommandException implements FriendlyException {
     public ArgumentRequirementException(String message) {
         super(message);

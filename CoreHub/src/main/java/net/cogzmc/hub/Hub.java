@@ -18,7 +18,8 @@ import java.util.Set;
         description = "The base hub API and plugin."
 )
 public final class Hub extends ModularPlugin {
-    @Getter private static Hub instance;
+    @Getter
+    private static Hub instance;
     private final Set<Limitation> limitations = new HashSet<>();
     private Integer attemptedModuleEnables = 0;
 

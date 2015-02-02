@@ -1,19 +1,12 @@
 package net.cogzmc.punishments.types.impl.manager;
 
-import com.mongodb.DBObject;
-import net.cogzmc.core.Core;
-import net.cogzmc.core.player.COfflinePlayer;
-import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.punishments.TimedPunishmentManager;
 import net.cogzmc.punishments.types.PunishmentException;
 import net.cogzmc.punishments.types.impl.TargetOnlinesOnly;
 import net.cogzmc.punishments.types.impl.model.MongoTemporaryPunishment;
-import org.bson.types.ObjectId;
 
 import java.util.Date;
 import java.util.UUID;
-
-import static net.cogzmc.core.player.mongo.MongoUtils.getValueFrom;
 
 abstract class BaseTemporaryMongoManager<T extends MongoTemporaryPunishment> extends BaseMongoManager<T> implements TimedPunishmentManager<T> {
     public BaseTemporaryMongoManager(Class<T> clazz) {

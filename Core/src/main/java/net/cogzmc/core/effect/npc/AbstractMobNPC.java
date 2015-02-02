@@ -1,25 +1,9 @@
 package net.cogzmc.core.effect.npc;
 
-import com.comphenix.packetwrapper.*;
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.comphenix.protocol.wrappers.WrappedWatchableObject;
-import com.google.common.collect.ImmutableSet;
-import lombok.*;
-import lombok.extern.java.Log;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.effect.CustomEntityIDManager;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.util.Point;
-import net.cogzmc.util.Observable;
-import net.cogzmc.util.RandomUtils;
-import org.bukkit.World;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 import java.lang.ref.WeakReference;
 import java.util.*;

@@ -1,9 +1,5 @@
 package net.cogzmc.core.network.lilypad;
 
-import lilypad.client.connect.api.request.impl.MessageRequest;
-import lilypad.client.connect.api.request.impl.RedirectRequest;
-import lombok.Data;
-import lombok.SneakyThrows;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.network.NetCommand;
 import net.cogzmc.core.network.NetworkServer;

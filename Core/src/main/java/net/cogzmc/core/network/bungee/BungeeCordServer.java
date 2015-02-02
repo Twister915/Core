@@ -1,17 +1,10 @@
 package net.cogzmc.core.network.bungee;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-import lombok.*;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.network.NetCommand;
 import net.cogzmc.core.network.NetworkServer;
 import net.cogzmc.core.network.NetworkUtils;
 import net.cogzmc.core.player.CPlayer;
-import org.bukkit.Bukkit;
-import org.json.simple.JSONObject;
-import redis.clients.jedis.Jedis;
 
 import java.util.*;
 

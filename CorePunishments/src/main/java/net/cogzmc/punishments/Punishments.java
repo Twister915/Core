@@ -1,11 +1,5 @@
 package net.cogzmc.punishments;
 
-import net.cogzmc.core.Core;
-import net.cogzmc.core.modular.ModularPlugin;
-import net.cogzmc.core.modular.ModuleMeta;
-import net.cogzmc.core.player.CPlayer;
-import net.cogzmc.core.player.CPlayerConnectionListener;
-import net.cogzmc.core.player.CPlayerJoinException;
 import net.cogzmc.punishments.command.LookupCommand;
 import net.cogzmc.punishments.command.PermanentPunishCommand;
 import net.cogzmc.punishments.command.TemporaryPunishCommand;

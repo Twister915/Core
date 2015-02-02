@@ -1,17 +1,7 @@
 package net.cogzmc.core.player.mongo;
 
-import com.google.common.collect.ImmutableList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.MongoException;
-import lombok.NonNull;
-import lombok.Synchronized;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.*;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;

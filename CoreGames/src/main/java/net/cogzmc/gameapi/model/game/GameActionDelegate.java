@@ -1,16 +1,6 @@
 package net.cogzmc.gameapi.model.game;
 
-import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.gameapi.model.arena.Arena;
-import net.cogzmc.core.util.Point;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Vehicle;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * The action delegate will be told by a game <b>after</b> something happens so that the game logic can be executed

@@ -1,6 +1,5 @@
 package net.cogzmc.core.network;
 
-import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
 
 import java.util.Date;

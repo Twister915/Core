@@ -1,22 +1,5 @@
 package net.cogzmc.bungee;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
-import net.cogzmc.core.player.CGroupRepository;
-import net.cogzmc.core.player.CPlayerRepository;
-import net.cogzmc.core.player.mongo.CMongoDatabase;
-import net.cogzmc.core.player.mongo.CMongoGroupRepository;
-import net.cogzmc.core.player.mongo.CMongoPlayerRepository;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.config.Configuration;
-import net.md_5.bungee.config.ConfigurationProvider;
-import net.md_5.bungee.config.YamlConfiguration;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

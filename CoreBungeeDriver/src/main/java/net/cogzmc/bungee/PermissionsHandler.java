@@ -1,13 +1,5 @@
 package net.cogzmc.bungee;
 
-import net.cogzmc.core.player.COfflinePlayer;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.PostLoginEvent;
-import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.event.EventHandler;
-import net.md_5.bungee.event.EventPriority;
-
 import java.util.Map;
 
 public final class PermissionsHandler implements Listener {

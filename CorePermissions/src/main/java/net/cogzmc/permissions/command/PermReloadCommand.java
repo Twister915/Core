@@ -1,13 +1,6 @@
 package net.cogzmc.permissions.command;
 
-import net.cogzmc.core.Core;
-import net.cogzmc.core.modular.command.CommandException;
-import net.cogzmc.core.modular.command.CommandPermission;
-import net.cogzmc.core.modular.command.ModuleCommand;
 import net.cogzmc.permissions.PermissionsManager;
-import org.bukkit.Sound;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 @CommandPermission("core.permissions.reload")
 public final class PermReloadCommand extends ModuleCommand {

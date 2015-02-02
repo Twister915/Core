@@ -1,12 +1,6 @@
 package net.cogzmc.core.player;
 
-import lombok.Data;
 import net.cogzmc.core.Core;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.*;
 
 /**
  * This will talk to any {@link net.cogzmc.core.player.CPlayerManager} and bridge communications between Bukkit and the Core.

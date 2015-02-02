@@ -1,11 +1,6 @@
 package net.cogzmc.hub.impl;
 
-import lombok.EqualsAndHashCode;
 import net.cogzmc.hub.Limitation;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 
 @EqualsAndHashCode(callSuper = true)
 public final class BuildLimitation extends Limitation {

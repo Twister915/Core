@@ -1,8 +1,5 @@
 package net.cogzmc.gameapi.model.arena;
 
-import lombok.Getter;
-import org.bukkit.World;
-
 abstract class BaseArena implements Arena {
     @Getter private World world;
     @Getter private boolean loaded;

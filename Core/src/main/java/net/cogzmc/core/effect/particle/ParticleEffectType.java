@@ -1,7 +1,5 @@
 package net.cogzmc.core.effect.particle;
 
-import org.bukkit.Material;
-
 @SuppressWarnings("SpellCheckingInspection")
 public enum ParticleEffectType {
     HUGE_EXPLOSION("hugeexplosion"),

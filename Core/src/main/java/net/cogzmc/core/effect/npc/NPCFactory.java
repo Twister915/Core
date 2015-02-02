@@ -1,6 +1,5 @@
 package net.cogzmc.core.effect.npc;
 
-import lombok.NonNull;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.util.Point;
 

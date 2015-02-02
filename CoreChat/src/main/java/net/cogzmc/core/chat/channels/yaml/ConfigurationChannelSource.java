@@ -1,11 +1,9 @@
 package net.cogzmc.core.chat.channels.yaml;
 
-import lombok.Data;
 import net.cogzmc.core.chat.CoreChat;
 import net.cogzmc.core.chat.channels.Channel;
 import net.cogzmc.core.chat.channels.ChannelException;
 import net.cogzmc.core.chat.channels.ChannelSource;
-import net.cogzmc.core.config.YAMLConfigurationFile;
 
 import java.io.File;
 import java.io.FilenameFilter;

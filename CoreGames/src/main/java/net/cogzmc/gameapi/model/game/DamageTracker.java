@@ -1,15 +1,8 @@
 package net.cogzmc.gameapi.model.game;
 
-import com.google.common.collect.ImmutableList;
-import lombok.*;
-import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.gameapi.model.arena.Arena;
-import net.cogzmc.core.util.Point;
-import org.bukkit.entity.LivingEntity;
 
 import java.util.*;
-
-import static org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public final class DamageTracker<ArenaType extends Arena> extends GameActionDelegate<ArenaType> {
     protected DamageTracker(Game<ArenaType> game) {

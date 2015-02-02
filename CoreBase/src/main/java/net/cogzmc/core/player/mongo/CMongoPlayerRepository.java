@@ -1,15 +1,8 @@
 package net.cogzmc.core.player.mongo;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import lombok.Data;
-import lombok.Synchronized;
 import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayerRepository;
 import net.cogzmc.core.player.DatabaseConnectException;
-import org.bson.types.ObjectId;
 
 import java.net.InetAddress;
 import java.util.ArrayList;

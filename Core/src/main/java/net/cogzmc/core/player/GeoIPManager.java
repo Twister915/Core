@@ -1,12 +1,5 @@
 package net.cogzmc.core.player;
 
-import com.maxmind.geoip2.DatabaseReader;
-import com.maxmind.geoip2.exception.GeoIp2Exception;
-import com.maxmind.geoip2.model.CityResponse;
-import lombok.Data;
-import lombok.NonNull;
-import lombok.Value;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;

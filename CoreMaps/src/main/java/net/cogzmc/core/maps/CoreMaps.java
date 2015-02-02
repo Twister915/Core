@@ -1,11 +1,5 @@
 package net.cogzmc.core.maps;
 
-import lombok.Getter;
-import net.cogzmc.core.Core;
-import net.cogzmc.core.modular.ModularPlugin;
-import net.cogzmc.core.modular.ModuleMeta;
-import net.cogzmc.core.player.mongo.CMongoDatabase;
-
 @ModuleMeta(
         name = "CoreMaps",
         description = "Manages maps for a network based, or single server."

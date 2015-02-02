@@ -1,10 +1,6 @@
 package net.cogzmc.core.chat.channels;
 
-import net.cogzmc.core.Core;
 import net.cogzmc.core.chat.CoreChat;
-import net.cogzmc.core.network.NetCommandHandler;
-import net.cogzmc.core.network.NetworkServer;
-import net.cogzmc.core.player.COfflinePlayer;
 
 import java.util.UUID;
 

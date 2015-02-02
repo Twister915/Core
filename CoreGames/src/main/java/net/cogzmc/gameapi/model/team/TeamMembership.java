@@ -1,11 +1,5 @@
 package net.cogzmc.gameapi.model.team;
 
-import com.google.common.collect.ImmutableSet;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Value;
-import net.cogzmc.core.player.CPlayer;
-
 import java.util.HashSet;
 import java.util.Set;
 

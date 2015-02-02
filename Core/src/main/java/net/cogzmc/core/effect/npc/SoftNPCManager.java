@@ -1,20 +1,9 @@
 package net.cogzmc.core.effect.npc;
 
-import com.comphenix.packetwrapper.WrapperPlayServerEntityDestroy;
-import lombok.Getter;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerConnectionListener;
 import net.cogzmc.core.player.CPlayerJoinException;
-import net.cogzmc.util.RandomUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.lang.ref.WeakReference;
 import java.net.InetAddress;

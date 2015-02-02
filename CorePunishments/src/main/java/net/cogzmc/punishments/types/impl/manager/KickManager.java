@@ -1,11 +1,7 @@
 package net.cogzmc.punishments.types.impl.manager;
 
-import net.cogzmc.core.Core;
-import net.cogzmc.core.player.COfflinePlayer;
-import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.punishments.Punishments;
 import net.cogzmc.punishments.types.impl.model.Kick;
-import org.bson.types.ObjectId;
 
 import java.util.Date;
 

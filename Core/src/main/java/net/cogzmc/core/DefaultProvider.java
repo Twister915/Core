@@ -4,14 +4,10 @@ import net.cogzmc.core.config.YAMLConfigurationFile;
 import net.cogzmc.core.network.NetworkManager;
 import net.cogzmc.core.network.bungee.BungeeCordNetworkManager;
 import net.cogzmc.core.network.lilypad.LilyPadNetworkManager;
-import net.cogzmc.core.player.CDatabase;
 import net.cogzmc.core.player.CPermissionsManager;
 import net.cogzmc.core.player.CPlayerManager;
-import net.cogzmc.core.player.DatabaseConnectException;
-import net.cogzmc.core.player.mongo.CMongoDatabase;
 import net.cogzmc.core.player.mongo.CMongoPermissionsManager;
 import net.cogzmc.core.player.mongo.CMongoPlayerManager;
-import org.bukkit.configuration.file.FileConfiguration;
 
 final class DefaultProvider implements Provider {
     @Override

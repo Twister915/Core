@@ -1,16 +1,8 @@
 package net.cogzmc.core.gui;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NonNull;
-import lombok.Setter;
 import net.cogzmc.core.effect.npc.ClickAction;
 import net.cogzmc.core.modular.command.EmptyHandlerException;
 import net.cogzmc.core.player.CPlayer;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,7 +1,5 @@
 package net.cogzmc.core.modular.command;
 
-import org.bukkit.ChatColor;
-
 public final class PermissionException extends CommandException implements FriendlyException {
     public PermissionException(String message) {
         super(message);
