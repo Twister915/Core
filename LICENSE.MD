@@ -12,4 +12,3 @@
    See the License for the specific language governing permissions and
    limitations under the License.
    
-   ANY ORGANIZATION HAVING AFFILIATION WITH DEADLOX OR Matt (MaTTHD) ARE PROHIBITED USAGE OF THIS SOFTWARE WITHOUT PRIOR WRITTEN CONCENT.
