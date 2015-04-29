@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 
 import java.lang.reflect.Type;
 
+@Deprecated
 @SuppressWarnings("unchecked")
 public final class RegionSerializer implements JSONSerializer<Region>, JsonSerializer<Region>, JsonDeserializer<Region> {
     private final static String MIN = "min";

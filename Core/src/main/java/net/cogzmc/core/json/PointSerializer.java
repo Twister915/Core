@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 
 import java.lang.reflect.Type;
 
+@Deprecated
 public final class PointSerializer implements JSONSerializer<Point>, JsonDeserializer<Point>, JsonSerializer<Point> {
     private final static String X = "x";
     private final static String Y = "y";

@@ -24,9 +24,7 @@ final class EnderBarListener implements Listener {
         MobNPCWither wither = manager.witherBar.get(onlinePlayer);
         if (wither == null) return;
         Point current = Point.of(getLocationFor(onlinePlayer));
-        if (wither.isSpawned() && current.distanceSquared(wither.getLocation()) > 9) {
-            wither.move(current);
-        }
+        if (wither.isSpawned() && current.distanceSquared(wither.getLocation()) > 4) wither.move(current);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

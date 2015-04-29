@@ -2,9 +2,6 @@ package net.cogzmc.core.player.message.parser;
 
 import java.util.regex.Pattern;
 
-/**
- * Created by August on 8/22/14.
- */
 public enum ParserRegex {
 
 	EMPHASIS("\\*((?!\\s)[^\\*]+(?<!\\s))\\*"),

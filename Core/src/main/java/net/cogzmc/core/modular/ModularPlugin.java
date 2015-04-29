@@ -1,5 +1,7 @@
 package net.cogzmc.core.modular;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.config.YAMLConfigurationFile;
@@ -14,9 +16,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class ModularPlugin extends JavaPlugin {
-    private YAMLConfigurationFile formatsFile;
     @Getter private ModuleMeta meta;
     @Getter private ModuleCommandMap commandMap;
+    @Getter private Gson gson = getNewGson();
+    @Getter private Formatter formatter;
+
+    protected Gson getNewGson() {
+        return getGsonBuilder().create();
+    }
+
+    protected GsonBuilder getGsonBuilder() {
+        return new GsonBuilder();
+    }
 
     @Override
     public final void onEnable() {
@@ -26,11 +37,14 @@ public abstract class ModularPlugin extends JavaPlugin {
                 return;
             }
             Core.getInstance().onModulePreEnable(this);
+            if (getClass().isAnnotationPresent(UsesFormats.class)) {
+                YAMLConfigurationFile formatsFile = new YAMLConfigurationFile(this, getClass().getAnnotation(UsesFormats.class).file());
+                formatsFile.saveDefaultConfig();
+                formatter = new Formatter(formatsFile);
+            }
             meta = getClass().getAnnotation(ModuleMeta.class);
             if (meta == null) throw new IllegalStateException("You must annotate your class with the @" + ModuleMeta.class.getName() + " annotation!");
             saveDefaultConfig();
-            this.formatsFile = new YAMLConfigurationFile(this, "formats.yml");
-            this.formatsFile.saveDefaultConfig();
             this.commandMap = new ModuleCommandMap(this);
             onModuleEnable();
         } catch (Exception e) {
@@ -85,36 +99,37 @@ public abstract class ModularPlugin extends JavaPlugin {
 
     /* Formatting methods */
 
+    @Deprecated
     public final String getFormatRaw(String key, String[]... formatters) {
-        FileConfiguration config = formatsFile.getConfig(); //Get the formats file
-        if (!config.contains(key)) return null; //Check if it has this format key, and if not return null
-        String unFormattedString = ChatColor.translateAlternateColorCodes('&',config.getString(key)); //Get the un-formatted key
-        if (formatters == null) return unFormattedString;
-        for (String[] formatter : formatters) { //Iterate through the formatters
-            if (formatter.length < 2) continue; //Validate the length
-            if (formatter[0] == null || formatter[1] == null) continue;
-            unFormattedString = unFormattedString.replace(formatter[0], formatter[1]); //Replace all in the unformatted string
+        Formatter.FormatBuilder begin = formatter.begin(key);
+        for (String[] strings : formatters) {
+            if (strings.length != 2) continue;
+            begin.withModifier(strings[0], strings[1]);
         }
-        return unFormattedString; //Return
+        return begin.withPrefix(false).get();
     }
 
+    @Deprecated
     public final String getFormat(String key, boolean prefix, String[]... formatters) {
         String formatRaw = getFormatRaw(key, formatters);
         String prefixString = getFormatRaw("prefix");
         return !prefix || prefixString == null ? formatRaw : prefixString + formatRaw;
     }
 
+    @Deprecated
     public final String getFormat(String key, String[]... formatters) {
         return getFormat(key, true, formatters);
     }
 
+    @Deprecated
     public final String getFormat(String key) {
         //noinspection NullArgumentToVariableArgMethod
         return getFormat(key, true, null);
     }
 
+    @Deprecated
     public final boolean hasFormat(String key) {
-        return formatsFile.getConfig().contains(key);
+        return formatter.has(key);
     }
 
     public final CPlayerManager getPlayerManager() {
