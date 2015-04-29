@@ -38,7 +38,6 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
     @Getter private InetAddress address = null;
     @Getter private final CooldownManager cooldownManager = new CooldownManager();
     private final CMongoPlayerScoreboardManager scoreboardManager = new CMongoPlayerScoreboardManager(this);
-    private String tagName;
     private String currentPrefix = null;
 
     public CMongoPlayer(Player player, COfflineMongoPlayer offlinePlayer, CMongoPlayerManager manager) {
