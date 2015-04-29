@@ -1,17 +1,21 @@
 package net.cogzmc.core.effect.particle;
 
-import com.comphenix.packetwrapper.WrapperPlayServerWorldParticles;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.reflect.StructureModifier;
 import lombok.Data;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import net.cogzmc.core.player.CPlayer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * Used to represent a single particle being emitted at a location, and can be sent to many players or a single player
- * using the {@link #emitGlobally(Long)} or {@link #emitToPlayer(org.bukkit.entity.Player)} methods provided by this
+ * using the {@link #(Long)} or {@link #(org.bukkit.entity.Player)} methods provided by this
  * class.
  */
 @Data
@@ -59,15 +63,18 @@ public final class ParticleEffect {
         this.type = type;
     }
 
-    private WrapperPlayServerWorldParticles getPacket(Location location) {
-        WrapperPlayServerWorldParticles packet = new WrapperPlayServerWorldParticles();
-        packet.setLocation(location);
-        packet.setOffsetX(xSpread);
-        packet.setOffsetY(ySpread);
-        packet.setOffsetZ(zSpread);
-        packet.setNumberOfParticles(amount);
-        packet.setParticleName(customParticle != null ? customParticle : type.toString());
-        if (speed != null) packet.setParticleSpeed(speed);
+    private PacketContainer getPacket(Location location) {
+        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+        PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.WORLD_PARTICLES);
+        packet.getStrings().write(0, type.toString());
+        StructureModifier<Float> floatStructure = packet.getFloat();
+        floatStructure.write(0, ((float) location.getX()));//location
+        floatStructure.write(1, ((float) location.getY()));
+        floatStructure.write(2, ((float) location.getZ()));
+        floatStructure.write(3, xSpread);//offset
+        floatStructure.write(4, ySpread);
+        floatStructure.write(5, zSpread);
+        packet.getIntegers().write(0, amount);
         return packet;
     }
 
@@ -75,14 +82,15 @@ public final class ParticleEffect {
      * Sends the particle effect you have created to the specified online player.
      * @param player The player to send the packet to.
      */
-    public void emitToPlayer(@NonNull CPlayer player, Location location) {
-        getPacket(location).sendPacket(player.getBukkitPlayer());
+    public void emitToPlayer(@NonNull CPlayer player, Location location) throws InvocationTargetException {
+        PacketContainer packet = getPacket(location);
+        ProtocolLibrary.getProtocolManager().sendServerPacket(player.getBukkitPlayer(), packet);
     }
 
-    public void emitToPlayers(@NonNull Iterable<CPlayer> players, Location location) {
-        WrapperPlayServerWorldParticles packet = getPacket(location);
+    public void emitToPlayers(@NonNull Iterable<CPlayer> players, Location location) throws InvocationTargetException {
+        PacketContainer packet = getPacket(location);
         for (CPlayer player : players) {
-            packet.sendPacket(player.getBukkitPlayer());
+            ProtocolLibrary.getProtocolManager().sendServerPacket(player.getBukkitPlayer(), packet);
         }
     }
 
@@ -90,12 +98,12 @@ public final class ParticleEffect {
      * Emits a particle effect to all players within a defined radius.
      * @param radius The radius to send the particle within.
      */
-    public void emitGlobally(Long radius, Location location) {
+    public void emitGlobally(Long radius, Location location) throws InvocationTargetException {
         double distanceSquared = Math.pow(radius, 2); //Distance squared is faster than doing sqrt always.
-        WrapperPlayServerWorldParticles packet = getPacket(location);
+        PacketContainer packet = getPacket(location);
         for (Player player : location.getWorld().getPlayers()) {
             //Determines if the distance from where our particle will be is less than our radius, and marks for sending if so
-            if (player.getLocation().distanceSquared(location) <= distanceSquared) packet.sendPacket(player);
+            if (player.getLocation().distanceSquared(location) <= distanceSquared) ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
         }
     }
 

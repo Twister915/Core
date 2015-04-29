@@ -1,6 +1,8 @@
 package net.cogzmc.core.effect.npc;
 
-import com.comphenix.packetwrapper.WrapperPlayServerEntityEquipment;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import net.cogzmc.core.player.CPlayer;
@@ -9,6 +11,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -66,18 +69,22 @@ public abstract class AbstractGearMobNPC extends AbstractMobNPC {
     private void updateEquipment() {
         for (int x = 0; x <= 4; x++) {
             if (!gearToUpdate.contains(x)) continue;
-            WrapperPlayServerEntityEquipment packet = new WrapperPlayServerEntityEquipment();
-            packet.setEntityId(id);
-            packet.setSlot((short)x);
+            PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
+            packet.getIntegers().write(0, id);
+            packet.getShorts().write(1, (short) x);
             switch (x) {
                 case 0:
-                    packet.setItem(itemInHand);
+                    packet.getItemModifier().write(2, itemInHand);
                     break;
                 default:
-                    packet.setItem(armor[x-1]);
+                    packet.getItemModifier().write(2, armor[x-1]);
             }
             for (Player player : getTargets()) {
-                packet.sendPacket(player);
+                try {
+                    ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
             }
         }
         gearToUpdate.clear();

@@ -8,7 +8,7 @@ import net.cogzmc.core.chat.channels.MessageArgumentDelegate;
 import net.cogzmc.core.chat.channels.MessageProcessor;
 import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
-import org.apache.commons.lang.text.StrSubstitutor;
+import org.apache.commons.lang3.text.StrSubstitutor;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 

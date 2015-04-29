@@ -1,8 +1,8 @@
 package net.cogzmc.core.effect.npc;
 
-import com.comphenix.packetwrapper.WrapperPlayServerEntityDestroy;
 import lombok.Getter;
 import net.cogzmc.core.Core;
+import net.cogzmc.core.effect.npc.packets.WrapperPlayServerEntityDestroy;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerConnectionListener;
 import net.cogzmc.core.player.CPlayerJoinException;

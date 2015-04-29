@@ -16,7 +16,6 @@
         <module>CorePermissions</module>
         <module>CoreHub</module>
         <module>CoreChat</module>
-        <module>CoreGames</module>
         <module>CoreServerlet</module>
         <module>CoreMaps</module>
         <module>CoreBungeeDriver</module>

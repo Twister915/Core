@@ -1,15 +1,11 @@
 package net.cogzmc.core.util;
 
-import lombok.Getter;
 import lombok.Value;
-import net.cogzmc.core.json.RegionSerializer;
 
 import java.util.Iterator;
 
 @Value
 public final class Region implements Iterable<Point> {
-    @Getter private final static RegionSerializer serializer = new RegionSerializer();
-
     private final Point min;
     private final Point max;
 

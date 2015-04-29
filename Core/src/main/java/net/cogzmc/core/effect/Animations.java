@@ -1,7 +1,7 @@
 package net.cogzmc.core.effect;
 
-import com.comphenix.packetwrapper.WrapperPlayServerAnimation;
 import com.comphenix.protocol.ProtocolLibrary;
+import net.cogzmc.core.effect.npc.packets.WrapperPlayServerAnimation;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 

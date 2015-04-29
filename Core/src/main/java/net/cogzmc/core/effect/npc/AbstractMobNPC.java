@@ -1,6 +1,5 @@
 package net.cogzmc.core.effect.npc;
 
-import com.comphenix.packetwrapper.*;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
@@ -12,6 +11,7 @@ import lombok.*;
 import lombok.extern.java.Log;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.effect.CustomEntityIDManager;
+import net.cogzmc.core.effect.npc.packets.*;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.util.Point;
 import net.cogzmc.util.Observable;

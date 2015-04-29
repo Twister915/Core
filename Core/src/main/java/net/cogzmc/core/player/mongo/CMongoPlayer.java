@@ -21,7 +21,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
-import org.kitteh.tag.TagAPI;
 
 import java.lang.ref.WeakReference;
 import java.net.InetAddress;
@@ -277,29 +276,7 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
 
     @Override
     public void onJoin() {
-        if (hasDisplayName() || hasTagName()) updateTag();
-    }
 
-    @Override
-    public void setTagName(String tagName) {
-        this.tagName = tagName;
-        updateTag();
-    }
-
-    @Override
-    public String getTagName() {
-        return tagName == null ? getDisplayName() : tagName;
-    }
-
-
-    @Override
-    public void removeTagName() {
-        setTagName(null);
-    }
-
-    @Override
-    public boolean hasTagName() {
-        return tagName != null || hasDisplayName();
     }
 
     @Override
@@ -375,10 +352,6 @@ final class CMongoPlayer extends COfflineMongoPlayer implements CPlayer {
             if (Core.getNetworkManager().kickViaNetworkManager(message, this)) return;
         }
         getBukkitPlayer().kickPlayer(message);
-    }
-
-    private void updateTag() {
-        TagAPI.refreshPlayer(getBukkitPlayer());
     }
 
     @Override
