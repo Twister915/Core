@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.StructureModifier;
 import lombok.Data;
 import net.cogzmc.core.PlayerTargets;
+import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.util.Point;
 import org.bukkit.entity.Player;
 
@@ -36,9 +37,9 @@ public final class ProtocolLibParticleEffectEmitter {
         if (particleData != 0) floatStructure.write(6, particleData);//?!?!?
         packet.getIntegers().write(0, amount);
         if (data != null && data.length != 0) packet.getIntegerArrays().write(0, data);
-        for (Player target : targets) {
+        for (CPlayer target : targets) {
             try {
-                protocolManager.sendServerPacket(target, packet, true);
+                protocolManager.sendServerPacket(target.getBukkitPlayer(), packet, true);
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             }

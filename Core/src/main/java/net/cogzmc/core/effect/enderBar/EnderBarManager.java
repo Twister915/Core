@@ -1,6 +1,7 @@
 package net.cogzmc.core.effect.enderBar;
 
 import net.cogzmc.core.Core;
+import net.cogzmc.core.PlayerTargets;
 import net.cogzmc.core.effect.npc.mobs.MobNPCWither;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerConnectionListener;
@@ -46,6 +47,7 @@ public final class EnderBarManager implements CPlayerConnectionListener {
      * @param player The {@link net.cogzmc.core.player.CPlayer} to set ender bar health for.
      * @param health The health to set the ender dragon's bar to.
      */
+    @Deprecated
     public void setHealthPercentageFor(CPlayer player, Float health) {
         createIfDoesNotExist(player);
         MobNPCWither mobNPCWither = witherBar.get(player);
@@ -61,6 +63,23 @@ public final class EnderBarManager implements CPlayerConnectionListener {
         if (!witherBar.containsKey(player)) return;
         MobNPCWither witherBar = this.witherBar.get(player);
         if (witherBar.isSpawned()) witherBar.despawn();
+    }
+
+    public void setFor(CPlayer player, String msg, Float v) {
+        setTextFor(player, msg);
+        setHealthPercentageFor(player, v);
+    }
+
+    public void setHealthPercentageFor(PlayerTargets target, Float v) {
+        target.forEach((p) -> setHealthPercentageFor(p, v));
+    }
+
+    public void setTextFor(PlayerTargets target, String text) {
+        target.forEach((p) -> setTextFor(p, text));
+    }
+
+    public void setFor(PlayerTargets target, String msg, Float v) {
+        target.forEach((p) -> setFor(p, msg, v));
     }
 
     /**

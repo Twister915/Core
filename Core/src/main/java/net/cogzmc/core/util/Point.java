@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 
 @Data
 @RequiredArgsConstructor(staticName = "of")
@@ -19,6 +20,14 @@ public final class Point implements Cloneable {
 
     public Location getLocation(World world) {
         return new Location(world, x, y, z, yaw, pitch);
+    }
+
+    public Location in(World world) {
+        return getLocation(world);
+    }
+
+    public static Point of(Entity entity) {
+        return Point.of(entity.getLocation());
     }
 
     public static Point of(Double x, Double y, Double z) {

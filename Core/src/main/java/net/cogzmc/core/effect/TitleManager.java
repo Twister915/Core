@@ -7,6 +7,7 @@ import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import net.cogzmc.core.PlayerTargets;
+import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.util.VersionUtil;
 import org.bukkit.entity.Player;
 
@@ -68,14 +69,14 @@ public final class TitleManager {
         players.forEach((player) -> {
             if (!shouldSend(player)) return;
             try {
-                ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet, true);
+                ProtocolLibrary.getProtocolManager().sendServerPacket(player.getBukkitPlayer(), packet, true);
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         });
     }
 
-    private boolean shouldSend(Player player) {
-        return VersionUtil.is18(player);
+    private boolean shouldSend(CPlayer player) {
+        return VersionUtil.is18(player.getBukkitPlayer());
     }
 }

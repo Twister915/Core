@@ -3,6 +3,7 @@ package net.cogzmc.core;
 import lombok.Getter;
 import lombok.NonNull;
 import net.cogzmc.core.config.YAMLConfigurationFile;
+import net.cogzmc.core.effect.TitleManager;
 import net.cogzmc.core.effect.enderBar.EnderBarManager;
 import net.cogzmc.core.effect.npc.SoftNPCManager;
 import net.cogzmc.core.modular.ModularPlugin;
@@ -55,6 +56,7 @@ public class Core extends JavaPlugin {
     private CPermissionsManager permissionsManager;
     private NetworkManager networkManager;
     private EnderBarManager enderBarManager;
+    private TitleManager titleManager;
 
     @Getter private YAMLConfigurationFile databaseConfiguration;
     @Getter private Integer saveFrequency;
@@ -95,6 +97,7 @@ public class Core extends JavaPlugin {
 
             //Some extras
             this.enderBarManager = new EnderBarManager();
+            this.titleManager = new TitleManager();
             new SoftNPCManager();
             File geoIPDatabase = new File(getDataFolder(), getConfig().getString("geo-ip-database"));
             if (geoIPDatabase.exists()) {
@@ -199,4 +202,6 @@ public class Core extends JavaPlugin {
     }
 
     public static EnderBarManager getEnderBarManager() {return instance.enderBarManager;}
+
+    public static TitleManager getTitleManager() { return instance.titleManager; }
 }

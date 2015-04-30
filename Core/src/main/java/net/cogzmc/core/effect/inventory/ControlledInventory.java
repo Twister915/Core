@@ -30,7 +30,11 @@ public abstract class ControlledInventory implements Listener, CPlayerConnection
     private final Set<CPlayer> players = new HashSet<>();
 
     public ControlledInventory() {
-        reload();
+        this(true);
+    }
+
+    public ControlledInventory(boolean reload) {
+        if (reload) reload();
     }
 
     protected abstract ControlledInventoryButton getNewButtonAt(Integer slot);
