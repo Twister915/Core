@@ -43,14 +43,14 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
     }
 
     @Override
-    public void open(CPlayer player) {
+    public final void open(CPlayer player) {
         if (observers.contains(player)) return;
         observers.add(player);
         player.getBukkitPlayer().openInventory(inventory);
     }
 
     @Override
-    public void close(CPlayer player) {
+    public final void close(CPlayer player) {
         if (!observers.contains(player)) return;
         observers.remove(player);
         player.getBukkitPlayer().closeInventory();
@@ -58,17 +58,17 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
     }
 
     @Override
-    public void open(Iterable<CPlayer> players) {
+    public final void open(Iterable<CPlayer> players) {
         for (CPlayer player : players) open(player);
     }
 
     @Override
-    public void close(Iterable<CPlayer> players) {
+    public final void close(Iterable<CPlayer> players) {
         for (CPlayer player : players) close(player);
     }
 
     @Override
-    public ImmutableList<CPlayer> getCurrentObservers() {
+    public final ImmutableList<CPlayer> getCurrentObservers() {
         return ImmutableList.copyOf(observers);
     }
 
@@ -76,7 +76,7 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
      * Adds a button, will replace default to the next available slot. Will throw an {@link java.lang.IllegalStateException} if there is no room remaining.
      * @param button The {@link net.cogzmc.core.gui.InventoryButton} to add to the inventory GUI.
      */
-    public void addButton(InventoryButton button) {
+    public final void addButton(InventoryButton button) {
         Integer nextOpenSlot = getNextOpenSlot();
         if (nextOpenSlot == null) throw new IllegalStateException("Unable to place the button in the inventory, no room remains!");
         addButton(button, nextOpenSlot);
@@ -87,7 +87,7 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
      * @param button The {@link net.cogzmc.core.gui.InventoryButton} to add to the inventory GUI.
      * @param slot The slot to place that button at.
      */
-    public void addButton(InventoryButton button, Integer slot) {
+    public final void addButton(InventoryButton button, Integer slot) {
         inventoryButtons.put(slot, button);
         markForUpdate(slot);
     }
@@ -97,7 +97,7 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
      * @param button
      * @param slot
      */
-    public void moveButton(InventoryButton button, Integer slot) {
+    public final void moveButton(InventoryButton button, Integer slot) {
         removeButton(button);
         addButton(button, slot);
     }
@@ -106,7 +106,7 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
      *
      * @param button
      */
-    public void markForUpdate(InventoryButton button) {
+    public final void markForUpdate(InventoryButton button) {
         markForUpdate(getSlotFor(button));
     }
 
@@ -114,7 +114,7 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
      *
      * @param slot
      */
-    public void markForUpdate(Integer slot) {
+    public final void markForUpdate(Integer slot) {
         updatedSlots.add(slot);
     }
 
@@ -123,7 +123,7 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
      * @param button
      * @return
      */
-    public Integer getSlotFor(InventoryButton button) {
+    public final Integer getSlotFor(InventoryButton button) {
         for (Map.Entry<Integer, InventoryButton> integerInventoryButtonEntry : inventoryButtons.entrySet()) {
             if (integerInventoryButtonEntry.getValue().equals(button)) return integerInventoryButtonEntry.getKey();
         }
@@ -134,7 +134,7 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
      *
      * @param button
      */
-    public void removeButton(InventoryButton button) {
+    public final void removeButton(InventoryButton button) {
         clearSlot(getSlotFor(button));
     }
 
@@ -147,13 +147,17 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
         markForUpdate(slot);
     }
 
+    public int getSize() {
+        return inventory.getSize();
+    }
+
     public void onClose(CPlayer onlinePlayer) {}
 
-    public boolean isFilled(Integer slot) {return inventoryButtons.containsKey(slot);}
+    public final boolean isFilled(Integer slot) {return inventoryButtons.containsKey(slot);}
     /**
      *
      */
-    public void updateInventory() {
+    public final void updateInventory() {
         for (int x = 0; x < inventory.getSize(); x++) {
             InventoryButton inventoryButton = inventoryButtons.get(x);
             if (inventoryButton == null && inventory.getItem(x) != null) {
@@ -182,7 +186,7 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
 
     /* Event Handlers */
     @EventHandler(priority = EventPriority.HIGH)
-    public void onPlayerLeave(PlayerQuitEvent event) {
+    public final void onPlayerLeave(PlayerQuitEvent event) {
         CPlayer onlinePlayer = Core.getOnlinePlayer(event.getPlayer());
         if (observers.contains(onlinePlayer)) {
             this.observers.remove(onlinePlayer);
@@ -191,7 +195,7 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
     }
 
     @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
+    public final void onInventoryClose(InventoryCloseEvent event) {
         if (!(event.getPlayer() instanceof Player)) return;
         if (!event.getInventory().equals(inventory)) return;
         Player player = (Player) event.getPlayer();
@@ -201,7 +205,7 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onInventoryClick(InventoryClickEvent event) {
+    public final void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) return;
         if (!(event.getInventory().equals(inventory))) return;
         CPlayer player = Core.getOnlinePlayer((Player) event.getWhoClicked());
@@ -218,12 +222,12 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerInventoryMove(InventoryMoveItemEvent event) {
+    public final void onPlayerInventoryMove(InventoryMoveItemEvent event) {
         if (!event.getDestination().equals(inventory)) return;
         event.setCancelled(true);
     }
 
-    public ImmutableList<InventoryButton> getButtons() {
+    public final ImmutableList<InventoryButton> getButtons() {
         return ImmutableList.copyOf(inventoryButtons.values());
     }
 
