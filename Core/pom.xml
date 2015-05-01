@@ -96,13 +96,14 @@
                         </goals>
                         <configuration>
                             <artifactSet>
-                                <excludes>
-                                    <exclude>org.bukkit</exclude>
-                                    <exclude>lilypad.client.connect</exclude>
-                                    <exclude>com.comphenix.protocol</exclude>
-                                    <exclude>com.google.guava</exclude>
-                                    <exclude>net.md-5</exclude>
-                                </excludes>
+                                <includes>
+                                    <include>net.cogzmc:CoreBase</include>
+                                    <include>com.googlecode.json-simple:json-simple</include>
+                                    <include>com.maxmind.geoip2:geoip2</include>
+                                    <include>redis.clients:jedis</include>
+                                    <include>com.mashape.unirest:unirest-java</include>
+                                    <include>org.apache.commons:commons-lang3</include>
+                                </includes>
                             </artifactSet>
                         </configuration>
                     </execution>
