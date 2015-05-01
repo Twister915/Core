@@ -21,6 +21,10 @@
             <name>Shadowvolt Maven Repository</name>
             <url>http://ci.shadowvolt.com/plugin/repository/everything/</url>
         </repository>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
