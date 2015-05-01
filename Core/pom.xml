@@ -103,6 +103,12 @@
                                     <include>redis.clients:jedis</include>
                                     <include>com.mashape.unirest:unirest-java</include>
                                     <include>org.apache.commons:commons-lang3</include>
+                                    <include>org.projectlombok:lombok</include>
+                                    <include>org.mongodb:mongo-java-driver</include>
+                                    <include>com.google.guava:guava</include>
+                                    <include>com.google.code.gson:gson</include>
+                                    <include>org.ocpsoft.prettytime:prettytime</include>
+                                    <include>joda-time:joda-time</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
