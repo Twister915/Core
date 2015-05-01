@@ -3,7 +3,6 @@ package net.cogzmc.core.player.mongo;
 import com.mongodb.*;
 import lombok.Data;
 import lombok.Getter;
-import lombok.NonNull;
 import net.cogzmc.core.player.CDatabase;
 import net.cogzmc.core.player.DatabaseConnectException;
 
@@ -24,12 +23,6 @@ public final class CMongoDatabase implements CDatabase {
             uri = new MongoClientURI("mongodb://" + username + ":" + password + "@" + host + ":"  + port + "/" + database);
         }
         else uri = new MongoClientURI("mongodb://" + host + ":" + port + "/" + database);
-        this.collectionPrefix = collectionPrefix;
-        this.database = database;
-    }
-
-    public CMongoDatabase(MongoClientURI uri, String collectionPrefix, String database) {
-        this.uri = uri;
         this.collectionPrefix = collectionPrefix;
         this.database = database;
     }
