@@ -16,6 +16,11 @@
             <id>lilypad</id>
             <url>http://ci.lilypadmc.org/plugin/repository/everything</url>
         </repository>
+        <repository>
+            <id>shadowvolt-repo</id>
+            <name>Shadowvolt Maven Repository</name>
+            <url>http://ci.shadowvolt.com/plugin/repository/everything/</url>
+        </repository>
     </repositories>
 
     <dependencies>
