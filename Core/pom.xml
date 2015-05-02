@@ -109,6 +109,8 @@
                                     <include>com.google.code.gson:gson</include>
                                     <include>org.ocpsoft.prettytime:prettytime</include>
                                     <include>joda-time:joda-time</include>
+                                    <include>com/mongodb/**</include>
+                                    <include>com/google/**</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
