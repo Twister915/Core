@@ -111,6 +111,7 @@
                                     <include>joda-time:joda-time</include>
                                     <include>com/mongodb/**</include>
                                     <include>org/apache/**</include>
+                                    <include>org.apache.commons:commons-pool2</include>
                                     <include>com/google/**</include>
                                 </includes>
                             </artifactSet>
