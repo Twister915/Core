@@ -37,11 +37,15 @@ public abstract class ModularPlugin extends JavaPlugin {
                 return;
             }
             Core.getInstance().onModulePreEnable(this);
+            YAMLConfigurationFile formatsFile;
             if (getClass().isAnnotationPresent(UsesFormats.class)) {
-                YAMLConfigurationFile formatsFile = new YAMLConfigurationFile(this, getClass().getAnnotation(UsesFormats.class).file());
-                formatsFile.saveDefaultConfig();
-                formatter = new Formatter(formatsFile);
+                formatsFile = new YAMLConfigurationFile(this, getClass().getAnnotation(UsesFormats.class).file());
+            } else {
+                formatsFile = new YAMLConfigurationFile(this, "formats.yml");
+                getLogger().warning("Update your plugin to support UsesFormats");
             }
+            formatsFile.saveDefaultConfig();
+            formatter = new Formatter(formatsFile);
             meta = getClass().getAnnotation(ModuleMeta.class);
             if (meta == null) throw new IllegalStateException("You must annotate your class with the @" + ModuleMeta.class.getName() + " annotation!");
             saveDefaultConfig();
