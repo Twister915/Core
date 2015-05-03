@@ -41,8 +41,10 @@ public final class ServerLinkingHandler extends BasePubSub {
             String name = split[1];
             ServerInfo serverInfo = ProxyServer.getInstance().getServers().get(name);
             if (serverInfo == null) return;
-            for (ProxiedPlayer proxiedPlayer : serverInfo.getPlayers()) {
-                proxiedPlayer.connect(CoreBungeeDriver.getInstance().getController().getFallbackServer(proxiedPlayer));
+            if (CoreBungeeDriver.getInstance().getController() != null) {
+                for (ProxiedPlayer proxiedPlayer : serverInfo.getPlayers()) {
+                    proxiedPlayer.connect(CoreBungeeDriver.getInstance().getController().getFallbackServer(proxiedPlayer));
+                }
             }
             ProxyServer.getInstance().getServers().remove(name);
             CoreBungeeDriver.getInstance().getServerReaper().playerCounts.remove(name);
