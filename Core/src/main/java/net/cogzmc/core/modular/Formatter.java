@@ -58,7 +58,7 @@ public final class Formatter {
             for (Map.Entry<String, String> stringStringEntry : modifiers.entrySet()) {
                 String value = stringStringEntry.getValue();
                 if (coloredInputs) value = ChatColor.translateAlternateColorCodes('&', value);
-                s = s.replaceAll(String.format("\\{\\{%s\\}\\}", stringStringEntry.getKey()), value).replaceAll(String.format("<%s>", stringStringEntry.getKey()), stringStringEntry.getValue());
+                s = s.replaceAll(String.format("\\{\\{%s\\}\\}", stringStringEntry.getKey()), value).replaceAll("<" + stringStringEntry.getKey() + ">", stringStringEntry.getValue());
             }
             if (prefix && loadedPrefix != null) return loadedPrefix + s;
             return s;
