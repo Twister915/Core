@@ -59,7 +59,7 @@ public final class Formatter {
                 String value = stringStringEntry.getValue();
                 if (coloredInputs) value = ChatColor.translateAlternateColorCodes('&', value);
                 s = s.replaceAll("\\{\\{" + stringStringEntry.getKey() + "\\}\\}", value);
-                s = s.replaceAll("\\<" + stringStringEntry.getKey() + "\\>", value);
+                s = s.replaceAll(stringStringEntry.getKey(), value);
             }
             if (prefix && loadedPrefix != null) return loadedPrefix + s;
             return s;
