@@ -12,7 +12,7 @@ public final class PlayerKickManager extends BasePubSub {
 
     @Override
     public void onMessage(String chan, String message) {
-        String[] split = message.split(";");
+        String[] split = new String[]{message.substring(0, 36), message.substring(36)};
         if (split.length != 2) return;
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(UUID.fromString(split[0]));
         if (player == null) return;

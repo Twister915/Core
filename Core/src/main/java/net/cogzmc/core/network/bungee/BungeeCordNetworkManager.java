@@ -226,7 +226,7 @@ public class BungeeCordNetworkManager implements NetworkManager {
     @Override
     public boolean kickViaNetworkManager(String message, CPlayer player) {
         Jedis resource = jedisPool.getResource();
-        resource.publish(KICK, player.getUniqueIdentifier().toString() + ";" + message);
+        resource.publish(KICK, player.getUniqueIdentifier().toString() + message);
         jedisPool.returnResource(resource);
         return true;
     }
