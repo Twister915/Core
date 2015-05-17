@@ -7,7 +7,6 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import redis.clients.jedis.Client;
 
 import java.net.InetSocketAddress;
-import java.util.Collection;
 
 @Log
 public final class ServerLinkingHandler extends BasePubSub {
@@ -47,7 +46,7 @@ public final class ServerLinkingHandler extends BasePubSub {
                 }
             }
             ProxyServer.getInstance().getServers().remove(name);
-            CoreBungeeDriver.getInstance().getServerReaper().playerCounts.remove(name);
+            CoreBungeeDriver.getInstance().getPlayerCounter().playerCounts.remove(name);
             log.info("Removed server gracefully " + name);
         }
     }

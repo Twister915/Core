@@ -37,6 +37,7 @@ public final class Hub extends ModularPlugin {
         registerLimitation(new DamageLimitation());
         registerLimitation(new HungerLimitation());
         registerLimitation(new VoidLimitation());
+        registerLimitation(new CreatureLimitation());
 
         logMessage("Enabled " + limitations.size() + "/" + attemptedModuleEnables + " limitations.");
     }

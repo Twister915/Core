@@ -1,6 +1,5 @@
 package net.cogzmc.bungee;
 
-import lombok.extern.java.Log;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -30,6 +29,7 @@ public final class Teleporter extends BasePubSub {
     }
 
     public static void enable() {
-        new PubSubThread(new Teleporter()).run();
+        new PubSubThread(new Teleporter()).start();
+
     }
 }

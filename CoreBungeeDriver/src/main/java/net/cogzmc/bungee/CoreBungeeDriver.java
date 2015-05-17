@@ -27,7 +27,7 @@ public final class CoreBungeeDriver extends Plugin {
     @Getter private CGroupRepository groupRepository;
     @Getter private static CoreBungeeDriver instance;
     @Getter @Setter private Controller controller;
-    @Getter private ServerReaper serverReaper;
+    @Getter private PlayerCounter playerCounter;
 
     @Override
     public void onEnable() {
@@ -42,6 +42,7 @@ public final class CoreBungeeDriver extends Plugin {
                 @Override
                 @SneakyThrows
                 public void run() {
+                    getLogger().info("Starting!");
                     Configuration dbConfig = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
                     Configuration redis = dbConfig.getSection("redis");
                     JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
@@ -75,7 +76,7 @@ public final class CoreBungeeDriver extends Plugin {
                         groupRepository1.reloadGroups();
 
                         ServerLinkingHandler.enable();
-                        serverReaper = ServerReaper.enable();
+                        playerCounter = new PlayerCounter();
                         DriverListener.enable();
                         Teleporter.enable();
                         PermissionsHandler.enable();

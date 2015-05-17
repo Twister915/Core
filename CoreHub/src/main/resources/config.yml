@@ -9,3 +9,4 @@ limitations: #Most limitations can be bypassed if you are OP or have the permiss
   no-damage: true #This will prevent damage to the player from all causes except for suicide, custom, and falling through the void
   no-hunger: true #This will prevent hunger from changing on the player and constantly refill it whenever needed.
   no-fall-void: true #This will prevent players from being able to go below Y of 0 and teleport them to spawn in the case that they do.
+  no-creatures: true #This will remove all living entities and prevent any more from spawning in all worlds.
