@@ -143,6 +143,7 @@ public class InventoryGraphicalInterface implements GraphicalInterface, Listener
      * @param slot
      */
     public void clearSlot(Integer slot) {
+        if (!inventoryButtons.containsKey(slot)) return;
         inventoryButtons.remove(slot);
         markForUpdate(slot);
     }
