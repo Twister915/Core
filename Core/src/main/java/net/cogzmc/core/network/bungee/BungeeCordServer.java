@@ -17,6 +17,7 @@ import java.util.*;
 
 @SuppressWarnings("unchecked")
 @Data
+@ToString(of = {"name", "uuids", "lastPing", "maximumPlayers"})
 @EqualsAndHashCode(of = {"name", "uuids", "lastPing", "maximumPlayers"})
 public class BungeeCordServer implements NetworkServer {
     private final String name;

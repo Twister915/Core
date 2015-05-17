@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings({"SuspiciousMethodCalls", "unchecked"})
 @EqualsAndHashCode
-@ToString
+@ToString(of = {"servers", "thisServer", "ip"})
 public class BungeeCordNetworkManager implements NetworkManager {
     static final String NET_COMMAND_CHANNEL = "CORE.BUNGEE.NETCOMMAND";
     private static final String LINK_CHANNEL = "CORE.BUNGEE.LINK";
