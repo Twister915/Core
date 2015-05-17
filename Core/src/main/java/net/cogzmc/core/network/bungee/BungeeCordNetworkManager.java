@@ -302,6 +302,7 @@ public class BungeeCordNetworkManager implements NetworkManager {
                 case NET_COMMAND_CHANNEL: {
                     try {
                         JSONObject parse = (JSONObject) JSONValue.parse(message);
+                        if (!parse.get("dest").equals(getThisServer().getName())) return;
                         String sender = (String) parse.get("sender");
                         NetworkServer server = getServer(sender);
                         if (server == null) return;

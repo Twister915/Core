@@ -55,6 +55,7 @@ public class BungeeCordServer implements NetworkServer {
         final JSONObject sendObject = new JSONObject();
         sendObject.put("sender", networkManager.getThisServer().getName());
         sendObject.put("net_command", jsonObject);
+        sendObject.put("dest", name);
         Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(), new Runnable() {
             @Override
             public void run() {
