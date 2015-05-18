@@ -25,6 +25,8 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
 @SuppressWarnings({"SuspiciousMethodCalls", "unchecked"})
@@ -49,6 +51,8 @@ public class BungeeCordNetworkManager implements NetworkManager {
     private final FileConfiguration bungeeYAML;
     private final String ip;
 
+    private final Lock lock = new ReentrantLock();
+
     public BungeeCordNetworkManager(YAMLConfigurationFile config) throws SocketException {
         bungeeYAML = config.getConfig();
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
@@ -70,11 +74,10 @@ public class BungeeCordNetworkManager implements NetworkManager {
         }
         if (address == null) throw new IllegalStateException("No IP could be found!");
         ip = address.getHostAddress();
-        linkServer();
-        Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(Core.getInstance(), "BungeeCord");
+        linkServer0();
     }
 
-    private void linkServer() {
+    private void linkServer0() {
         Jedis resource = jedisPool.getResource();
         resource.publish(LINK_CHANNEL, "LINK;" + thisServer.getName() + ";" + ip + ":" + Bukkit.getPort());
         jedisPool.returnResource(resource);
@@ -83,7 +86,12 @@ public class BungeeCordNetworkManager implements NetworkManager {
     @Override
     public List<NetworkServer> getServers() {
         ArrayList<NetworkServer> bungeeCordServers = new ArrayList<>();
-        bungeeCordServers.addAll(servers.values());
+        try {
+            lock.lock();
+            bungeeCordServers.addAll(servers.values());
+        } finally {
+            lock.unlock();
+        }
         bungeeCordServers.add(thisServer);
         return ImmutableList.copyOf(bungeeCordServers);
     }
@@ -104,40 +112,53 @@ public class BungeeCordNetworkManager implements NetworkManager {
 
     @Override
     public NetworkServer getServer(String name) {
+        try {
+            lock.lock();
+            return getServer0(name);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private NetworkServer getServer0(String name) {
         if (thisServer.getName().equals(name)) return thisServer;
         return servers.get(name);
     }
 
     @Override
-    @Synchronized
     public void updateHeartbeat() {
-        Iterator<BungeeCordServer> iterator = servers.values().iterator();
-        Long time = System.currentTimeMillis();
-        while (iterator.hasNext()) {
-            BungeeCordServer next = iterator.next();
-            if (time - next.getLastPing().getTime() > 10000) {
-                for (NetworkServerDiscoverObserver discoverObserver : discoverObservers) {
-                    discoverObserver.onNetworkServerRemove(next);
+        try {
+            lock.lock();
+            Iterator<BungeeCordServer> iterator = servers.values().iterator();
+            Long time = System.currentTimeMillis();
+            while (iterator.hasNext()) {
+                BungeeCordServer next = iterator.next();
+                if (time - next.getLastPing().getTime() > 10000) {
+                    for (NetworkServerDiscoverObserver discoverObserver : discoverObservers) {
+                        discoverObserver.onNetworkServerRemove(next);
+                    }
+                    iterator.remove();
                 }
-                iterator.remove();
             }
+            updateThisServer();
+            String[] heartbeat = new String[3];
+            heartbeat[0] = getThisServer().getName();
+            heartbeat[1] = getThisServer().getPlayers().size() == 0 ? "NONE" : Joiner.on(',').join(getThisServer().getPlayers());
+            heartbeat[2] = String.valueOf(getThisServer().getMaximumPlayers());
+            final String join = Joiner.on(';').join(heartbeat);
+            Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    Jedis resource = jedisPool.getResource();
+                    resource.publish(HEARTBEAT_CHAN, join);
+                    jedisPool.returnResource(resource);
+                }
+            });
+            linkServer0();
+            resetHeartbeat(5L, TimeUnit.SECONDS);
+        } finally {
+            lock.unlock();
         }
-        updateThisServer();
-        String[] heartbeat = new String[3];
-        heartbeat[0] = getThisServer().getName();
-        heartbeat[1] = getThisServer().getPlayers().size() == 0 ? "NONE" : Joiner.on(',').join(getThisServer().getPlayers());
-        heartbeat[2] = String.valueOf(getThisServer().getMaximumPlayers());
-        final String join = Joiner.on(';').join(heartbeat);
-        Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                Jedis resource = jedisPool.getResource();
-                resource.publish(HEARTBEAT_CHAN, join);
-                jedisPool.returnResource(resource);
-            }
-        });
-        linkServer();
-        resetHeartbeat(5L, TimeUnit.SECONDS);
     }
 
     private void updateThisServer() {
@@ -231,14 +252,15 @@ public class BungeeCordNetworkManager implements NetworkManager {
         return true;
     }
 
-    private void removeServer(NetworkServer server) {
+    //not sync'd
+    private void removeServer0(NetworkServer server) {
         servers.remove(server.getName());
         for (NetworkServerDiscoverObserver discoverObserver : discoverObservers) {
             discoverObserver.onNetworkServerRemove(server);
         }
     }
 
-    private void addServer(BungeeCordServer server) {
+    private void addServer0(BungeeCordServer server) {
         servers.put(server.getName(), server);
         for (NetworkServerDiscoverObserver discoverObserver : discoverObservers) {
             discoverObserver.onNetworkServerDiscover(server);
@@ -255,67 +277,72 @@ public class BungeeCordNetworkManager implements NetworkManager {
         @Override
         public void onMessage(String chan, String message) {
             Core.logDebug(chan + ":" + message + "; BG CORD");
-            switch (chan) {
-                case REAPCHANNEL: {
-                    NetworkServer server = getServer(message);
-                    if (server == null) return;
-                    removeServer(server);
-                    break;
-                }
-                case LINK_CHANNEL: {
-                    if (message.equals("BUNGEE_START")) {
-                        linkServer();
-                        return;
-                    }
-                    String[] split = message.split(";");
-                    if (split.length == 1) return;
-                    String cmd = split[0];
-                    if (cmd.equals("UNLINK")) {
-                        if (split.length < 2) return;
-                        NetworkServer server = getServer(split[1]);
+            try {
+                lock.lock();
+                switch (chan) {
+                    case REAPCHANNEL: {
+                        NetworkServer server = getServer0(message);
                         if (server == null) return;
-                        removeServer(server);
-                    } //We use heartbeat instead of link
-                    break;
-                }
-                case HEARTBEAT_CHAN: {
-                    String[] split = message.split(";");
-                    if (split.length != 3) return;
-                    String name = split[0];
-                    if (name.equals(thisServer.getName())) return;
-                    String uuids = split[1];
-                    Integer maxPlayers = Integer.parseInt(split[2]);
-                    BungeeCordServer server = (BungeeCordServer) getServer(name);
-                    if (server == null) {
-                        server = new BungeeCordServer(name, maxPlayers, BungeeCordNetworkManager.this);
-                        addServer(server);
+                        removeServer0(server);
+                        break;
                     }
-                    server.getUuids().clear();
-                    if (!uuids.equals("NONE")) {
-                        for (String s : uuids.split(",")) {
-                            server.getUuids().add(UUID.fromString(s));
+                    case LINK_CHANNEL: {
+                        if (message.equals("BUNGEE_START")) {
+                            linkServer0();
+                            return;
+                        }
+                        String[] split = message.split(";");
+                        if (split.length == 1) return;
+                        String cmd = split[0];
+                        if (cmd.equals("UNLINK")) {
+                            if (split.length < 2) return;
+                            NetworkServer server = getServer0(split[1]);
+                            if (server == null) return;
+                            removeServer0(server);
+                        } //We use heartbeat instead of link
+                        break;
+                    }
+                    case HEARTBEAT_CHAN: {
+                        String[] split = message.split(";");
+                        if (split.length != 3) return;
+                        String name = split[0];
+                        if (name.equals(thisServer.getName())) return;
+                        String uuids = split[1];
+                        Integer maxPlayers = Integer.parseInt(split[2]);
+                        BungeeCordServer server = (BungeeCordServer) getServer0(name);
+                        if (server == null) {
+                            server = new BungeeCordServer(name, maxPlayers, BungeeCordNetworkManager.this);
+                            addServer0(server);
+                        }
+                        server.getUuids().clear();
+                        if (!uuids.equals("NONE")) {
+                            for (String s : uuids.split(",")) {
+                                server.getUuids().add(UUID.fromString(s));
+                            }
+                        }
+                        server.setLastPing(new Date());
+                        break;
+                    }
+                    case NET_COMMAND_CHANNEL: {
+                        try {
+                            JSONObject parse = (JSONObject) JSONValue.parse(message);
+                            if (!parse.get("dest").equals(getThisServer().getName())) return;
+                            String sender = (String) parse.get("sender");
+                            NetworkServer server = getServer0(sender);
+                            if (server == null) return;
+                            JSONObject jsonObject = (JSONObject) parse.get("net_command");
+                            NetCommand netCommand = NetworkUtils.decodeNetCommand(jsonObject);
+                            for (NetCommandHandler netCommandHandler : netCommandHandlers.get(netCommand.getClass())) {
+                                netCommandHandler.handleNetCommand(server, netCommand);
+                            }
+                        } catch (Exception e) {
+                            Core.logDebug("Unable to gather data about NetCommand " + message);
+                            if (Core.DEBUG) e.printStackTrace();
                         }
                     }
-                    server.setLastPing(new Date());
-                    break;
                 }
-                case NET_COMMAND_CHANNEL: {
-                    try {
-                        JSONObject parse = (JSONObject) JSONValue.parse(message);
-                        if (!parse.get("dest").equals(getThisServer().getName())) return;
-                        String sender = (String) parse.get("sender");
-                        NetworkServer server = getServer(sender);
-                        if (server == null) return;
-                        JSONObject jsonObject = (JSONObject) parse.get("net_command");
-                        NetCommand netCommand = NetworkUtils.decodeNetCommand(jsonObject);
-                        for (NetCommandHandler netCommandHandler : netCommandHandlers.get(netCommand.getClass())) {
-                            netCommandHandler.handleNetCommand(server, netCommand);
-                        }
-                    } catch (Exception e) {
-                        Core.logDebug("Unable to gather data about NetCommand " + message);
-                        if (Core.DEBUG) e.printStackTrace();
-                    }
-                }
+            } finally {
+                lock.unlock();
             }
         }
 

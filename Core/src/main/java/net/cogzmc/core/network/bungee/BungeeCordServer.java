@@ -27,16 +27,29 @@ public class BungeeCordServer implements NetworkServer {
     private Date lastPing;
 
     @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    @Synchronized
     public Integer getOnlineCount() {
         return uuids.size();
     }
 
     @Override
+    public Integer getMaximumPlayers() {
+        return maximumPlayers;
+    }
+
+    @Override
+    @Synchronized
     public List<UUID> getPlayers() {
         return ImmutableList.copyOf(uuids);
     }
 
     @Override
+    @Synchronized
     public void sendPlayerToServer(final CPlayer player) {
         Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(), new Runnable() {
             @Override
@@ -49,7 +62,14 @@ public class BungeeCordServer implements NetworkServer {
     }
 
     @Override
+    @Synchronized
+    public Date getLastPing() {
+        return lastPing;
+    }
+
+    @Override
     @SneakyThrows
+    @Synchronized
     public void sendNetCommand(NetCommand command) {
         JSONObject jsonObject = NetworkUtils.encodeNetCommand(command);
         final JSONObject sendObject = new JSONObject();
@@ -64,5 +84,15 @@ public class BungeeCordServer implements NetworkServer {
                 networkManager.getJedisPool().returnResource(resource);
             }
         });
+    }
+
+    @Synchronized
+    public Set<UUID> getUuids() {
+        return uuids;
+    }
+
+    @Synchronized
+    public void setLastPing(Date lastPing) {
+        this.lastPing = lastPing;
     }
 }
