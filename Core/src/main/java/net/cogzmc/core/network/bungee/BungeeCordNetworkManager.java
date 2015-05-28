@@ -4,7 +4,6 @@ import com.google.api.client.repackaged.com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Synchronized;
 import lombok.ToString;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.config.YAMLConfigurationFile;
@@ -332,6 +331,7 @@ public class BungeeCordNetworkManager implements NetworkManager {
                             if (server == null) return;
                             JSONObject jsonObject = (JSONObject) parse.get("net_command");
                             NetCommand netCommand = NetworkUtils.decodeNetCommand(jsonObject);
+                            assert netCommand != null;
                             for (NetCommandHandler netCommandHandler : netCommandHandlers.get(netCommand.getClass())) {
                                 netCommandHandler.handleNetCommand(server, netCommand);
                             }

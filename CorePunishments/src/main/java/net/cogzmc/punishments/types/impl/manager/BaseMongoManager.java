@@ -6,6 +6,7 @@ import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.player.CPlayerJoinException;
 import net.cogzmc.core.player.mongo.CMongoDatabase;
+import net.cogzmc.punishments.PunishEvent;
 import net.cogzmc.punishments.PunishmentManager;
 import net.cogzmc.punishments.Punishments;
 import net.cogzmc.punishments.types.PunishmentException;
@@ -13,6 +14,7 @@ import net.cogzmc.punishments.types.TimedPunishment;
 import net.cogzmc.punishments.types.impl.TargetOnlinesOnly;
 import net.cogzmc.punishments.types.impl.model.MongoPunishment;
 import org.bson.types.ObjectId;
+import org.bukkit.Bukkit;
 import org.ocpsoft.prettytime.Duration;
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -74,6 +76,9 @@ abstract class BaseMongoManager<T extends MongoPunishment> implements Punishment
         if (getActivePunishmentFor(target) != null) throw new PunishmentException("A punishment of this type already exists!");
         if (!(target instanceof CPlayer) && punishmentClazz.isAnnotationPresent(TargetOnlinesOnly.class)) throw new PunishmentException("You can only punish online players with this!");
         T newPunishment = createNewPunishment(target, reason, issuer);
+        PunishEvent punishEvent = new PunishEvent(target, issuer, newPunishment);
+        Bukkit.getPluginManager().callEvent(punishEvent);
+        if (punishEvent.isCancelled()) throw new PunishmentException("The punishment was cancelled!");
         DBObject dbObject = convertToDBObject(newPunishment);
         newPunishment.setMongoId((ObjectId) dbObject.get("_id"));
         collection.save(dbObject);

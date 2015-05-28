@@ -47,6 +47,7 @@ public final class Punishments extends ModularPlugin implements CPlayerConnectio
 
     private <T extends Punishment> void registerPunishmentManager(Class<T> punishmentClass, PunishmentManager<T> punishmentManager) {
         punishmentManagers.put(punishmentClass, punishmentManager);
+        if (!getConfig().getBoolean("builtin-commands", true)) return;
         if (TimedPunishment.class.isAssignableFrom(punishmentClass)) //noinspection unchecked
             registerCommand(new TemporaryPunishCommand<>((Class<? extends TimedPunishment>)punishmentClass));
         else registerCommand(new PermanentPunishCommand<>(punishmentClass));

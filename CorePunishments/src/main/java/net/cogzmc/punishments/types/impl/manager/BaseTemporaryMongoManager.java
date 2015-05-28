@@ -4,11 +4,13 @@ import com.mongodb.DBObject;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
+import net.cogzmc.punishments.PunishEvent;
 import net.cogzmc.punishments.TimedPunishmentManager;
 import net.cogzmc.punishments.types.PunishmentException;
 import net.cogzmc.punishments.types.impl.TargetOnlinesOnly;
 import net.cogzmc.punishments.types.impl.model.MongoTemporaryPunishment;
 import org.bson.types.ObjectId;
+import org.bukkit.Bukkit;
 
 import java.util.Date;
 import java.util.UUID;
@@ -51,6 +53,9 @@ abstract class BaseTemporaryMongoManager<T extends MongoTemporaryPunishment> ext
         if (getActivePunishmentFor(target) != null) throw new PunishmentException("You cannot punish the same player twice!");
         if (!(target instanceof CPlayer) && punishmentClazz.isAnnotationPresent(TargetOnlinesOnly.class)) throw new PunishmentException("You can only punish online players with this!");
         T newPunishment = createNewPunishment(target, reason, issuer, lengthInSeconds);
+        PunishEvent punishEvent = new PunishEvent(target, issuer, newPunishment);
+        Bukkit.getPluginManager().callEvent(punishEvent);
+        if (punishEvent.isCancelled()) throw new PunishmentException("The punishment was cancelled!");
         DBObject dbObject = convertToDBObject(newPunishment);
         newPunishment.setMongoId((ObjectId) dbObject.get("_id"));
         collection.save(dbObject);
