@@ -2,6 +2,8 @@ package net.cogzmc.core.network.bungee;
 
 import com.google.api.client.repackaged.com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -12,8 +14,6 @@ import net.cogzmc.core.player.CPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitTask;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -324,12 +324,11 @@ public class BungeeCordNetworkManager implements NetworkManager {
                     }
                     case NET_COMMAND_CHANNEL: {
                         try {
-                            JSONObject parse = (JSONObject) JSONValue.parse(message);
-                            if (!parse.get("dest").equals(getThisServer().getName())) return;
-                            String sender = (String) parse.get("sender");
-                            NetworkServer server = getServer0(sender);
+                            JsonObject parse = new JsonParser().parse(message).getAsJsonObject();
+                            if (!parse.getAsJsonPrimitive("dest").getAsString().equals(getThisServer().getName())) return;
+                            NetworkServer server = getServer0(parse.getAsJsonPrimitive("sender").getAsString());
                             if (server == null) return;
-                            JSONObject jsonObject = (JSONObject) parse.get("net_command");
+                            JsonObject jsonObject = parse.getAsJsonObject("net_command");
                             NetCommand netCommand = NetworkUtils.decodeNetCommand(jsonObject);
                             assert netCommand != null;
                             for (NetCommandHandler netCommandHandler : netCommandHandlers.get(netCommand.getClass())) {

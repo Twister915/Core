@@ -1,5 +1,6 @@
 package net.cogzmc.core.network.lilypad;
 
+import com.google.gson.*;
 import lilypad.client.connect.api.Connect;
 import lilypad.client.connect.api.event.EventListener;
 import lilypad.client.connect.api.event.MessageEvent;
@@ -15,10 +16,6 @@ import net.cogzmc.core.player.COfflinePlayer;
 import net.cogzmc.core.player.CPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -113,16 +110,16 @@ public class LilyPadNetworkManager implements NetworkManager, HeartbeatHandler {
         }
 
         //Now we'll need to send out an encoded heartbeat, and then check if any of the servers have expired.
-        JSONObject object = new JSONObject(); //Build the JSON Object
-        JSONArray uuids = new JSONArray(); //Generate a JSON list of uuids
+        JsonObject object = new JsonObject();
+        JsonArray uuids = new JsonArray(); //Generate a JSON list of uuids
         for (CPlayer onlinePlayer : Core.getOnlinePlayers()) {
-            uuids.add(onlinePlayer.getUniqueIdentifier().toString());
+            uuids.add(new JsonPrimitive(onlinePlayer.getUniqueIdentifier().toString()));
         }
-        object.put(HEARTBEAT_PLAYERS_KEY, uuids); //and put it in the heartbeat
-        object.put(HEARTBEAT_MAX_PLAYERS_KEY, getMaximumPlayers());
+        object.add(HEARTBEAT_PLAYERS_KEY, uuids); //and put it in the heartbeat
+        object.addProperty(HEARTBEAT_MAX_PLAYERS_KEY, getMaximumPlayers());
         MessageRequest messageRequest;
         try {
-            messageRequest = new MessageRequest(Collections.EMPTY_LIST, NETWORK_MANAGER_CHANNEL, object.toJSONString());
+            messageRequest = new MessageRequest(Collections.EMPTY_LIST, NETWORK_MANAGER_CHANNEL, object.toString());
         } catch (UnsupportedEncodingException e) {
             return;
         }
@@ -206,7 +203,7 @@ public class LilyPadNetworkManager implements NetworkManager, HeartbeatHandler {
     @SneakyThrows
     public void sendMassNetCommand(NetCommand command) {
         //Create a new message request, destination: Empty_List (aka all servers) on the net command channel with the text from the encodeNetCommand method.
-        connect.request(new MessageRequest(Collections.EMPTY_LIST, NET_COMMAND_CHANNEL, NetworkUtils.encodeNetCommand(command).toJSONString()));
+        connect.request(new MessageRequest(Collections.EMPTY_LIST, NET_COMMAND_CHANNEL, NetworkUtils.encodeNetCommand(command).toString()));
     }
 
     @Override
@@ -279,13 +276,13 @@ public class LilyPadNetworkManager implements NetworkManager, HeartbeatHandler {
         if (event.getSender().equals(connect.getSettings().getUsername())) return; //If it's our heartbeat, doesn't matter either.
         try {
             String messageAsString = event.getMessageAsString();
-            JSONObject heartbeat = (JSONObject)JSONValue.parse(messageAsString); //Get the values
-            JSONArray playerUUIDs = (JSONArray) heartbeat.get(HEARTBEAT_PLAYERS_KEY);
-            Integer maxPlayers = ((Long) (heartbeat.get(HEARTBEAT_MAX_PLAYERS_KEY))).intValue();
+            JsonObject heartbeat = new JsonParser().parse(messageAsString).getAsJsonObject(); //Get the values
+            JsonArray playerUUIDs = heartbeat.getAsJsonArray(HEARTBEAT_PLAYERS_KEY);
+            Integer maxPlayers = heartbeat.getAsJsonPrimitive(HEARTBEAT_MAX_PLAYERS_KEY).getAsInt();
             List<UUID> uuids = new ArrayList<>(); //Holder for UUIDs that are converted from the strings above
-            for (Object playerUUID : playerUUIDs) {
-                if (!(playerUUID instanceof String)) continue;
-                uuids.add(UUID.fromString(String.valueOf(playerUUID))); //Convert a string to UUID
+            for (JsonElement playerUUID : playerUUIDs) {
+                if (!playerUUID.isJsonPrimitive() && ((JsonPrimitive) playerUUID).isString()) continue;
+                uuids.add(UUID.fromString(playerUUID.getAsString())); //Convert a string to UUID
             }
             handleHeartbeatData(event.getSender(), maxPlayers, uuids); //Update the server info.
         } catch (ClassCastException ex) {
@@ -304,7 +301,7 @@ public class LilyPadNetworkManager implements NetworkManager, HeartbeatHandler {
         if (Core.DEBUG) Core.logInfo(event.getMessageAsString());
         if (sender.getName().equals(connect.getSettings().getUsername())) return;
         //Get the command object (JSON) and attempt to read it
-        JSONObject netCommand = (JSONObject) JSONValue.parse(event.getMessageAsString());
+        JsonObject netCommand = new JsonParser().parse(event.getMessageAsString()).getAsJsonObject();
         NetCommand netCommand1 = NetworkUtils.decodeNetCommand(netCommand);
         //Now let's call the handlers
         List<NetCommandHandler> netCommandHandlers1 = netCommandHandlers.get(netCommand1.getClass());

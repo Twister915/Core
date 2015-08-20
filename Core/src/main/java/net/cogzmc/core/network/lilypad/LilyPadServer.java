@@ -44,6 +44,6 @@ public class LilyPadServer implements NetworkServer {
             Core.getInstance().getLogger().severe("LILYPAD CONNECT IS NOT CONNECTED TO THE CLOUD. Unable to send a netcommand.");
             return;
         }
-        networkManager.getConnect().request(new MessageRequest(name, LilyPadNetworkManager.NET_COMMAND_CHANNEL, NetworkUtils.encodeNetCommand(command).toJSONString()));
+        networkManager.getConnect().request(new MessageRequest(name, LilyPadNetworkManager.NET_COMMAND_CHANNEL, NetworkUtils.encodeNetCommand(command).toString()));
     }
 }

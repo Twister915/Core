@@ -1,8 +1,7 @@
 package net.cogzmc.core.network.bungee;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
+import com.google.gson.JsonObject;
 import lombok.*;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.network.NetCommand;
@@ -10,7 +9,6 @@ import net.cogzmc.core.network.NetworkServer;
 import net.cogzmc.core.network.NetworkUtils;
 import net.cogzmc.core.player.CPlayer;
 import org.bukkit.Bukkit;
-import org.json.simple.JSONObject;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
@@ -71,16 +69,16 @@ public class BungeeCordServer implements NetworkServer {
     @SneakyThrows
     @Synchronized
     public void sendNetCommand(NetCommand command) {
-        JSONObject jsonObject = NetworkUtils.encodeNetCommand(command);
-        final JSONObject sendObject = new JSONObject();
-        sendObject.put("sender", networkManager.getThisServer().getName());
-        sendObject.put("net_command", jsonObject);
-        sendObject.put("dest", name);
+        JsonObject jsonObject = NetworkUtils.encodeNetCommand(command);
+        final JsonObject sendObject = new JsonObject();
+        sendObject.addProperty("sender", networkManager.getThisServer().getName());
+        sendObject.add("net_command", jsonObject);
+        sendObject.addProperty("dest", name);
         Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(), new Runnable() {
             @Override
             public void run() {
                 Jedis resource = networkManager.getJedisPool().getResource();
-                resource.publish(BungeeCordNetworkManager.NET_COMMAND_CHANNEL, sendObject.toJSONString());
+                resource.publish(BungeeCordNetworkManager.NET_COMMAND_CHANNEL, sendObject.toString());
                 networkManager.getJedisPool().returnResource(resource);
             }
         });
