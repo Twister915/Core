@@ -3,6 +3,7 @@ package net.cogzmc.core.network.lilypad;
 import lilypad.client.connect.api.request.impl.MessageRequest;
 import lilypad.client.connect.api.request.impl.RedirectRequest;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
 import net.cogzmc.core.Core;
 import net.cogzmc.core.network.NetCommand;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
+@EqualsAndHashCode(of = {"name", "maximumPlayers"})
 public class LilyPadServer implements NetworkServer {
     private final String name;
     private final Integer maximumPlayers;

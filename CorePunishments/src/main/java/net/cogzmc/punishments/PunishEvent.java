@@ -12,7 +12,7 @@ import org.bukkit.event.HandlerList;
 @Data
 public final class PunishEvent extends Event implements Cancellable {
     @SuppressWarnings("unused")
-    private static HandlerList handlerList;
+    private static final HandlerList handlerList = new HandlerList();
 
     private final COfflinePlayer target, punisher;
     private final Punishment punishment;
