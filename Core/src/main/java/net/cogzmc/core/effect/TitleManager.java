@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import net.cogzmc.core.Core;
 import net.cogzmc.core.PlayerTargets;
 import net.cogzmc.core.player.CPlayer;
 import net.cogzmc.core.util.VersionUtil;
@@ -43,6 +44,7 @@ public final class TitleManager {
     }
 
     private void sendPacket(PlayerTargets players, TitleAction action, WrappedChatComponent text, Integer in, Integer stay, Integer out) {
+        if (!Core.getInstance().isHasProtocolLib()) throw new IllegalStateException("You must be using ProtocolLib!");
         PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.TITLE);
         try {
             //hacky way to do this

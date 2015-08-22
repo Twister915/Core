@@ -1,6 +1,7 @@
 package net.cogzmc.core.effect;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import net.cogzmc.core.Core;
 import net.cogzmc.core.effect.npc.packets.WrapperPlayServerAnimation;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -19,6 +20,7 @@ public final class Animations {
     }
 
     private static void sendAnimationFor(LivingEntity entity, Integer animationType) {
+        if (!Core.getInstance().isHasProtocolLib()) throw new IllegalStateException("You must be using ProtocolLib!");
         WrapperPlayServerAnimation packet = new WrapperPlayServerAnimation();
         packet.setEntityID(entity.getEntityId());
         packet.setAnimation(animationType);

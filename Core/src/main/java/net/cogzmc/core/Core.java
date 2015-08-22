@@ -60,10 +60,12 @@ public class Core extends JavaPlugin {
 
     @Getter private YAMLConfigurationFile databaseConfiguration;
     @Getter private Integer saveFrequency;
+    @Getter private boolean hasProtocolLib;
 
     @Override
     public final void onEnable() {
         instance = this;
+        hasProtocolLib = Bukkit.getPluginManager().getPlugin("ProtocolLib") != null;
         try {
             saveDefaultConfig();
             //Kick any online players
@@ -96,8 +98,10 @@ public class Core extends JavaPlugin {
             this.permissionsManager = provider.getNewPermissionsManager(this, this.playerManager);
 
             //Some extras
-            this.enderBarManager = new EnderBarManager();
-            this.titleManager = new TitleManager();
+            if (hasProtocolLib) {
+                this.enderBarManager = new EnderBarManager();
+                this.titleManager = new TitleManager();
+            }
             new SoftNPCManager();
             File geoIPDatabase = new File(getDataFolder(), getConfig().getString("geo-ip-database"));
             if (geoIPDatabase.exists()) {

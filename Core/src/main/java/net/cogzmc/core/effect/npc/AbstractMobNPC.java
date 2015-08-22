@@ -54,6 +54,8 @@ public abstract class AbstractMobNPC implements Observable<NPCObserver> {
     }
 
     public AbstractMobNPC(@NonNull Point location, World world, Set<CPlayer> observers, @NonNull String title) {
+        if (!Core.getInstance().isHasProtocolLib()) throw new IllegalStateException("You must be using ProtocolLib!");
+
         this.location = location.deepCopy();
         this.world = world;
         this.viewers = new HashSet<>();

@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.StructureModifier;
 import lombok.Data;
 import lombok.NonNull;
+import net.cogzmc.core.Core;
 import net.cogzmc.core.player.CPlayer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -64,6 +65,7 @@ public final class ParticleEffect {
     }
 
     private PacketContainer getPacket(Location location) {
+        if (!Core.getInstance().isHasProtocolLib()) throw new IllegalStateException("You must be using ProtocolLib!");
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.WORLD_PARTICLES);
         packet.getStrings().write(0, type.toString());

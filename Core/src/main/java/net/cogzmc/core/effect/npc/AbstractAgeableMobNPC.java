@@ -22,6 +22,6 @@ public abstract class AbstractAgeableMobNPC extends AbstractMobNPC {
     @Override
     protected void onDataWatcherUpdate() {
         super.onDataWatcherUpdate();
-        dataWatcher.setObject(12, adult ? 1 : -1); //Age (adult)
+        dataWatcher.setObject(12, (byte) (adult ? 1 : -1)); //Age (adult)
     }
 }
