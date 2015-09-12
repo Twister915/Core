@@ -73,6 +73,11 @@
             <artifactId>unirest-java</artifactId>
             <version>1.4.5</version>
         </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20141113</version>
+        </dependency>
     </dependencies>
 
     <properties>
